@@ -3,3 +3,4 @@
 
 #include <slankdev/system.h>
 #include <slankdev/utils.h>
+#include <slankdev/intfd.h>
