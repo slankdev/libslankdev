@@ -10,8 +10,8 @@ int main()
 {
     uint8_t buf[100];
 
-    uint64_t now = get_rdtsc();
+    uint64_t now = rdtsc();
     hexdump("test", buf, sizeof buf);
-    printf("%lu \n", get_rdtsc() - now);
+    printf("%lu \n", rdtsc() - now);
 }
 

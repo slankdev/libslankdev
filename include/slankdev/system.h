@@ -5,4 +5,4 @@
 #include <stdio.h>
 #include <stdint.h>
 
-uint64_t get_rdtsc();
+uint64_t rdtsc();
