@@ -7,14 +7,12 @@
 
 
 
-
-class intfd {
-    private:
+class impl_intfd {
+    protected:
         int _fd;
+
     public:
-    
-        intfd();
-        ~intfd();
+        impl_intfd();
 
         void socket(int domain, int type, int protocol);
         void open(const char* path, int flags);
@@ -24,3 +22,17 @@ class intfd {
         void write(const void* buffer, size_t bufferlen);
         size_t read(void* buffer, size_t bufferlen);
 };
+
+
+class unsafe_intfd : public impl_intfd {
+    public:
+        int fd();
+};
+
+
+class safe_intfd : public impl_intfd {
+    public:
+        ~safe_intfd();
+};
+
+

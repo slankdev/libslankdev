@@ -25,3 +25,4 @@ uninstall:
 	$(RM) $(INSTALL_LIB_DIR)/libslankdev.a
 	$(RM) $(INSTALL_HDR_DIR)/slankdev.h
 	$(RM) $(INSTALL_HDR_DIR)/slankdev
+

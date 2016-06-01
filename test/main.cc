@@ -1,17 +1,65 @@
 
+#include <slankdev.h>
 
 #include <stdio.h>
 #include <stdint.h>
-#include <slankdev/utils.h>
-#include <slankdev/system.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
 
+#include <slankdev.h>
+#include <arpa/inet.h>
+#include <net/if.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <net/if.h>
+
+#include <netpacket/packet.h>
+#include <netinet/if_ether.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+
+
+const char* dev = "enp3s0";
+static uint8_t raw[] = { 
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x09, 0x0f, 0x09, 0x00, 0x0d, 0x08, 0x06, 0x00, 0x01,
+    0x08, 0x00, 0x06, 0x04, 0x00, 0x01, 0x00, 0x09, 0x0f, 0x09, 0x00, 0x0d, 0x0a, 0xd2, 0x7c, 0x01,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0a, 0xd2, 0x7c, 0x36, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+int gfd;
+
+void func()
+{
+    safe_intfd fd;
+    fd.socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+
+    struct ifreq ifreq;
+    memset(&ifreq, 0, sizeof(ifreq));
+    strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
+    fd.ioctl(SIOCGIFINDEX, &ifreq);
+
+    struct sockaddr_ll sa;
+    sa.sll_family = AF_PACKET;
+    sa.sll_protocol = htonl(ETH_P_ALL);
+    sa.sll_ifindex = ifreq.ifr_ifindex;
+    fd.bind((struct sockaddr*)&sa, sizeof(sa));
+
+    fd.ioctl(SIOCGIFFLAGS, &ifreq);
+    ifreq.ifr_flags = ifreq.ifr_flags | IFF_PROMISC;
+    fd.ioctl(SIOCSIFFLAGS, &ifreq);
+    
+    fd.write(raw, sizeof(raw));
+    
+}
 
 int main()
 {
-    uint8_t buf[100];
-
-    uint64_t now = rdtsc();
-    hexdump("test", buf, sizeof buf);
-    printf("%lu \n", rdtsc() - now);
+    gfd= -1;
+    func();
+    write(gfd, raw, sizeof(raw));
 }
+
 
