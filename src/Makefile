@@ -2,10 +2,14 @@
 include ../common.mk
 INCLUDE_DIR = ../include
 
+
 .cc.o: 
 	$(CPP) $(CPPFLAGS) -c $< -o $@  -I$(INCLUDE_DIR)
 
-SRC = utils.cc system.cc intfd.cc
+
+SRC = utils.cc  \
+	  system.cc \
+	  intfd.cc
 OBJ = $(SRC:.cc=.o)
 
 
