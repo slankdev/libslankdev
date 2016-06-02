@@ -22,7 +22,27 @@
 #include <sys/socket.h>
 
 
-const char* dev = "enp3s0";
+const char* dev = "eth0";
+const char* dev1 = "enp0s8";
+const char* dev2 = "enp0s9";
+
+int main()
+{
+    base b;
+    b.add_if(dev1);
+    b.add_if(dev2);
+    
+    while (1) {
+        std::string name;
+        uint8_t buf[10000];
+        size_t recvlen = b.recv_any(name, buf, sizeof buf);
+
+        printf("%s recvlen=%zu \n", name.c_str(), recvlen);
+    }
+}
+
+
+#if 0
 static uint8_t raw[] = { 
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x09, 0x0f, 0x09, 0x00, 0x0d, 0x08, 0x06, 0x00, 0x01,
     0x08, 0x00, 0x06, 0x04, 0x00, 0x01, 0x00, 0x09, 0x0f, 0x09, 0x00, 0x0d, 0x0a, 0xd2, 0x7c, 0x01,
@@ -52,7 +72,6 @@ void func()
     fd.ioctl(SIOCSIFFLAGS, &ifreq);
     
     fd.write(raw, sizeof(raw));
-    
 }
 
 int main()
@@ -62,4 +81,4 @@ int main()
     write(gfd, raw, sizeof(raw));
 }
 
-
+#endif

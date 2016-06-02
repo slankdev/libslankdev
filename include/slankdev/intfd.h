@@ -6,6 +6,11 @@
 #include <sys/socket.h> // for struct sockaddr
 
 
+#define ETH_P_ALL  0x0003
+#define ETH_P_IP   0x0800
+#define ETH_P_ARP  0x0806
+#define ETH_P_RARP 0x0835
+
 
 class impl_intfd {
     protected:

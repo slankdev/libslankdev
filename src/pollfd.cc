@@ -1,10 +1,41 @@
 
 #include <slankdev/intfd.h>
 #include <slankdev/pollfd.h>
+
 #include <stdio.h>
+#include <string.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <arpa/inet.h>
+#include <netpacket/packet.h>
+#include <net/if.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+
+static unsafe_intfd* open_if(const std::string& name)
+{
+    unsafe_intfd *fd = new unsafe_intfd();
+    fd->socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+
+    struct ifreq ifreq;
+    memset(&ifreq, 0, sizeof(ifreq));
+    strncpy(ifreq.ifr_name, name.c_str(), sizeof(ifreq.ifr_name)-1);
+    fd->ioctl(SIOCGIFINDEX, &ifreq);
+
+    struct sockaddr_ll sa;
+    sa.sll_family = PF_PACKET;
+    sa.sll_protocol = htonl(ETH_P_ALL);
+    sa.sll_ifindex = ifreq.ifr_ifindex;
+    fd->bind((struct sockaddr*)&sa, sizeof(sa));
+
+    fd->ioctl(SIOCGIFFLAGS, &ifreq);
+    ifreq.ifr_flags = ifreq.ifr_flags | IFF_PROMISC;
+    fd->ioctl(SIOCSIFFLAGS, &ifreq);
+
+    return fd;
+}
 
 
 base::base() 
@@ -35,11 +66,10 @@ void base::add_if(const std::string& name)
 {
     struct pollfd pfd;
 
-    unsafe_intfd* iface = new unsafe_intfd;
-    iface->open_if(name.c_str());
+    unsafe_intfd* iface = open_if(name);
 
     memset(&pfd, 0, sizeof pfd);
-    pfd.fd = iface->fd;
+    pfd.fd = iface->fd();
     pfd.events = POLLIN | POLLERR;
 
     _names.push_back(name);
@@ -66,13 +96,13 @@ size_t base::num_ifs()
 void base::send(const std::string& name, const void* buf, size_t nbyte)
 {
     int index = name_to_index(name);
-    _ifs[index]->send(buf, nbyte);   
+    _ifs[index]->write(buf, nbyte);   
 }
 
 size_t base::recv(const std::string& name, void* buf, size_t nbyte)
 {
     int index = name_to_index(name);
-    return _ifs[index]->recv(buf, nbyte);   
+    return _ifs[index]->read(buf, nbyte);   
 }
 
 size_t base::recv_any(std::string& name, void* buf, size_t nbyte)
@@ -82,7 +112,7 @@ size_t base::recv_any(std::string& name, void* buf, size_t nbyte)
     for (size_t i=0; i<_pfd.size(); i++) {
         if (_pfd[i].revents & POLLIN) {
             name = _names[i];
-            return _ifs[i]->recv(buf, nbyte);
+            return _ifs[i]->read(buf, nbyte);
         }
     }
     return 0;
