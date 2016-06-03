@@ -9,7 +9,7 @@ const char* if1 = "enp8s0";
 int main()
 {
     
-    base base;
+    slankdev::pollfd base;
     base.add_if(if0);
     base.add_if(if1);
 

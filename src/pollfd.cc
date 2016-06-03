@@ -14,6 +14,10 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 
+namespace slankdev {
+
+
+
 static unsafe_intfd* open_if(const std::string& name)
 {
     unsafe_intfd *fd = new unsafe_intfd();
@@ -38,18 +42,18 @@ static unsafe_intfd* open_if(const std::string& name)
 }
 
 
-base::base() 
+pollfd::pollfd() 
 {
 }
 
-base::~base()
+pollfd::~pollfd()
 {
     for (size_t i=0; i<_ifs.size(); i++) {
         delete _ifs[i];
     }
 }
 
-ssize_t base::name_to_index(const std::string& name) 
+ssize_t pollfd::name_to_index(const std::string& name) 
 {
     ssize_t index;
     for (index=0; index< static_cast<ssize_t>(_names.size()); index++) {
@@ -62,14 +66,14 @@ success:
     return index;
 }
 
-void base::add_if(const std::string& name)
+void pollfd::add_if(const std::string& name)
 {
-    struct pollfd pfd;
+    struct ::pollfd pfd;
 
     unsafe_intfd* iface = open_if(name);
 
     memset(&pfd, 0, sizeof pfd);
-    pfd.fd = iface->fd();
+    pfd.fd = iface->fd;
     pfd.events = POLLIN | POLLERR;
 
     _names.push_back(name);
@@ -77,7 +81,7 @@ void base::add_if(const std::string& name)
     _ifs.push_back(iface);
 }
 
-void base::rm_if(const std::string& name)
+void pollfd::rm_if(const std::string& name)
 {
     int index = name_to_index(name);
 
@@ -88,24 +92,24 @@ void base::rm_if(const std::string& name)
     }
 }
 
-size_t base::num_ifs()
+size_t pollfd::num_ifs()
 {
     return _ifs.size();
 }
 
-void base::send(const std::string& name, const void* buf, size_t nbyte)
+void pollfd::send(const std::string& name, const void* buf, size_t nbyte)
 {
     int index = name_to_index(name);
     _ifs[index]->write(buf, nbyte);   
 }
 
-size_t base::recv(const std::string& name, void* buf, size_t nbyte)
+size_t pollfd::recv(const std::string& name, void* buf, size_t nbyte)
 {
     int index = name_to_index(name);
     return _ifs[index]->read(buf, nbyte);   
 }
 
-size_t base::recv_any(std::string& name, void* buf, size_t nbyte)
+size_t pollfd::recv_any(std::string& name, void* buf, size_t nbyte)
 {
 
     poll(_pfd.data(), _pfd.size(), -1);
@@ -118,3 +122,6 @@ size_t base::recv_any(std::string& name, void* buf, size_t nbyte)
     return 0;
 }
 
+
+
+} /* namespace slankdev */

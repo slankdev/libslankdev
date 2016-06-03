@@ -9,16 +9,20 @@
 #include <stddef.h>
 #include <poll.h>
 
-class base {
+
+namespace slankdev {
+
+
+class pollfd {
     private:
-        std::vector<struct pollfd>     _pfd;
+        std::vector<struct ::pollfd>     _pfd;
         std::vector<unsafe_intfd*> _ifs;
         std::vector<std::string>       _names;
         ssize_t name_to_index(const std::string& name);
 
     public:
-        base();
-        ~base();
+        pollfd();
+        ~pollfd();
         size_t num_ifs();
         void add_if(const std::string& name);
         void rm_if(const std::string& name);
@@ -29,3 +33,5 @@ class base {
 
 
 
+
+} /* namespace slankdev */

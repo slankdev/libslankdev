@@ -23,62 +23,44 @@
 
 
 const char* dev = "eth0";
-const char* dev1 = "enp0s8";
-const char* dev2 = "enp0s9";
+const char* dev1 = "enp3s0";
+const char* dev2 = "enp8s0";
 
-int main()
+using namespace slankdev;
+
+
+static safe_intfd* open_if(const std::string& name)
 {
-    base b;
-    b.add_if(dev1);
-    b.add_if(dev2);
-    
-    while (1) {
-        std::string name;
-        uint8_t buf[10000];
-        size_t recvlen = b.recv_any(name, buf, sizeof buf);
-
-        printf("%s recvlen=%zu \n", name.c_str(), recvlen);
-    }
-}
-
-
-#if 0
-static uint8_t raw[] = { 
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x09, 0x0f, 0x09, 0x00, 0x0d, 0x08, 0x06, 0x00, 0x01,
-    0x08, 0x00, 0x06, 0x04, 0x00, 0x01, 0x00, 0x09, 0x0f, 0x09, 0x00, 0x0d, 0x0a, 0xd2, 0x7c, 0x01,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0a, 0xd2, 0x7c, 0x36, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-int gfd;
-
-void func()
-{
-    safe_intfd fd;
-    fd.socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+    safe_intfd *fd = new safe_intfd();
+    fd->socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 
     struct ifreq ifreq;
     memset(&ifreq, 0, sizeof(ifreq));
-    strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
-    fd.ioctl(SIOCGIFINDEX, &ifreq);
+    strncpy(ifreq.ifr_name, name.c_str(), sizeof(ifreq.ifr_name)-1);
+    fd->ioctl(SIOCGIFINDEX, &ifreq);
 
     struct sockaddr_ll sa;
-    sa.sll_family = AF_PACKET;
+    sa.sll_family = PF_PACKET;
     sa.sll_protocol = htonl(ETH_P_ALL);
     sa.sll_ifindex = ifreq.ifr_ifindex;
-    fd.bind((struct sockaddr*)&sa, sizeof(sa));
+    fd->bind((struct sockaddr*)&sa, sizeof(sa));
 
-    fd.ioctl(SIOCGIFFLAGS, &ifreq);
+    fd->ioctl(SIOCGIFFLAGS, &ifreq);
     ifreq.ifr_flags = ifreq.ifr_flags | IFF_PROMISC;
-    fd.ioctl(SIOCSIFFLAGS, &ifreq);
-    
-    fd.write(raw, sizeof(raw));
+    fd->ioctl(SIOCSIFFLAGS, &ifreq);
+
+    return fd;
 }
+
 
 int main()
 {
-    gfd= -1;
-    func();
-    write(gfd, raw, sizeof(raw));
+    uint8_t raw[64];
+    memset(raw, 0xee, sizeof raw);
+
+    safe_intfd* fd = open_if(dev1);
+    fd->write(raw, sizeof(raw));
+    delete fd;
 }
 
-#endif
+

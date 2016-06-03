@@ -2,6 +2,7 @@
 
 #include <slankdev/utils.h>
 
+namespace slankdev {
 
 
 /* Thanks @herumi */
@@ -96,3 +97,6 @@ void bindump(const char* title, const void* buffer, size_t bufferlen)
         if ((i+1) % 8 == 0) printf("\n");
     }
 } 
+
+
+} /* namespace slankdev */

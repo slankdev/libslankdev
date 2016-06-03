@@ -21,42 +21,44 @@
 #include <sys/socket.h>
 
 
+namespace slankdev {
 
 
 
-impl_intfd::impl_intfd() : _fd(-1) {}
+
+unsafe_intfd::unsafe_intfd() : fd(-1) {}
 
 
-void impl_intfd::socket(int domain, int type, int protocol)
+void unsafe_intfd::socket(int domain, int type, int protocol)
 {
-    _fd = ::socket(domain, type, protocol);
-    if (_fd < 0) {
+    fd = ::socket(domain, type, protocol);
+    if (fd < 0) {
         perror("socket");
         exit(-1);
     }
 }
 
 
-void impl_intfd::open(const char* path, int flags)
+void unsafe_intfd::open(const char* path, int flags)
 {
-    _fd = ::open(path, flags);
-    if (_fd < 0) {
+    fd = ::open(path, flags);
+    if (fd < 0) {
         perror("open");
         exit(-1);
     }
 }
 
 
-void impl_intfd::close()
+void unsafe_intfd::close()
 {
-    if (_fd >= 0)
-        ::close(_fd);
+    if (fd >= 0)
+        ::close(fd);
 }
 
 
-void impl_intfd::bind(const struct sockaddr* sa, size_t len)
+void unsafe_intfd::bind(const struct sockaddr* sa, size_t len)
 {
-    int res = ::bind(_fd, sa, len);
+    int res = ::bind(fd, sa, len);
     if (res < 0) {
         perror("bind");
         exit(-1);
@@ -64,9 +66,9 @@ void impl_intfd::bind(const struct sockaddr* sa, size_t len)
 }
 
 
-void impl_intfd::ioctl(unsigned long l, void* arg)
+void unsafe_intfd::ioctl(unsigned long l, void* arg)
 {
-    int res = ::ioctl(_fd, l, arg);
+    int res = ::ioctl(fd, l, arg);
     if (res < 0) {
         perror("ioctl");
         exit(-1);
@@ -74,9 +76,9 @@ void impl_intfd::ioctl(unsigned long l, void* arg)
 }
 
 
-void impl_intfd::write(const void* buffer, size_t bufferlen)
+void unsafe_intfd::write(const void* buffer, size_t bufferlen)
 {
-    ssize_t res = ::write(_fd, buffer, bufferlen);
+    ssize_t res = ::write(fd, buffer, bufferlen);
     if (res < 0) {
         perror("write");
         exit(-1);
@@ -86,9 +88,9 @@ void impl_intfd::write(const void* buffer, size_t bufferlen)
 }
 
 
-size_t impl_intfd::read(void* buffer, size_t bufferlen)
+size_t unsafe_intfd::read(void* buffer, size_t bufferlen)
 {
-    ssize_t res = ::read(_fd, buffer, bufferlen);
+    ssize_t res = ::read(fd, buffer, bufferlen);
     if (res < 0) {
         perror("read");
         exit(-1);
@@ -99,14 +101,10 @@ size_t impl_intfd::read(void* buffer, size_t bufferlen)
 
 
 
-int unsafe_intfd::fd()
-{
-    return this->_fd;
-}
-
-
-
 safe_intfd::~safe_intfd()
 {
     close();
 }
+
+
+} /* namespace slankdev */

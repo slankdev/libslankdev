@@ -6,19 +6,21 @@
 #include <sys/socket.h> // for struct sockaddr
 
 
+
+namespace slankdev {
+
+
 #define ETH_P_ALL  0x0003
 #define ETH_P_IP   0x0800
 #define ETH_P_ARP  0x0806
 #define ETH_P_RARP 0x0835
 
 
-class impl_intfd {
-    protected:
-        int _fd;
-
+class unsafe_intfd {
     public:
-        impl_intfd();
+        int fd;
 
+        unsafe_intfd();
         void socket(int domain, int type, int protocol);
         void open(const char* path, int flags);
         void close();
@@ -29,15 +31,13 @@ class impl_intfd {
 };
 
 
-class unsafe_intfd : public impl_intfd {
-    public:
-        int fd();
-};
-
-
-class safe_intfd : public impl_intfd {
+class safe_intfd : public unsafe_intfd {
+    private:
+        int fd;
     public:
         ~safe_intfd();
 };
 
 
+
+} /* namespace slankdev */
