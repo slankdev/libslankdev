@@ -22,9 +22,8 @@
 #include <sys/socket.h>
 
 
-const char* dev = "eth0";
-const char* dev1 = "enp3s0";
-const char* dev2 = "enp8s0";
+const char* dev1 = "enp0s8";
+const char* dev2 = "enp0s9";
 
 using namespace slankdev;
 

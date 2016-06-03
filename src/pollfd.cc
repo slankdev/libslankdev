@@ -18,38 +18,37 @@ namespace slankdev {
 
 
 
-static unsafe_intfd* open_if(const std::string& name)
+static int open_if(const std::string& name)
 {
-    unsafe_intfd *fd = new unsafe_intfd();
-    fd->socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+    unsafe_intfd fd;
+    fd.socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 
     struct ifreq ifreq;
     memset(&ifreq, 0, sizeof(ifreq));
     strncpy(ifreq.ifr_name, name.c_str(), sizeof(ifreq.ifr_name)-1);
-    fd->ioctl(SIOCGIFINDEX, &ifreq);
+    fd.ioctl(SIOCGIFINDEX, &ifreq);
 
     struct sockaddr_ll sa;
     sa.sll_family = PF_PACKET;
     sa.sll_protocol = htonl(ETH_P_ALL);
     sa.sll_ifindex = ifreq.ifr_ifindex;
-    fd->bind((struct sockaddr*)&sa, sizeof(sa));
+    fd.bind((struct sockaddr*)&sa, sizeof(sa));
 
-    fd->ioctl(SIOCGIFFLAGS, &ifreq);
+    fd.ioctl(SIOCGIFFLAGS, &ifreq);
     ifreq.ifr_flags = ifreq.ifr_flags | IFF_PROMISC;
-    fd->ioctl(SIOCSIFFLAGS, &ifreq);
+    fd.ioctl(SIOCSIFFLAGS, &ifreq);
 
-    return fd;
+    return fd.fd;
 }
 
 
-pollfd::pollfd() 
-{
-}
-
+pollfd::pollfd() {}
 pollfd::~pollfd()
 {
-    for (size_t i=0; i<_ifs.size(); i++) {
-        delete _ifs[i];
+    unsafe_intfd fd;
+    for (size_t i=0; i<_pfd.size(); i++) {
+        fd.fd = _pfd[i].fd;
+        fd.close();
     }
 }
 
@@ -70,23 +69,22 @@ void pollfd::add_if(const std::string& name)
 {
     struct ::pollfd pfd;
 
-    unsafe_intfd* iface = open_if(name);
+    unsafe_intfd fd;
+    fd.fd = open_if(name);
 
     memset(&pfd, 0, sizeof pfd);
-    pfd.fd = iface->fd;
+    pfd.fd = fd.fd;
     pfd.events = POLLIN | POLLERR;
 
     _names.push_back(name);
     _pfd.push_back(pfd);
-    _ifs.push_back(iface);
 }
 
-void pollfd::rm_if(const std::string& name)
+void pollfd::del_if(const std::string& name)
 {
     int index = name_to_index(name);
 
     if (index >= 0) {
-        _ifs.erase(_ifs.begin() + index);
         _pfd.erase(_pfd.begin() + index);
         _names.erase(_names.begin() + index);
     }
@@ -94,29 +92,36 @@ void pollfd::rm_if(const std::string& name)
 
 size_t pollfd::num_ifs()
 {
-    return _ifs.size();
+    return _pfd.size();
 }
 
 void pollfd::send(const std::string& name, const void* buf, size_t nbyte)
 {
     int index = name_to_index(name);
-    _ifs[index]->write(buf, nbyte);   
+    unsafe_intfd fd;
+    fd.fd = _pfd[index].fd;
+
+    fd.write(buf, nbyte);   
 }
 
 size_t pollfd::recv(const std::string& name, void* buf, size_t nbyte)
 {
     int index = name_to_index(name);
-    return _ifs[index]->read(buf, nbyte);   
+    unsafe_intfd fd;
+    fd.fd = _pfd[index].fd;
+
+    return fd.read(buf, nbyte);   
 }
 
 size_t pollfd::recv_any(std::string& name, void* buf, size_t nbyte)
 {
-
+    unsafe_intfd fd;
     poll(_pfd.data(), _pfd.size(), -1);
     for (size_t i=0; i<_pfd.size(); i++) {
         if (_pfd[i].revents & POLLIN) {
             name = _names[i];
-            return _ifs[i]->read(buf, nbyte);
+            fd.fd = _pfd[i].fd;
+            return fd.read(buf, nbyte);
         }
     }
     return 0;

@@ -16,7 +16,6 @@ namespace slankdev {
 class pollfd {
     private:
         std::vector<struct ::pollfd>     _pfd;
-        std::vector<unsafe_intfd*> _ifs;
         std::vector<std::string>       _names;
         ssize_t name_to_index(const std::string& name);
 
@@ -25,7 +24,7 @@ class pollfd {
         ~pollfd();
         size_t num_ifs();
         void add_if(const std::string& name);
-        void rm_if(const std::string& name);
+        void del_if(const std::string& name);
         void send(const std::string& name, const void* buf, size_t nbyte);
         size_t recv(const std::string& name, void* buf, size_t nbyte);
         size_t recv_any(std::string& name, void* buf, size_t nbyte);

@@ -3,12 +3,11 @@
 #include <string>
 #include <slankdev.h>
 
-const char* if0 = "enp3s0";
-const char* if1 = "enp8s0";
+const char* if0 = "enp0s8";
+const char* if1 = "enp0s9";
 
 int main()
 {
-    
     slankdev::pollfd base;
     base.add_if(if0);
     base.add_if(if1);
@@ -17,7 +16,7 @@ int main()
         std::string name;
         uint8_t buf[10000];
         size_t recvlen = base.recv_any(name, buf, sizeof buf);
-        printf("interface=%s length=%zd   ", name.c_str(), recvlen);
+        printf("interface=%s length=%zd ", name.c_str(), recvlen);
 
         if (name == if0) {
             printf("send to eth1 \n");
@@ -29,7 +28,6 @@ int main()
             printf("unknown interface \n");
         }
     }
-
 }
 
 
