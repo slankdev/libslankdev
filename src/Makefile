@@ -10,7 +10,8 @@ INCLUDE_DIR = ../include
 SRC = utils.cc  \
 	  system.cc \
 	  intfd.cc  \
-	  pollfd.cc
+	  pollfd.cc \
+	  bit.cc
 OBJ = $(SRC:.cc=.o)
 
 
