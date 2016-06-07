@@ -5,6 +5,7 @@
 #include <slankdev/util.h>
 #include <slankdev/intfd.h>
 #include <slankdev/pollfd.h>
+#include <slankdev/gns.h>
 
 
 namespace slankdev {}
