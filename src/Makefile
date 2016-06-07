@@ -7,7 +7,7 @@ INCLUDE_DIR = ../include
 	$(CPP) $(CPPFLAGS) -c $< -o $@  -I$(INCLUDE_DIR)
 
 
-SRC = utils.cc  \
+SRC = util.cc  \
 	  system.cc \
 	  intfd.cc  \
 	  gns.cc  \
