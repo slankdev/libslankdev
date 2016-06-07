@@ -18,28 +18,6 @@ namespace slankdev {
 
 
 
-// static int open_if(const std::string& name)
-// {
-//     unsafe_intfd fd;
-//     fd.socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-//
-//     struct ifreq ifreq;
-//     memset(&ifreq, 0, sizeof(ifreq));
-//     strncpy(ifreq.ifr_name, name.c_str(), sizeof(ifreq.ifr_name)-1);
-//     fd.ioctl(SIOCGIFINDEX, &ifreq);
-//
-//     struct sockaddr_ll sa;
-//     sa.sll_family = PF_PACKET;
-//     sa.sll_protocol = htonl(ETH_P_ALL);
-//     sa.sll_ifindex = ifreq.ifr_ifindex;
-//     fd.bind((struct sockaddr*)&sa, sizeof(sa));
-//
-//     fd.ioctl(SIOCGIFFLAGS, &ifreq);
-//     ifreq.ifr_flags = ifreq.ifr_flags | IFF_PROMISC;
-//     fd.ioctl(SIOCSIFFLAGS, &ifreq);
-//
-//     return fd.fd;
-// }
 
 
 pollfd::pollfd() {}
@@ -57,12 +35,10 @@ ssize_t pollfd::name_to_index(const std::string& name)
     ssize_t index;
     for (index=0; index< static_cast<ssize_t>(_names.size()); index++) {
         if (_names[index] == name) {
-            goto success;
+            return index;
         }
     }
-    index = -1;
-success:
-    return index;
+    return -1;
 }
 
 void pollfd::add_if(const std::string& name)
