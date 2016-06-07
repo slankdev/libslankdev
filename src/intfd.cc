@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <errno.h>
 #include <unistd.h>
 
 #include <sys/socket.h>
@@ -79,12 +80,14 @@ void unsafe_intfd::ioctl(unsigned long l, void* arg)
 void unsafe_intfd::write(const void* buffer, size_t bufferlen)
 {
     ssize_t res = ::write(fd, buffer, bufferlen);
-    if (res < 0) {
-        perror("write");
-        exit(-1);
-    } else if (static_cast<size_t>(res) != bufferlen) {
-        fprintf(stderr, "write could not send all.\n");
-    } 
+    if (static_cast<size_t>(res) != bufferlen) {
+        if (res < 0) {
+            perror("write");
+            exit(-1);
+        } else {
+            fprintf(stderr, "write could not send all.\n");
+        } 
+    }
 }
 
 
@@ -94,7 +97,10 @@ size_t unsafe_intfd::read(void* buffer, size_t bufferlen)
     if (res < 0) {
         perror("read");
         exit(-1);
+    } else if (res == EINTR) {
+        return read(buffer, bufferlen);
     }
+    return static_cast<size_t>(res);
 }
 
 

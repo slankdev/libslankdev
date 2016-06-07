@@ -32,8 +32,7 @@ pollfd::~pollfd()
 
 ssize_t pollfd::name_to_index(const std::string& name) 
 {
-    ssize_t index;
-    for (index=0; index< static_cast<ssize_t>(_names.size()); index++) {
+    for (ssize_t index=0, sz=static_cast<ssize_t>(_names.size()); index<sz; index++) {
         if (_names[index] == name) {
             return index;
         }
