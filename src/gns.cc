@@ -1,6 +1,7 @@
 
 
 #include <slankdev/gns.h>
+#include <algorithm>
 
 
 namespace slankdev {
@@ -21,14 +22,15 @@ void gns::del_if(const std::string& name)
 }
 
 
-void gns::add_callback(gns_callback func)
+
+void gns::add_callback(gns_callback func, uint8_t priority)
 {
-    callbacks.push_back(func);
+    callbacks.push_back(std::pair<gns_callback, uint8_t>(func, priority));
 }
 void gns::del_callback(gns_callback func)
 {
     for (size_t i=0; i<callbacks.size(); i++) {
-        if (func == callbacks[i]) {
+        if (func == callbacks[i].first) {
             callbacks.erase(callbacks.begin() + i);
             return ;
         }
@@ -36,19 +38,22 @@ void gns::del_callback(gns_callback func)
 }
 
 
+
 void gns::start()
 {
+    std::sort(callbacks.begin(), callbacks.end());
+
     running = true;
     while (running) {
         std::string name;
-        uint8_t buf[10000];
+        uint8_t buf[5000];
         size_t recvlen = pfd.recv_any(name, buf, sizeof buf);
 
         struct gns_recvinfo info;
         info.interface = &name;
         info.gns = this;
         for (size_t i=0; i<callbacks.size(); i++) {
-            callbacks[i](&info, buf, recvlen);
+            callbacks[i].first(&info, buf, recvlen);
         }
     }
 }

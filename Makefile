@@ -5,9 +5,14 @@ export INSTALL_HDR_DIR := /usr/local/include
 include common.mk
 
 
-all:
+all: build-src build-test
+
+build-src:
 	$(MAKE) -C src
+
+build-test:
 	$(MAKE) -C test
+
 
 
 clean:

@@ -30,7 +30,7 @@ typedef void (*gns_callback)(struct gns_recvinfo* info, const void*, size_t);
 class gns {
     private:
         slankdev::pollfd pfd;
-        std::vector<gns_callback> callbacks;
+        std::vector<std::pair<gns_callback, uint8_t> > callbacks;
         bool running;
 
     public:
@@ -39,7 +39,7 @@ class gns {
         ~gns();
         void add_if(const std::string& name);
         void del_if(const std::string& name);
-        void add_callback(gns_callback func);
+        void add_callback(gns_callback func, uint8_t priority);
         void del_callback(gns_callback func);
         void start();
         void stop();
