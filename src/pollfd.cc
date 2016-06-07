@@ -18,28 +18,28 @@ namespace slankdev {
 
 
 
-static int open_if(const std::string& name)
-{
-    unsafe_intfd fd;
-    fd.socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-
-    struct ifreq ifreq;
-    memset(&ifreq, 0, sizeof(ifreq));
-    strncpy(ifreq.ifr_name, name.c_str(), sizeof(ifreq.ifr_name)-1);
-    fd.ioctl(SIOCGIFINDEX, &ifreq);
-
-    struct sockaddr_ll sa;
-    sa.sll_family = PF_PACKET;
-    sa.sll_protocol = htonl(ETH_P_ALL);
-    sa.sll_ifindex = ifreq.ifr_ifindex;
-    fd.bind((struct sockaddr*)&sa, sizeof(sa));
-
-    fd.ioctl(SIOCGIFFLAGS, &ifreq);
-    ifreq.ifr_flags = ifreq.ifr_flags | IFF_PROMISC;
-    fd.ioctl(SIOCSIFFLAGS, &ifreq);
-
-    return fd.fd;
-}
+// static int open_if(const std::string& name)
+// {
+//     unsafe_intfd fd;
+//     fd.socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+//
+//     struct ifreq ifreq;
+//     memset(&ifreq, 0, sizeof(ifreq));
+//     strncpy(ifreq.ifr_name, name.c_str(), sizeof(ifreq.ifr_name)-1);
+//     fd.ioctl(SIOCGIFINDEX, &ifreq);
+//
+//     struct sockaddr_ll sa;
+//     sa.sll_family = PF_PACKET;
+//     sa.sll_protocol = htonl(ETH_P_ALL);
+//     sa.sll_ifindex = ifreq.ifr_ifindex;
+//     fd.bind((struct sockaddr*)&sa, sizeof(sa));
+//
+//     fd.ioctl(SIOCGIFFLAGS, &ifreq);
+//     ifreq.ifr_flags = ifreq.ifr_flags | IFF_PROMISC;
+//     fd.ioctl(SIOCSIFFLAGS, &ifreq);
+//
+//     return fd.fd;
+// }
 
 
 pollfd::pollfd() {}
@@ -70,7 +70,7 @@ void pollfd::add_if(const std::string& name)
     struct ::pollfd pfd;
 
     unsafe_intfd fd;
-    fd.fd = open_if(name);
+    fd.open_if(name.c_str());
 
     memset(&pfd, 0, sizeof pfd);
     pfd.fd = fd.fd;

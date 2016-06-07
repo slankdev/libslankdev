@@ -99,6 +99,27 @@ size_t unsafe_intfd::read(void* buffer, size_t bufferlen)
 
 
 
+void unsafe_intfd::open_if(const char* name)
+{
+    socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+    
+    struct ifreq ifreq;
+    memset(&ifreq, 0, sizeof(ifreq));
+    strncpy(ifreq.ifr_name, name, sizeof(ifreq.ifr_name)-1);
+    ioctl(SIOCGIFINDEX, &ifreq);
+
+    struct sockaddr_ll sa;
+    sa.sll_family = PF_PACKET;
+    sa.sll_protocol = htonl(ETH_P_ALL);
+    sa.sll_ifindex = ifreq.ifr_ifindex;
+    bind((struct sockaddr*)&sa, sizeof(sa));
+
+    ioctl(SIOCGIFFLAGS, &ifreq);
+    ifreq.ifr_flags = ifreq.ifr_flags | IFF_PROMISC;
+    ioctl(SIOCSIFFLAGS, &ifreq);
+}
+
+
 
 
 safe_intfd::~safe_intfd()

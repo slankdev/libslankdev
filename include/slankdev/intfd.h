@@ -16,6 +16,8 @@ namespace slankdev {
 #define ETH_P_RARP 0x0835
 
 
+
+
 class unsafe_intfd {
     public:
         int fd;
@@ -28,6 +30,8 @@ class unsafe_intfd {
         void ioctl(unsigned long l, void* arg);
         void write(const void* buffer, size_t bufferlen);
         size_t read(void* buffer, size_t bufferlen);
+
+        void open_if(const char* name);
 };
 
 
