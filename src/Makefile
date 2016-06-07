@@ -10,6 +10,7 @@ INCLUDE_DIR = ../include
 SRC = utils.cc  \
 	  system.cc \
 	  intfd.cc  \
+	  gns.cc  \
 	  pollfd.cc 
 OBJ = $(SRC:.cc=.o)
 
