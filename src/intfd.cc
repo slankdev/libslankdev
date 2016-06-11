@@ -127,6 +127,29 @@ void unsafe_intfd::open_if(const char* name)
 
 
 
+void unsafe_intfd::sendto(const void* buffer, size_t bufferlen,int flags, 
+        const struct sockaddr* dest_addr, socklen_t dest_len)
+{
+    ssize_t res = ::sendto(fd, buffer, bufferlen, flags, dest_addr, dest_len);
+    if (res < 0) {
+        perror("sendto");
+        exit(-1);
+    }
+}
+
+
+size_t unsafe_intfd::recvfrom(void* buffer, size_t bufferlen, int flags,
+        struct sockaddr* address, socklen_t* address_len)
+{
+    ssize_t res = ::recvfrom(fd, buffer, bufferlen, flags, address, address_len);
+    if (res < 0) {
+        perror("recvfrom");
+        exit(-1);
+    }
+}
+
+
+
 
 safe_intfd::~safe_intfd()
 {
