@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <sys/socket.h> // for struct sockaddr
+#include <sys/stat.h>
+#include <fcntl.h>
 
 
 
@@ -25,6 +27,7 @@ class unsafe_intfd {
         unsafe_intfd();
         void socket(int domain, int type, int protocol);
         void open(const char* path, int flags);
+        void open(const char* path, int flags, mode_t mode);
         void close();
         void bind(const struct sockaddr* sa, size_t len);
         void ioctl(unsigned long l, void* arg);

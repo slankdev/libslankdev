@@ -50,6 +50,18 @@ void unsafe_intfd::open(const char* path, int flags)
 }
 
 
+
+void unsafe_intfd::open(const char* path, int flags, mode_t mode)
+{
+    fd = ::open(path, flags, mode);
+    if (fd < 0) {
+        perror("open");
+        exit(-1);
+    }
+}
+
+
+
 void unsafe_intfd::close()
 {
     if (fd >= 0)
