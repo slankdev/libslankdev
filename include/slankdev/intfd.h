@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include <netinet/in.h> // for IPPROTO_**
 
 
 namespace slankdev {
@@ -16,6 +17,7 @@ namespace slankdev {
 #define ETH_P_IP   0x0800
 #define ETH_P_ARP  0x0806
 #define ETH_P_RARP 0x0835
+
 
 
 
