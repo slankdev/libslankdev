@@ -1,7 +1,7 @@
 
 
 export CPP             := g++
-export CPPFLAGS        := -Wextra -g3  -O0
+export CPPFLAGS        := -Wextra -g3  -O0 -std=c++11
 export AR              := ar 
 export RANLIB          := ranlib
 export MAKE            := make
