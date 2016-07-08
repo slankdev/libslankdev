@@ -13,12 +13,6 @@ uint64_t rdtsc()
 
 
 
-#define slankdev_bswap_16(x) \
-    ( (((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00) )
-
-#define slankdev_bswap_32(x) \
-    ( (((val) >> 24) & 0x000000FF) | (((val) >>  8) & 0x0000FF00) | \
-      (((val) <<  8) & 0x00FF0000) | (((val) << 24) & 0xFF000000) )
 
 
 # if __BYTE_ORDER == __BIG_ENDIAN
@@ -36,6 +30,17 @@ uint64_t rdtsc()
 # else
 # error "Unknown __BYTE_ORDER"
 # endif
+
+
+
+#define slankdev_bswap_16(n) \
+    (((((unsigned short)(n) & 0xFF)) << 8) | (((unsigned short)(n) & 0xFF00) >> 8))
+
+#define slankdev_bswap_32(n) \
+    (((((unsigned long)(n) & 0xFF)) << 24)   | ((((unsigned long)(n) & 0xFF00)) << 8) | \
+	((((unsigned long)(n) & 0xFF0000)) >> 8) | ((((unsigned long)(n) & 0xFF000000)) >> 24))
+
+
 
 
 

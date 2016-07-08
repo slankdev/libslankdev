@@ -1,6 +1,7 @@
 
 
 #include <slankdev/intfd.h>
+#include <slankdev/system.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -119,7 +120,8 @@ size_t unsafe_intfd::read(void* buffer, size_t bufferlen)
 
 void unsafe_intfd::open_if(const char* name)
 {
-    socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+
+    socket(PF_PACKET, SOCK_RAW, slankdev::htons(ETH_P_ALL));
     
     struct ifreq ifreq;
     memset(&ifreq, 0, sizeof(ifreq));
@@ -128,7 +130,7 @@ void unsafe_intfd::open_if(const char* name)
 
     struct sockaddr_ll sa;
     sa.sll_family = PF_PACKET;
-    sa.sll_protocol = htonl(ETH_P_ALL);
+    sa.sll_protocol = slankdev::htons(ETH_P_ALL);
     sa.sll_ifindex = ifreq.ifr_ifindex;
     bind((struct sockaddr*)&sa, sizeof(sa));
 
