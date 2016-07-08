@@ -8,7 +8,6 @@ include common.mk
 SRC = src/util.cc  \
 	  src/system.cc \
 	  src/intfd.cc  \
-	  src/gns.cc  \
 	  src/pollfd.cc
 OBJ = $(SRC:.cc=.o)
 
