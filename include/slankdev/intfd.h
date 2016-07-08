@@ -10,6 +10,7 @@
 #include <netinet/in.h> // for IPPROTO_**
 
 
+
 namespace slankdev {
 
 
@@ -42,7 +43,20 @@ class unsafe_intfd {
                 struct sockaddr* address, socklen_t* address_len);
 
         void open_if(const char* name);
+
+
+        template<typename... ARG>
+        void printf(const char* const fmt, const ARG&... arg)
+        {
+            ::dprintf(fd, fmt, arg...);
+        }
+        void printf(const char* fmt)
+        {
+            ::dprintf(fd, "%s", fmt);
+        }
 };
+
+
 
 
 class safe_intfd : public unsafe_intfd {

@@ -2,6 +2,7 @@
 include ../common.mk
 export INCLUDE_DIR := ../include
 export LIB_DIR     := ../src
+CPPFLAGS += -g -O0
 
 .cc.o: 
 	$(CPP) $(CPPFLAGS) -c $< -o $@  -I$(INCLUDE_DIR)
