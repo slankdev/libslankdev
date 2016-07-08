@@ -53,18 +53,5 @@ class safe_intfd : public unsafe_intfd {
 };
 
 
-class sngltn_intfd : public safe_intfd {
-    protected:
-        int fd;
-        sngltn_intfd();
-        ~sngltn_intfd();
-
-        sngltn_intfd(const sngltn_intfd&)=delete;
-        sngltn_intfd& operator=(const sngltn_intfd&)=delete;
-
-    public:
-        static sngltn_intfd& instance();
-};
-
 
 } /* namespace slankdev */

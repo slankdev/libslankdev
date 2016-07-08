@@ -170,20 +170,6 @@ safe_intfd::~safe_intfd()
 
 
 
-sngltn_intfd::sngltn_intfd() : fd(-1) {}
-sngltn_intfd::~sngltn_intfd() 
-{
-    close();
-}
-
-
-sngltn_intfd& sngltn_intfd::instance()
-{
-    static sngltn_intfd inst;
-    return inst;
-}
-
-
 
 
 } /* namespace slankdev */
