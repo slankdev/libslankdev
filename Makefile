@@ -9,11 +9,12 @@ SRC = src/util.cc  \
 	  src/system.cc \
 	  src/intfd.cc  \
 	  src/gns.cc  \
-	  src/pollfd.cc 
+	  src/pollfd.cc
 OBJ = $(SRC:.cc=.o)
 
 .cc.o: 
-	$(CPP) $(CPPFLAGS) -c $< -o $@  -I$(INCLUDE_DIR)
+	@echo [CXX] $@
+	@$(CPP) $(CPPFLAGS) -c $< -o $@  -I$(INCLUDE_DIR)
 
 
 all: libslankdev.a
