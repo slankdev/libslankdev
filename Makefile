@@ -41,7 +41,7 @@ clean:
 	$(MAKE) -C test clean
 
 
-install:
+install: all
 	$(CP) libslankdev.a  $(INSTALL_LIB_DIR)
 	$(CP) include/slankdev.h $(INSTALL_HDR_DIR)
 	$(CP) include/slankdev   $(INSTALL_HDR_DIR)
