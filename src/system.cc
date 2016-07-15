@@ -15,21 +15,21 @@ uint64_t rdtsc()
 
 
 
-# if __BYTE_ORDER == __BIG_ENDIAN
+// # if __BYTE_ORDER == __BIG_ENDIAN
 // # warning "BIG ENDIAN"
-# define slankdev_ntohl(x)	(x)
-# define slankdev_ntohs(x)	(x)
-# define slankdev_htonl(x)	(x)
-# define slankdev_htons(x)	(x)
-# elif __BYTE_ORDER == __LITTLE_ENDIAN
-// # warning "LITTLE ENDIAN"
 #  define slankdev_ntohl(x)	slankdev_bswap_32 (x)
 #  define slankdev_ntohs(x)	slankdev_bswap_16 (x)
 #  define slankdev_htonl(x)	slankdev_bswap_32 (x)
 #  define slankdev_htons(x)	slankdev_bswap_16 (x)
-# else
-# error "Unknown __BYTE_ORDER"
-# endif
+// # elif __BYTE_ORDER == __LITTLE_ENDIAN
+// # warning "LITTLE ENDIAN"
+// #  define slankdev_ntohl(x)	slankdev_bswap_32 (x)
+// #  define slankdev_ntohs(x)	slankdev_bswap_16 (x)
+// #  define slankdev_htonl(x)	slankdev_bswap_32 (x)
+// #  define slankdev_htons(x)	slankdev_bswap_16 (x)
+// # else
+// # error "Unknown __BYTE_ORDER"
+// # endif
 
 
 
