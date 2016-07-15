@@ -164,6 +164,25 @@ size_t unsafe_intfd::recvfrom(void* buffer, size_t bufferlen, int flags,
 
 
 
+void unsafe_intfd::getsockopt(int level, int optname, void* optval, socklen_t *optlen)
+{
+    int res = ::getsockopt(fd, level, optname, optval, optlen);
+    if (res < 0) {
+        perror("getsockopt");
+        exit(-1);
+    }
+}
+void unsafe_intfd::setsockopt(int level, int optname, const void* optval, socklen_t optlen)
+{
+    int res = ::setsockopt(fd, level, optname, optval, optlen);
+    if (res < 0) {
+        perror("setsockopt");
+        exit(-1);
+    }
+}
+
+
+
 
 safe_intfd::~safe_intfd()
 {

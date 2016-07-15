@@ -37,12 +37,16 @@ class unsafe_intfd {
         void write(const void* buffer, size_t bufferlen);
         size_t read(void* buffer, size_t bufferlen);
 
+
+
         void sendto(const void* buffer, size_t bufferlen,int flags, 
                 const struct sockaddr* dest_addr, socklen_t dest_len);
         size_t recvfrom(void* buffer, size_t bufferlen, int flags,
                 struct sockaddr* address, socklen_t* address_len);
 
         void open_if(const char* name);
+        void getsockopt(int level, int optname, void* optval, socklen_t *optlen);
+        void setsockopt(int level, int optname, const void* optval, socklen_t optlen);
 
 
         template<typename... ARG>
