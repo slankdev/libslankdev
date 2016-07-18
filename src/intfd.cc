@@ -31,14 +31,6 @@ namespace slankdev {
 unsafe_intfd::unsafe_intfd() : fd(-1) {}
 
 
-void unsafe_intfd::socket(int domain, int type, int protocol)
-{
-    fd = ::socket(domain, type, protocol);
-    if (fd < 0) {
-        perror("socket");
-        exit(-1);
-    }
-}
 
 
 void unsafe_intfd::open(const char* path, int flags)
@@ -70,14 +62,6 @@ void unsafe_intfd::close()
 }
 
 
-void unsafe_intfd::bind(const struct sockaddr* sa, size_t len)
-{
-    int res = ::bind(fd, sa, len);
-    if (res < 0) {
-        perror("bind");
-        exit(-1);
-    }
-}
 
 
 void unsafe_intfd::ioctl(unsigned long l, void* arg)
@@ -106,6 +90,7 @@ void unsafe_intfd::write(const void* buffer, size_t bufferlen)
 
 size_t unsafe_intfd::read(void* buffer, size_t bufferlen)
 {
+    printf("fd %d \n", fd);
     ssize_t res = ::read(fd, buffer, bufferlen);
     if (res < 0) {
         perror("read");
@@ -118,9 +103,108 @@ size_t unsafe_intfd::read(void* buffer, size_t bufferlen)
 
 
 
-void unsafe_intfd::open_if(const char* name)
-{
 
+
+
+
+
+safe_intfd::~safe_intfd()
+{
+    close();
+}
+
+
+int safe_intfd::get_fd()
+{
+    return fd;
+}
+
+
+
+void safe_intfd::set_fd(int f)
+{
+    fd = f;
+}
+
+
+void socketfd::socket(int domain, int type, int protocol)
+{
+    fd = ::socket(domain, type, protocol);
+    if (fd < 0) {
+        perror("socket");
+        exit(-1);
+    }
+}
+void socketfd::bind(const struct sockaddr* sa, size_t len)
+{
+    int res = ::bind(fd, sa, len);
+    if (res < 0) {
+        perror("bind");
+        exit(-1);
+    }
+}
+void socketfd::listen(int backlog)
+{
+    int res = ::listen(fd, backlog);
+    if (res < 0) {
+        perror("listen");
+        exit(-1);
+    }
+}
+int socketfd::accept(struct sockaddr* sa, socklen_t* len)
+{
+    int res = ::accept(fd, sa, len);
+    if (res < 0) {
+        perror("accept");
+        exit(-1);
+    }
+    return res;
+}
+void socketfd::sendto(const void* buffer, size_t bufferlen,int flags, 
+        const struct sockaddr* dest_addr, socklen_t dest_len)
+{
+    ssize_t res = ::sendto(fd, buffer, bufferlen, flags, dest_addr, dest_len);
+    if (res < 0) {
+        perror("sendto");
+        exit(-1);
+    }
+}
+
+
+size_t socketfd::recvfrom(void* buffer, size_t bufferlen, int flags,
+        struct sockaddr* address, socklen_t* address_len)
+{
+    ssize_t res = ::recvfrom(fd, buffer, bufferlen, flags, address, address_len);
+    if (res < 0) {
+        perror("recvfrom");
+        exit(-1);
+    }
+}
+
+
+
+void socketfd::getsockopt(int level, int optname, void* optval, socklen_t *optlen)
+{
+    int res = ::getsockopt(fd, level, optname, optval, optlen);
+    if (res < 0) {
+        perror("getsockopt");
+        exit(-1);
+    }
+}
+void socketfd::setsockopt(int level, int optname, const void* optval, socklen_t optlen)
+{
+    int res = ::setsockopt(fd, level, optname, optval, optlen);
+    if (res < 0) {
+        perror("setsockopt");
+        exit(-1);
+    }
+}
+
+
+
+#ifdef __linux__
+void socketfd::open_if(const char* name)
+{
     socket(PF_PACKET, SOCK_RAW, slankdev::htons(ETH_P_ALL));
     
     struct ifreq ifreq;
@@ -138,59 +222,6 @@ void unsafe_intfd::open_if(const char* name)
     ifreq.ifr_flags = ifreq.ifr_flags | IFF_PROMISC;
     ioctl(SIOCSIFFLAGS, &ifreq);
 }
-
-
-
-void unsafe_intfd::sendto(const void* buffer, size_t bufferlen,int flags, 
-        const struct sockaddr* dest_addr, socklen_t dest_len)
-{
-    ssize_t res = ::sendto(fd, buffer, bufferlen, flags, dest_addr, dest_len);
-    if (res < 0) {
-        perror("sendto");
-        exit(-1);
-    }
-}
-
-
-size_t unsafe_intfd::recvfrom(void* buffer, size_t bufferlen, int flags,
-        struct sockaddr* address, socklen_t* address_len)
-{
-    ssize_t res = ::recvfrom(fd, buffer, bufferlen, flags, address, address_len);
-    if (res < 0) {
-        perror("recvfrom");
-        exit(-1);
-    }
-}
-
-
-
-void unsafe_intfd::getsockopt(int level, int optname, void* optval, socklen_t *optlen)
-{
-    int res = ::getsockopt(fd, level, optname, optval, optlen);
-    if (res < 0) {
-        perror("getsockopt");
-        exit(-1);
-    }
-}
-void unsafe_intfd::setsockopt(int level, int optname, const void* optval, socklen_t optlen)
-{
-    int res = ::setsockopt(fd, level, optname, optval, optlen);
-    if (res < 0) {
-        perror("setsockopt");
-        exit(-1);
-    }
-}
-
-
-
-
-safe_intfd::~safe_intfd()
-{
-    close();
-}
-
-
-
-
+#endif
 
 } /* namespace slankdev */
