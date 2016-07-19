@@ -24,8 +24,11 @@ namespace slankdev {
 
 
 class unsafe_intfd {
-    public:
+    protected:
         int fd;
+    public:
+        int get_fd();
+        void set_fd(int f);
 
         unsafe_intfd();
         void open(const char* path, int flags);
@@ -51,11 +54,7 @@ class unsafe_intfd {
 
 
 class safe_intfd : public unsafe_intfd {
-    protected:
-        int fd;
     public:
-        int get_fd();
-        void set_fd(int f);
 
         ~safe_intfd();
 };

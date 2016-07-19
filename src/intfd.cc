@@ -16,11 +16,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <net/if.h>
-
-#include <netpacket/packet.h>
 #include <netinet/if_ether.h>
 #include <arpa/inet.h>
-#include <sys/socket.h>
+
+#ifdef __linux__
+#include <netpacket/packet.h>
+#endif
 
 
 namespace slankdev {
@@ -29,6 +30,14 @@ namespace slankdev {
 
 
 unsafe_intfd::unsafe_intfd() : fd(-1) {}
+int unsafe_intfd::get_fd()
+{
+    return fd;
+}
+void unsafe_intfd::set_fd(int f)
+{
+    fd = f;
+}
 
 
 
@@ -90,7 +99,6 @@ void unsafe_intfd::write(const void* buffer, size_t bufferlen)
 
 size_t unsafe_intfd::read(void* buffer, size_t bufferlen)
 {
-    printf("fd %d \n", fd);
     ssize_t res = ::read(fd, buffer, bufferlen);
     if (res < 0) {
         perror("read");
@@ -114,17 +122,6 @@ safe_intfd::~safe_intfd()
 }
 
 
-int safe_intfd::get_fd()
-{
-    return fd;
-}
-
-
-
-void safe_intfd::set_fd(int f)
-{
-    fd = f;
-}
 
 
 void socketfd::socket(int domain, int type, int protocol)
@@ -179,6 +176,7 @@ size_t socketfd::recvfrom(void* buffer, size_t bufferlen, int flags,
         perror("recvfrom");
         exit(-1);
     }
+    return res;
 }
 
 

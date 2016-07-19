@@ -1,4 +1,5 @@
 
+#pragma once
 
 namespace slankdev {
 
@@ -19,10 +20,11 @@ struct ip {
 #if __BYTE_ORDER == __LITTLE_ENDIAN   /* Intel */
     unsigned char    ihl:4;           /* header length */
     unsigned char    version:4;       /* version */
-#endif
-#if __BYTE_ORDER == __BIG_ENDIAN      /* Motorola */
+#elif __BYTE_ORDER == __BIG_ENDIAN      /* Motorola */
     unsigned int     version:4;       /* version */
     unsigned int     ihl:4;           /* header length */
+#else
+# error "fix endian!!"
 #endif
     unsigned char    tos;             /* type of service */
     unsigned short   len;             /* total length */

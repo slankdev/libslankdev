@@ -4,7 +4,6 @@
 #include <slankdev/system.h>
 #include <slankdev/util.h>
 #include <slankdev/intfd.h>
-#include <slankdev/pollfd.h>
 #include <slankdev/singleton.h>
 #include <slankdev/net/protocol.h>
 
