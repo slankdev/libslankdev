@@ -38,7 +38,6 @@ class unsafe_intfd {
         void write(const void* buffer, size_t bufferlen);
         size_t read(void* buffer, size_t bufferlen);
 
-
         template<typename... ARG>
         void printf(const char* const fmt, const ARG&... arg)
         {
@@ -51,14 +50,11 @@ class unsafe_intfd {
 };
 
 
-
-
 class safe_intfd : public unsafe_intfd {
     public:
 
         ~safe_intfd();
 };
-
 
 
 class socketfd : public safe_intfd {
@@ -74,6 +70,8 @@ class socketfd : public safe_intfd {
                 struct sockaddr* address, socklen_t* address_len);
         void getsockopt(int level, int optname, void* optval, socklen_t *optlen);
         void setsockopt(int level, int optname, const void* optval, socklen_t optlen);
+        void send(const void* buf, size_t nbyte, int flags);
+        size_t recv(void* buf, size_t nbyte, int flags);
 
 #ifdef __linux__
         void open_if(const char* name);

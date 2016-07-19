@@ -36,12 +36,10 @@ int unsafe_intfd::get_fd()
 }
 void unsafe_intfd::set_fd(int f)
 {
+    if (f >= 0) 
+        close();
     fd = f;
 }
-
-
-
-
 void unsafe_intfd::open(const char* path, int flags)
 {
     fd = ::open(path, flags);
@@ -50,9 +48,6 @@ void unsafe_intfd::open(const char* path, int flags)
         exit(-1);
     }
 }
-
-
-
 void unsafe_intfd::open(const char* path, int flags, mode_t mode)
 {
     fd = ::open(path, flags, mode);
@@ -61,18 +56,11 @@ void unsafe_intfd::open(const char* path, int flags, mode_t mode)
         exit(-1);
     }
 }
-
-
-
 void unsafe_intfd::close()
 {
     if (fd >= 0)
         ::close(fd);
 }
-
-
-
-
 void unsafe_intfd::ioctl(unsigned long l, void* arg)
 {
     int res = ::ioctl(fd, l, arg);
@@ -81,8 +69,6 @@ void unsafe_intfd::ioctl(unsigned long l, void* arg)
         exit(-1);
     }
 }
-
-
 void unsafe_intfd::write(const void* buffer, size_t bufferlen)
 {
     ssize_t res = ::write(fd, buffer, bufferlen);
@@ -95,8 +81,6 @@ void unsafe_intfd::write(const void* buffer, size_t bufferlen)
         } 
     }
 }
-
-
 size_t unsafe_intfd::read(void* buffer, size_t bufferlen)
 {
     ssize_t res = ::read(fd, buffer, bufferlen);
@@ -120,6 +104,8 @@ safe_intfd::~safe_intfd()
 {
     close();
 }
+
+
 
 
 
@@ -166,8 +152,6 @@ void socketfd::sendto(const void* buffer, size_t bufferlen,int flags,
         exit(-1);
     }
 }
-
-
 size_t socketfd::recvfrom(void* buffer, size_t bufferlen, int flags,
         struct sockaddr* address, socklen_t* address_len)
 {
@@ -178,9 +162,6 @@ size_t socketfd::recvfrom(void* buffer, size_t bufferlen, int flags,
     }
     return res;
 }
-
-
-
 void socketfd::getsockopt(int level, int optname, void* optval, socklen_t *optlen)
 {
     int res = ::getsockopt(fd, level, optname, optval, optlen);
@@ -197,8 +178,23 @@ void socketfd::setsockopt(int level, int optname, const void* optval, socklen_t 
         exit(-1);
     }
 }
-
-
+void socketfd::send(const void* buf, size_t nbyte, int flags)
+{
+    int res = ::send(fd, buf, nbyte, flags);
+    if (res < 0) {
+        perror("send");
+        exit(-1);
+    }
+}
+size_t socketfd::recv(void* buf, size_t nbyte, int flags)
+{
+    ssize_t res = ::recv(fd, buf, nbyte, flags);
+    if (res < 0) {
+        perror("recv");
+        exit(-1);
+    }
+    return res;
+}
 
 #ifdef __linux__
 void socketfd::open_if(const char* name)
@@ -221,5 +217,11 @@ void socketfd::open_if(const char* name)
     ioctl(SIOCSIFFLAGS, &ifreq);
 }
 #endif
+
+
+
+
+
+
 
 } /* namespace slankdev */
