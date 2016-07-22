@@ -24,30 +24,19 @@ namespace slankdev {
 
 
 class unsafe_intfd {
-    public:
+    protected:
         int fd;
+    public:
+        int get_fd();
+        void set_fd(int f);
 
         unsafe_intfd();
-        void socket(int domain, int type, int protocol);
         void open(const char* path, int flags);
         void open(const char* path, int flags, mode_t mode);
         void close();
-        void bind(const struct sockaddr* sa, size_t len);
         void ioctl(unsigned long l, void* arg);
         void write(const void* buffer, size_t bufferlen);
         size_t read(void* buffer, size_t bufferlen);
-
-
-
-        void sendto(const void* buffer, size_t bufferlen,int flags, 
-                const struct sockaddr* dest_addr, socklen_t dest_len);
-        size_t recvfrom(void* buffer, size_t bufferlen, int flags,
-                struct sockaddr* address, socklen_t* address_len);
-
-        void open_if(const char* name);
-        void getsockopt(int level, int optname, void* optval, socklen_t *optlen);
-        void setsockopt(int level, int optname, const void* optval, socklen_t optlen);
-
 
         template<typename... ARG>
         void printf(const char* const fmt, const ARG&... arg)
@@ -61,13 +50,32 @@ class unsafe_intfd {
 };
 
 
-
-
 class safe_intfd : public unsafe_intfd {
-    protected:
-        int fd;
     public:
+
         ~safe_intfd();
+};
+
+
+class socketfd : public safe_intfd {
+    public:
+
+        void socket(int domain, int type, int protocol);
+        void bind(const struct sockaddr* sa, size_t len);
+        void listen(int backlog);
+        int  accept(struct sockaddr* sa, socklen_t* len);
+        void sendto(const void* buffer, size_t bufferlen,int flags, 
+                const struct sockaddr* dest_addr, socklen_t dest_len);
+        size_t recvfrom(void* buffer, size_t bufferlen, int flags,
+                struct sockaddr* address, socklen_t* address_len);
+        void getsockopt(int level, int optname, void* optval, socklen_t *optlen);
+        void setsockopt(int level, int optname, const void* optval, socklen_t optlen);
+        void send(const void* buf, size_t nbyte, int flags);
+        size_t recv(void* buf, size_t nbyte, int flags);
+
+#ifdef __linux__
+        void open_if(const char* name);
+#endif
 };
 
 

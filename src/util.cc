@@ -18,7 +18,7 @@ static uint16_t read_as_little_endian(const void* data)
 static uint16_t read_as_big_endian(const void* data)
 {
     const uint8_t* p = reinterpret_cast<const uint8_t*>(data);  
-    return uint16_t(p[1]) | (uint16_t(p[2]) << 8);
+    return uint16_t(p[1]) | (uint16_t(p[0]) << 8);
 }
 
 

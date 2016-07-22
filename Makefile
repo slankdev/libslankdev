@@ -5,10 +5,10 @@ INCLUDE_DIR = include
 
 include common.mk
 
+TARGET = libslankdev.a
 SRC = src/util.cc  \
 	  src/system.cc \
-	  src/intfd.cc  \
-	  src/pollfd.cc
+	  src/intfd.cc  
 OBJ = $(SRC:.cc=.o)
 
 .cc.o: 
@@ -16,14 +16,10 @@ OBJ = $(SRC:.cc=.o)
 	@$(CPP) $(CPPFLAGS) -g -c $< -o $@  -I$(INCLUDE_DIR)
 
 
-all: libslankdev.a
 
 
 
-
-
-
-all: libslankdev.a
+all: $(TARGET)
 
 libslankdev.a: $(OBJ)
 	@rm -f $@
@@ -33,19 +29,15 @@ libslankdev.a: $(OBJ)
 build-test:
 	$(MAKE) -C test
 
-
-
 clean:
 	$(RM) libslankdev.a
 	$(RM) $(OBJ)
 	$(MAKE) -C test clean
 
-
 install: all
 	$(CP) libslankdev.a  $(INSTALL_LIB_DIR)
 	$(CP) include/slankdev.h $(INSTALL_HDR_DIR)
 	$(CP) include/slankdev   $(INSTALL_HDR_DIR)
-
 
 uninstall:
 	$(RM) $(INSTALL_LIB_DIR)/libslankdev.a
