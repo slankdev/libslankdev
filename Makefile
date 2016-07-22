@@ -13,7 +13,7 @@ OBJ = $(SRC:.cc=.o)
 
 .cc.o: 
 	@echo [CXX] $@
-	@$(CPP) $(CPPFLAGS) -c $< -o $@  -I$(INCLUDE_DIR)
+	@$(CPP) $(CPPFLAGS) -g -c $< -o $@  -I$(INCLUDE_DIR)
 
 
 all: libslankdev.a
