@@ -9,7 +9,7 @@ all: $(TARGET)
 
 
 $(TARGET): $(SRC)
-	$(CPP) $(SRC) -o $@ -lslankdev
+	$(CPP) -g $(SRC) -o $@ -lslankdev
 
 clean:
 	$(RM) $(TARGET) *.o
