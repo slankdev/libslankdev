@@ -3,9 +3,12 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <fcntl.h>
+#include <net/if.h>
 #include <sys/socket.h> // for struct sockaddr
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <arpa/inet.h>
 
 #include <netinet/in.h> // for IPPROTO_**
 
@@ -14,10 +17,31 @@
 namespace slankdev {
 
 
+#ifndef ETH_P_ALL
 #define ETH_P_ALL  0x0003
+#endif
+#ifndef ETH_P_IP
 #define ETH_P_IP   0x0800
+#endif
+#ifndef ETH_P_ARP
 #define ETH_P_ARP  0x0806
+#endif
+#ifndef ETH_P_RARP
 #define ETH_P_RARP 0x0835
+#endif
+
+#ifndef IPPROTO_ICMP
+#define IPPROTO_ICMP 1
+#endif
+#ifndef IPPROTO_TCP
+#define IPPROTO_TCP  6
+#endif
+#ifndef IPPROTO_UDP
+#define IPPROTO_UDP  17
+#endif
+#ifndef IPPROTO_RAW
+#define IPPROTO_RAW  255
+#endif
 
 
 
