@@ -64,5 +64,14 @@ uint32_t ntohl(uint32_t val)
 
 
 
+battery::battery()
+{
+    
+}
+
+
+
+
+
 
 } /* namespace slankdev */
