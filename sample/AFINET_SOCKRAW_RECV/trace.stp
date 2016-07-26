@@ -1,0 +1,27 @@
+
+
+
+#! /usr/bin/env stap
+
+
+
+
+# probe kernel.function("*@net/ipv4/raw.c").call {
+#   if (execname() == "app.out") {
+#     printf("recvfrom Called\n")
+#   }
+# }
+
+
+prob kernel.function("*@net/socket.c").call {
+  if (execname() == "app.out") {
+    printf("%15s -> %15s\n", thread_indent(2), probefunc())
+  }
+}
+probe kernel.function("*@net/socket.c").return {
+  if (execname() == "app.out") {
+    printf("%15s <- %15s\n", thread_indent(-2), probefunc())
+  }
+}
+
+
