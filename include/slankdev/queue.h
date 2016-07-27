@@ -78,11 +78,11 @@ class queue {
             }
     
         }
-        bool empty()
+        bool empty() const
         {
             return (!head);
         }
-        size_t size()
+        size_t size() const 
         {
             size_t cnt = 0;
             T* node = head;
@@ -92,7 +92,7 @@ class queue {
             }
             return cnt;
         }
-        T* front()
+        T* front() const
         {
             return head;
         }
@@ -109,9 +109,11 @@ class queue {
                 head = node;
             }
         }
-        T* pop() /* free head */
+        T* pop()
         {
             T* node = head;
+            if (!node) return nullptr;
+
             head = node->next;
             node->next = nullptr;
             return node;

@@ -8,6 +8,7 @@
 
 #include <slankdev/singleton.h>
 #include <slankdev/queue.h>
+#include <slankdev/log.h>
 
 
 namespace slankdev {
