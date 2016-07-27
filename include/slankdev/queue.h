@@ -92,10 +92,10 @@ class queue {
             }
             return cnt;
         }
-        // T* front()
-        // {
-        //     return head;
-        // }
+        T* front()
+        {
+            return head;
+        }
         // T* back()
         // {
         //     return get_tail();
@@ -115,25 +115,7 @@ class queue {
             head = node->next;
             node->next = nullptr;
             return node;
-            // allocer.deallocate(node);
         }
-        // const void* get_head()
-        // {
-        //     return head;
-        // }
-        //
-        //
-        // void print()
-        // {
-        //     T* node = head;
-        //     if (!node) return ;
-        //
-        //     while (1) {
-        //         printf("(%p)val=%d, next=%p\n", node, node->val, node->next);
-        //         node = node->next;
-        //         if (!node) break;
-        //     }
-        // }
 };
 
 

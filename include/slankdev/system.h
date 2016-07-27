@@ -4,6 +4,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <iostream>
+#include <vector>
+#include <slankdev/intfd.h>
 
 
 namespace slankdev {
