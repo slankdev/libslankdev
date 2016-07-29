@@ -62,28 +62,27 @@ class unsafe_intfd {
         void write(const void* buffer, size_t bufferlen);
         size_t read(void* buffer, size_t bufferlen);
 
-        template<typename... ARG>
-        void printf(const char* const fmt, const ARG&... arg)
-        {
-            ::dprintf(fd, fmt, arg...);
-        }
-        void printf(const char* fmt)
-        {
-            ::dprintf(fd, "%s", fmt);
-        }
+        /* These don't work correctry */
+        // template<typename... ARG>
+        // void printf(const char* const fmt, const ARG&... arg)
+        // {
+        //     ::dprintf(fd, fmt, arg...);
+        // }
+        // void printf(const char* fmt)
+        // {
+        //     ::dprintf(fd, "%s", fmt);
+        // }
 };
 
 
 class safe_intfd : public unsafe_intfd {
     public:
-
         ~safe_intfd();
 };
 
 
 class socketfd : public safe_intfd {
     public:
-
         void socket(int domain, int type, int protocol);
         void bind(const struct sockaddr* sa, size_t len);
         void listen(int backlog);
