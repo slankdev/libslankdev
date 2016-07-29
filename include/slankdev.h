@@ -3,6 +3,7 @@
 
 #include <slankdev/system.h>
 #include <slankdev/util.h>
+#include <slankdev/filefd.h>
 #include <slankdev/intfd.h>
 #include <slankdev/net/protocol.h>
 
