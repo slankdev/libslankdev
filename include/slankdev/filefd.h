@@ -49,10 +49,24 @@ class filefd {
         {
             size_t res = ::fread(ptr, size, nmemb, fp);
             if (res != nmemb) {
-                perror("fread");
+                if (errno == 0)
+                    return res;
+                else
+                    perror("fread");
             }
             return res;
         }
+        void flush()
+        {
+            int res = ::fflush(fp);
+            if (res == EOF) {
+                perror("fflush");
+                exit(-1);
+            }
+        }
+
+
+
         template<typename... ARG>
         void printf(const char* const fmt, const ARG&... arg)
         {
