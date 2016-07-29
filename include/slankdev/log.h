@@ -5,21 +5,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <slankdev/intfd.h>
+#include <slankdev/filefd.h>
 
 
 
 namespace slankdev {
     
 
-enum class loglevel {
+enum loglevel {
     DEBUG,
     INFO ,
     WARN ,
     ERROR,
     FATAL
 };
-
 static const char* lv2str(loglevel lv)
 {
     static char str[8];
@@ -34,27 +33,38 @@ static const char* lv2str(loglevel lv)
 }
 
 
-/* 
- * Format
- * [rdtcp clock] host: msg.. 
- */
-class logger {
+class log {
     private:
-        slankdev::safe_intfd fd;
+        std::string name;
+        slankdev::filefd fd;
     public:
-
-        void open(const char* n)
+        void open(const char* path)
         {
-            fd.open(n, 0666);
+            fd.open(path, "a");
+            name = path;
         }
         template<typename ... ARG>
         void write(loglevel lv, const char* fmt, const ARG&... arg)
         {
             fd.printf("%s: ", lv2str(lv));
             fd.printf(fmt, arg...);
+            fd.printf("\n");
+        }
+        void export_to_file(const char* output_path)
+        {
+            fd.flush();
+
+            slankdev::filefd read_fd;
+            slankdev::filefd write_fd;
+            read_fd.open(name.c_str(), "r");
+            write_fd.open(output_path, "w");
+
+            char c;
+            while (read_fd.read(&c, sizeof(c), 1)!=0) {
+                write_fd.write(&c, sizeof(c), 1);
+            }
         }
 };
-
 
 
 
