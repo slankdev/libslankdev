@@ -12,11 +12,10 @@ namespace slankdev {
 
 
 template <typename T>
-class singleton final
-{
-private:
-    singleton();
-    ~singleton();
+class singleton {
+protected:
+    singleton() {}
+    ~singleton() {}
     singleton(const singleton&) = delete;
     singleton& operator=(const singleton&) = delete;
 
