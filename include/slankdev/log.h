@@ -49,6 +49,7 @@ class log {
             fd.printf("%s: ", lv2str(lv));
             fd.printf(fmt, arg...);
             fd.printf("\n");
+            fd.flush();
         }
         void export_to_file(const char* output_path)
         {
