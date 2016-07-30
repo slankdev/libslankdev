@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <slankdev/filefd.h>
+#include <slankdev/singleton.h>
 
 
 
@@ -33,7 +34,8 @@ static const char* lv2str(loglevel lv)
 }
 
 
-class log {
+class log : public slankdev::singleton<log> {
+    friend slankdev::singleton<log>;
     private:
         std::string name;
         slankdev::filefd fd;
@@ -49,6 +51,7 @@ class log {
             fd.printf("%s: ", lv2str(lv));
             fd.printf(fmt, arg...);
             fd.printf("\n");
+            fd.flush();
         }
         void export_to_file(const char* output_path)
         {
