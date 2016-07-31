@@ -58,9 +58,9 @@ class log : public slankdev::singleton<log> {
                 throw slankdev::exception("Not nited yes");
 
             fd.printf("%s: ", lv2str(lv));
-            for (size_t i=0; i<depth.size(); i++) {
+            for (size_t i=0; i<depth.size(); i++)
                 fd.printf("%s:", depth[i].c_str());
-            }
+            fd.printf(" ");
             fd.printf(fmt, arg...);
             fd.printf("\n");
             fd.flush();
