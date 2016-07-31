@@ -14,22 +14,22 @@
 namespace slankdev {
     
 
-enum loglevel {
-    DEBUG,
-    INFO ,
-    WARN ,
-    ERROR,
-    FATAL
-};
-static const char* lv2str(loglevel lv)
+#define DEBUG 0
+#define INFO  1
+#define WARN  2
+#define ERROR 3
+#define FATAL 4
+typedef uint8_t loglevel_t;
+
+static const char* lv2str(loglevel_t lv)
 {
     static char str[8];
     switch (lv) {
-        case loglevel::DEBUG: strcpy(str, "DEBUG"); break;
-        case loglevel::INFO : strcpy(str, "INFO "); break;
-        case loglevel::WARN : strcpy(str, "WARN "); break;
-        case loglevel::ERROR: strcpy(str, "ERROR"); break;
-        case loglevel::FATAL: strcpy(str, "FATAL"); break;
+        case DEBUG: strcpy(str, "DEBUG"); break;
+        case INFO : strcpy(str, "INFO "); break;
+        case WARN : strcpy(str, "WARN "); break;
+        case ERROR: strcpy(str, "ERROR"); break;
+        case FATAL: strcpy(str, "FATAL"); break;
     }
     return str;
 }
@@ -53,7 +53,7 @@ class log : public slankdev::singleton<log> {
             name = path;
         }
         template<typename ... ARG>
-        void write(loglevel lv, const char* fmt, const ARG&... arg)
+        void write(loglevel_t lv, const char* fmt, const ARG&... arg)
         {
             if (!inited)
                 throw slankdev::exception("Not nited yes");
