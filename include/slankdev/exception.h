@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <string>
 #include <exception>
+#include <sstream>
+#include <ostream>
 
 
 namespace slankdev {

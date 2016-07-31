@@ -1,12 +1,13 @@
 
 #pragma once
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 #include <slankdev/filefd.h>
 #include <slankdev/singleton.h>
+#include <slankdev/exception.h>
 
 
 
@@ -92,7 +93,6 @@ class log : public slankdev::singleton<log> {
             depth.pop_back();
         }
 };
-bool log::inited = false;
 
 
 
