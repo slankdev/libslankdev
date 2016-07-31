@@ -40,6 +40,8 @@ class log : public slankdev::singleton<log> {
         static bool inited;
         std::string name;
         slankdev::filefd fd;
+
+        std::vector<std::string> depth;
     public:
         void open(const char* path)
         {
@@ -56,6 +58,9 @@ class log : public slankdev::singleton<log> {
                 throw slankdev::exception("Not nited yes");
 
             fd.printf("%s: ", lv2str(lv));
+            for (size_t i=0; i<depth.size(); i++) {
+                fd.printf("%s:", depth[i].c_str());
+            }
             fd.printf(fmt, arg...);
             fd.printf("\n");
             fd.flush();
@@ -75,6 +80,16 @@ class log : public slankdev::singleton<log> {
             while (read_fd.read(&c, sizeof(c), 1)!=0) {
                 write_fd.write(&c, sizeof(c), 1);
             }
+        }
+
+        void push(const char* name)
+        {
+            std::string str = name;
+            depth.push_back(str);
+        }
+        void pop()
+        {
+            depth.pop_back();
         }
 };
 bool log::inited = false;
