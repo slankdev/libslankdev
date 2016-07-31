@@ -35,8 +35,8 @@ static const char* lv2str(loglevel_t lv)
 }
 
 
-class log : public slankdev::singleton<log> {
-    friend slankdev::singleton<log>;
+class log : public slankdev::simple_singleton<log> {
+    friend slankdev::simple_singleton<log>;
     private:
         static bool inited;
         std::string name;

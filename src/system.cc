@@ -22,6 +22,7 @@ uint64_t rdtsc()
 // # error "Unknown __BYTE_ORDER"
 // # endif
 
+#ifdef __linux
 # if __BYTE_ORDER == __BIG_ENDIAN
 // # warning "BIG ENDIAN"
 #  define slankdev_ntohl(x)	x
@@ -37,7 +38,7 @@ uint64_t rdtsc()
 # else
 # error "Unknown __BYTE_ORDER"
 # endif
-
+#endif
 
 
 #define slankdev_bswap_16(n) \
@@ -50,7 +51,7 @@ uint64_t rdtsc()
 
 
 
-
+#ifdef __linux
 uint16_t htons(uint16_t val)
 {
     return slankdev_htons(val);
@@ -67,6 +68,7 @@ uint32_t ntohl(uint32_t val)
 {
     return slankdev_ntohl(val);
 }
+#endif
 
 
 
