@@ -26,6 +26,29 @@
 
 namespace slankdev {
 
+void string2binary_in4(const char* src, struct ::sockaddr_in* dst)
+{
+    int res = inet_pton(AF_INET, src, &dst->sin_addr);
+    if (res != 1) {
+        perror("inet_pton");
+        exit(-1);
+    }
+}
+
+
+
+
+void binary2string_in4(const struct sockaddr_in* src, char* dst, size_t dstlen)
+{
+    const char* res = inet_ntop(AF_INET, &src->sin_addr, dst, dstlen);
+    if (res == NULL) {
+        perror("inet_ntop");
+        exit(-1);
+    }
+}
+
+
+
 
 
 

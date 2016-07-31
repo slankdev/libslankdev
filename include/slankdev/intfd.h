@@ -44,6 +44,8 @@ namespace slankdev {
 #endif
 
 
+void string2binary_in4(const char* src, struct ::sockaddr_in* dst);
+void binary2string_in4(const struct sockaddr_in* src, char* dst, size_t dstlen);
 
 
 
