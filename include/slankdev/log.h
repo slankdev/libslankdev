@@ -37,17 +37,24 @@ static const char* lv2str(loglevel lv)
 class log : public slankdev::singleton<log> {
     friend slankdev::singleton<log>;
     private:
+        static bool inited;
         std::string name;
         slankdev::filefd fd;
     public:
         void open(const char* path)
         {
+            if (inited)
+                throw slankdev::exception("Inited yet");
+            inited = true;
             fd.open(path, "a");
             name = path;
         }
         template<typename ... ARG>
         void write(loglevel lv, const char* fmt, const ARG&... arg)
         {
+            if (!inited)
+                throw slankdev::exception("Not nited yes");
+
             fd.printf("%s: ", lv2str(lv));
             fd.printf(fmt, arg...);
             fd.printf("\n");
@@ -55,8 +62,10 @@ class log : public slankdev::singleton<log> {
         }
         void export_to_file(const char* output_path)
         {
-            fd.flush();
+            if (!inited)
+                throw slankdev::exception("Not nited yes");
 
+            fd.flush();
             slankdev::filefd read_fd;
             slankdev::filefd write_fd;
             read_fd.open(name.c_str(), "r");
@@ -68,6 +77,7 @@ class log : public slankdev::singleton<log> {
             }
         }
 };
+bool log::inited = false;
 
 
 
