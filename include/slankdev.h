@@ -10,6 +10,7 @@
 #include <slankdev/singleton.h>
 #include <slankdev/queue.h>
 #include <slankdev/log.h>
+#include <slankdev/exception.h>
 
 
 namespace slankdev {
