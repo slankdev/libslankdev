@@ -10,7 +10,7 @@ namespace slankdev {
     
 
 
-#if 0
+#if 1
 template <typename T>
 class singleton {
 protected:
@@ -29,6 +29,7 @@ public:
 #endif
 
 
+#if 0
 template <typename T>
 class singleton {
 protected:
@@ -58,9 +59,13 @@ public:
     {
         return _inited;
     }
+
+    // void init();
+    // void init(Arg.. args);
 };
 template <typename T>
 bool singleton<T>::_inited = false;
+#endif
 
 
 
