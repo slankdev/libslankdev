@@ -69,14 +69,14 @@ class filefd {
 
 
         template<typename... ARG>
-        void printf(const char* const fmt, const ARG&... arg)
+        void printf(const char* fmt, const ARG&... arg)
         {
             ::fprintf(fp, fmt, arg...);
         }
-        void printf(const char* const fmt)
-        {
-            ::fprintf(fp, fmt);
-        }
+        // void printf(const char* fmt)
+        // {
+        //     ::fprintf(fp, fmt);
+        // }
 };
 
 
