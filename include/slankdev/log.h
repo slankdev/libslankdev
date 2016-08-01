@@ -35,28 +35,39 @@ static const char* lv2str(loglevel_t lv)
 }
 
 
-class log : public slankdev::simple_singleton<log> {
-    friend slankdev::simple_singleton<log>;
+template <class Tag>
+class log {
     private:
         static bool inited;
-        std::string name;
+        //std::string name;
         slankdev::filefd fd;
-
         std::vector<std::string> depth;
+    
+        log() {}
+        ~log() {}
+        log(const log&) = delete;
+        log& operator=(const log&) = delete; 
+
     public:
+        static log& instance()
+        {
+            static log l;
+            return l;
+        }
+
         void open(const char* path)
         {
             if (inited)
                 throw slankdev::exception("Inited yet");
             inited = true;
             fd.open(path, "a");
-            name = path;
+            //name = path;
         }
         template<typename ... ARG>
         void write(loglevel_t lv, const char* fmt, const ARG&... arg)
         {
             if (!inited)
-                throw slankdev::exception("Not nited yes");
+                throw slankdev::exception("Not inited yes");
 
             fd.printf("%s: ", lv2str(lv));
             for (size_t i=0; i<depth.size(); i++)
@@ -69,12 +80,13 @@ class log : public slankdev::simple_singleton<log> {
         void export_to_file(const char* output_path)
         {
             if (!inited)
-                throw slankdev::exception("Not nited yes");
+                throw slankdev::exception("Not inited yes");
 
             fd.flush();
             slankdev::filefd read_fd;
             slankdev::filefd write_fd;
-            read_fd.open(name.c_str(), "r");
+            //read_fd.open(name.c_str(), "r");
+            read_fd.open(fd.name.c_str(), "r");
             write_fd.open(output_path, "w");
 
             char c;
@@ -82,7 +94,6 @@ class log : public slankdev::simple_singleton<log> {
                 write_fd.write(&c, sizeof(c), 1);
             }
         }
-
         void push(const char* name)
         {
             std::string str = name;
@@ -93,6 +104,8 @@ class log : public slankdev::simple_singleton<log> {
             depth.pop_back();
         }
 };
+template <class Tag>
+bool log<Tag>::inited = false;
 
 
 

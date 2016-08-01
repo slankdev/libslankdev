@@ -7,12 +7,14 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include <string>
 
 namespace slankdev {
     
 class filefd {
     private:
         FILE* fp;
+        std::string name;
 
     public:
         filefd() : fp(nullptr) {}
@@ -32,11 +34,13 @@ class filefd {
                 perror("fopen");
                 exit(-1);
             }
+            name = path;
         }
         void close()
         {
             if (fp)
                 ::fclose(fp);
+            name = "";
         }
         void write(const void* ptr, size_t size, size_t nmemb)
         {

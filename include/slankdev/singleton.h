@@ -9,7 +9,12 @@
 
 namespace slankdev {
     
-
+/* I don't need singleton templates 
+ * Because it is simple, and be able to imple with tiny codes.
+ * And, so important reason is that singleton with 
+ * huge-codes-implementation tends to unsafe.
+ */
+#if 0 
 
 template <typename T>
 class simple_singleton {
@@ -109,6 +114,6 @@ template <typename T>
 bool reference_singleton<T>::inited = false;
 #endif
 
-
+#endif 
 
 } /* namespace slankdev */

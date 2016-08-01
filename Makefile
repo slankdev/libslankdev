@@ -8,7 +8,6 @@ include common.mk
 TARGET = libslankdev.a
 SRC = src/util.cc  \
 	  src/system.cc \
-	  src/log.cc \
 	  src/intfd.cc  
 OBJ = $(SRC:.cc=.o)
 
