@@ -1,6 +1,6 @@
 
 
-CPP = g++
+CPP = g++ -std=c++11
 RM  = rm -rf
 SRC = main.cc
 TARGET = sendarp

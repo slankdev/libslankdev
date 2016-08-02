@@ -30,7 +30,6 @@ static const char* lv2str(loglevel_t lv)
         case ERROR: return "ERROR" ; break;
         case FATAL: return "FATAL" ; break;
     }
-    return str;
 }
 
 
