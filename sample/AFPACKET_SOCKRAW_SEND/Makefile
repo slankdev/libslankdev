@@ -3,7 +3,7 @@
 CPP = g++
 RM  = rm -rf
 SRC = main.cc
-TARGET = app.out
+TARGET = sendarp
 
 all: $(TARGET)
 
