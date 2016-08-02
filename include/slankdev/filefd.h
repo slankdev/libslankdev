@@ -1,12 +1,13 @@
 
 
-#pragma onece
+#pragma once
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
 
+#include <iostream>
 #include <string>
 
 namespace slankdev {
@@ -17,7 +18,7 @@ class filefd {
         std::string name;
 
     public:
-        filefd() : fp(nullptr) {}
+        filefd() : fp(NULL) {}
         ~filefd() 
         {
             close();
