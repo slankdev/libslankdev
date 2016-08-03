@@ -24,11 +24,11 @@ typedef uint8_t loglevel_t;
 static const char* lv2str(loglevel_t lv)
 {
     switch (lv) {
-        case DEBUG: return "DEBUG" ; break;
-        case INFO : return "INFO " ; break;
-        case WARN : return "WARN " ; break;
-        case ERROR: return "ERROR" ; break;
-        case FATAL: return "FATAL" ; break;
+        case DEBUG: return "DEBUG" ;
+        case INFO : return "INFO " ;
+        case WARN : return "WARN " ;
+        case ERROR: return "ERROR" ;
+        case FATAL: return "FATAL" ;
     }
 }
 
