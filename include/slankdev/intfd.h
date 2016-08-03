@@ -64,7 +64,7 @@ class unsafe_intfd {
         void write(const void* buffer, size_t bufferlen);
         size_t read(void* buffer, size_t bufferlen);
 
-        /* These don't work correctry */
+        /* These don't work correctly */
         // template<typename... ARG>
         // void printf(const char* const fmt, const ARG&... arg)
         // {
