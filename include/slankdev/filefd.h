@@ -51,6 +51,11 @@ class filefd {
                 exit(-1);
             }
         }
+        void write_imediate(const void* ptr, size_t size, size_t nmemb)
+        {
+            write(ptr, size, nmemb);
+            flush();
+        }
         size_t read(void* ptr, size_t size, size_t nmemb)
         {
             size_t res = ::fread(ptr, size, nmemb, fp);
@@ -77,6 +82,12 @@ class filefd {
         void printf(const char* fmt, const ARG&... arg)
         {
             ::fprintf(fp, fmt, arg...);
+        }
+        template<typename... ARG>
+        void printf_imediate(const char* fmt, const ARG&... arg)
+        {
+            printf(fmt, arg...);
+            flush();
         }
         // void printf(const char* fmt)
         // {

@@ -61,6 +61,13 @@ class log {
             fd.open(path, "a");
             //name = path;
         }
+        void open_new(const char* path)
+        {
+            if (inited)
+                throw slankdev::exception("Inited yet");
+            inited = true;
+            fd.open(path, "w");
+        }
         template<typename ... ARG>
         void write(loglevel_t lv, const char* fmt, const ARG&... arg)
         {
