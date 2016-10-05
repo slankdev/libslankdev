@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <slankdev.h>
+#include <arpa/inet.h>
 using namespace slankdev;
 
 
@@ -32,23 +33,35 @@ int main(int argc, char** argv)
 
     }
 
-    struct ip iph;
-    memset(&iph, 0, sizeof iph);
-    iph.ihl = 5;
-    iph.version = 4;
-    iph.len = sizeof(iph);
-    iph.ttl = 64;
-    iph.protocol = 1; // ICMP
-    iph.sum = 0;
-    iph.src.s_addr = inet_addr("192.168.0.1");
-    iph.dst.s_addr = inet_addr(argv[2]);
-    iph.sum = checksum(&iph, sizeof iph);
+    size_t udpdata_len = 10000;
+    
+    uint8_t buf[100000];
+    memset(buf, 0xee, sizeof buf);
+
+    struct udp* uh = reinterpret_cast<struct udp*>(buf + sizeof(ip));
+    uh->src      = ::htons(1111);
+    uh->dst      = ::htons(1111);
+    uh->len      = ::htons(8 + udpdata_len);
+    uh->checksum = ::htons(0x00);
+
+    struct ip* iph = reinterpret_cast<struct ip*>(buf);
+    iph->ihl = 5;
+    iph->version = 4;
+    iph->off = ::htons(uint16_t(0x4000));
+    iph->len = sizeof(iph) + ::ntohs(uh->len);
+    iph->ttl = 64;
+    iph->protocol = 0x11; // ICMP
+    iph->sum = 0;
+    iph->src.s_addr = inet_addr("192.168.222.100");
+    iph->dst.s_addr = inet_addr(argv[2]);
+    iph->sum = checksum(&iph, sizeof iph);
 
     struct sockaddr_in dst;
     memset(&dst, 0, sizeof dst);
     dst.sin_family = AF_INET;
-    dst.sin_addr.s_addr = iph.dst.s_addr;
+    dst.sin_addr.s_addr = iph->dst.s_addr;
 
-    sendpacket_l3(&iph, sizeof(iph), argv[1], &dst, sizeof(dst));
+    size_t  buflen = sizeof(struct ip) + ::ntohs(uh->len);
+    sendpacket_l3(buf, buflen, argv[1], &dst, sizeof(dst));
 }
 
