@@ -42,7 +42,8 @@ uint16_t checksum(const void* data, size_t len)
     
     if (len == 1) {
         fprintf(stderr, "pgen::checksum: byte length isn't even num\n");
-        uint8_t tmp = *data_pointer;
+        // uint8_t tmp = *data_pointer;
+        uint16_t tmp = read_as_little_endian(data_pointer);
         sum += tmp;
     }
     
