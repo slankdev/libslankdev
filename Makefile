@@ -34,6 +34,8 @@ clean:
 	$(RM) $(OBJ)
 	$(MAKE) -C test clean
 
+re: clean all
+
 install: all
 	$(CP) libslankdev.a  $(INSTALL_LIB_DIR)
 	$(CP) include/slankdev.h $(INSTALL_HDR_DIR)
