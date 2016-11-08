@@ -51,6 +51,11 @@ class filefd {
                 exit(-1);
             }
         }
+        char* fgets(char* s, int size)
+        {
+           char* res = ::fgets(s, size, fp);
+           return res;
+        }
         size_t read(void* ptr, size_t size, size_t nmemb)
         {
             size_t res = ::fread(ptr, size, nmemb, fp);
