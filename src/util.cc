@@ -110,6 +110,16 @@ void bindump(const char* title, const void* buffer, size_t bufferlen)
 
 
 
+uint16_t htons(uint16_t n)
+{
+    return ::htons(n);
+}
+uint16_t ntohs(uint16_t n)
+{
+    return ::ntohs(n);
+}
+
+
 
 
 

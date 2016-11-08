@@ -38,6 +38,13 @@ struct ip {
 };
 
 
+struct udp {
+    uint16_t src;
+    uint16_t dst;
+    uint16_t len;
+    uint16_t checksum;
+};
+
 
 
 struct arp {
