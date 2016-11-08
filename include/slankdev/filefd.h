@@ -11,7 +11,7 @@
 #include <string>
 
 namespace slankdev {
-    
+
 class filefd {
     private:
         FILE* fp;
@@ -19,7 +19,7 @@ class filefd {
 
     public:
         filefd() : fp(NULL) {}
-        ~filefd() 
+        ~filefd()
         {
             close();
         }
@@ -51,11 +51,6 @@ class filefd {
                 exit(-1);
             }
         }
-        void write_imediate(const void* ptr, size_t size, size_t nmemb)
-        {
-            write(ptr, size, nmemb);
-            flush();
-        }
         size_t read(void* ptr, size_t size, size_t nmemb)
         {
             size_t res = ::fread(ptr, size, nmemb, fp);
@@ -75,9 +70,6 @@ class filefd {
                 exit(-1);
             }
         }
-
-
-
         template<typename... ARG>
         void printf(const char* fmt, const ARG&... arg)
         {
@@ -89,10 +81,6 @@ class filefd {
             printf(fmt, arg...);
             flush();
         }
-        // void printf(const char* fmt)
-        // {
-        //     ::fprintf(fp, fmt);
-        // }
 };
 
 
