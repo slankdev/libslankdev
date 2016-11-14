@@ -6,12 +6,11 @@ INCLUDE_DIR = include
 include common.mk
 
 TARGET = libslankdev.a
-SRC = src/util.cc  \
-	  src/system.cc \
-	  src/intfd.cc  
+SRC = \
+	  src/intfd.cc
 OBJ = $(SRC:.cc=.o)
 
-.cc.o: 
+.cc.o:
 	@echo [CXX] $@
 	@$(CPP) $(CPPFLAGS) -g -c $< -o $@  -I$(INCLUDE_DIR)
 
