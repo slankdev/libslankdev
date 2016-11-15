@@ -8,6 +8,7 @@
 #include <vector>
 #include <slankdev/intfd.h>
 
+#if 0
 #define slankdev_bswap_16(n) \
     (((((unsigned short)(n) & 0xFF)) << 8) | (((unsigned short)(n) & 0xFF00) >> 8))
 
@@ -33,6 +34,7 @@
 # error "Unknown __BYTE_ORDER"
 # endif
 #endif
+#endif
 
 namespace slankdev {
 
@@ -43,6 +45,7 @@ uint64_t rdtsc()
     return ((uint64_t)edx << 32) | eax;
 }
 
+#if 0
 #ifdef __linux
 uint16_t htons(uint16_t val)
 {
@@ -60,6 +63,7 @@ uint32_t ntohl(uint32_t val)
 {
     return slankdev_ntohl(val);
 }
+#endif
 #endif
 
 

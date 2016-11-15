@@ -59,7 +59,7 @@ int unsafe_intfd::get_fd()
 }
 void unsafe_intfd::set_fd(int f)
 {
-    if (f >= 0) 
+    if (f >= 0)
         close();
     fd = f;
 }
@@ -101,7 +101,7 @@ void unsafe_intfd::write(const void* buffer, size_t bufferlen)
             exit(-1);
         } else {
             fprintf(stderr, "write could not send all.\n");
-        } 
+        }
     }
 }
 size_t unsafe_intfd::read(void* buffer, size_t bufferlen)
@@ -166,7 +166,7 @@ int socketfd::accept(struct sockaddr* sa, socklen_t* len)
     }
     return res;
 }
-void socketfd::sendto(const void* buffer, size_t bufferlen,int flags, 
+void socketfd::sendto(const void* buffer, size_t bufferlen,int flags,
         const struct sockaddr* dest_addr, socklen_t dest_len)
 {
     ssize_t res = ::sendto(fd, buffer, bufferlen, flags, dest_addr, dest_len);
@@ -222,8 +222,8 @@ size_t socketfd::recv(void* buf, size_t nbyte, int flags)
 #ifdef __linux__
 void socketfd::open_if(const char* name)
 {
-    socket(PF_PACKET, SOCK_RAW, slankdev::htons(ETH_P_ALL));
-    
+    socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+
     struct ifreq ifreq;
     memset(&ifreq, 0, sizeof(ifreq));
     strncpy(ifreq.ifr_name, name, sizeof(ifreq.ifr_name)-1);
@@ -231,7 +231,7 @@ void socketfd::open_if(const char* name)
 
     struct sockaddr_ll sa;
     sa.sll_family = PF_PACKET;
-    sa.sll_protocol = slankdev::htons(ETH_P_ALL);
+    sa.sll_protocol = htons(ETH_P_ALL);
     sa.sll_ifindex = ifreq.ifr_ifindex;
     bind((struct sockaddr*)&sa, sizeof(sa));
 

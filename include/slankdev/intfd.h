@@ -89,7 +89,7 @@ class socketfd : public safe_intfd {
         void bind(const struct sockaddr* sa, size_t len);
         void listen(int backlog);
         int  accept(struct sockaddr* sa, socklen_t* len);
-        void sendto(const void* buffer, size_t bufferlen,int flags, 
+        void sendto(const void* buffer, size_t bufferlen,int flags,
                 const struct sockaddr* dest_addr, socklen_t dest_len);
         size_t recvfrom(void* buffer, size_t bufferlen, int flags,
                 struct sockaddr* address, socklen_t* address_len);
