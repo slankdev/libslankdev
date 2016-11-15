@@ -3,37 +3,22 @@ export INSTALL_LIB_DIR := /usr/local/lib
 export INSTALL_HDR_DIR := /usr/local/include
 INCLUDE_DIR = include
 
-include common.mk
+export CPP             := g++
+export CPPFLAGS        := -Wextra -g3  -O0 -std=c++11
+export AR              := ar
+export RANLIB          := ranlib
+export MAKE            := make
+export CP              := cp -rf
+export RM              := rm -rf
+export MKDIR           := mkdir -p
 
-TARGET = libslankdev.a
-SRC = \
-	  src/intfd.cc
-OBJ = $(SRC:.cc=.o)
+MAKEFLAGS += --no-print-directory
 
-.cc.o:
-	@echo [CXX] $@
-	@$(CPP) $(CPPFLAGS) -g -c $< -o $@  -I$(INCLUDE_DIR)
-
-
-
-
-
-all: $(TARGET)
-
-libslankdev.a: $(OBJ)
-	@rm -f $@
-	$(AR) rc $@ $(OBJ)
-	$(RANLIB) $@
+all:
+	@echo slankdev
 
 build-test:
 	$(MAKE) -C test
-
-clean:
-	$(RM) libslankdev.a
-	$(RM) $(OBJ)
-	$(MAKE) -C test clean
-
-re: clean all
 
 install: all
 	$(CP) libslankdev.a  $(INSTALL_LIB_DIR)

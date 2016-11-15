@@ -71,16 +71,16 @@ uint32_t ntohl(uint32_t val)
  * This class manages Battery state.
  * However, not implemented yet.
  */
-class battery {
-    private:
-        std::vector<safe_intfd> bats_full;
-        std::vector<safe_intfd> bats_now;
-
-    public:
-        battery();
-        void update_state();
-        int percent();
-};
+// class battery {
+//     private:
+//         std::vector<safe_intfd> bats_full;
+//         std::vector<safe_intfd> bats_now;
+//
+//     public:
+//         battery();
+//         void update_state();
+//         int percent();
+// };
 
 
 // Sample Code that Gets Battery State
