@@ -2,12 +2,12 @@
 #pragma once
 
 #include <slankdev/exception.h>
-#include <slankdev/net/protocol.h>
 #include <slankdev/filefd.h>
 #include <slankdev/intfd.h>
 #include <slankdev/log.h>
-#include <slankdev/queue.h>
-#include <slankdev/singleton.h>
+#include <slankdev/net/protocol.h>
+#include <slankdev/prototype.h>
+#include <slankdev/socketfd.h>
 #include <slankdev/system.h>
 #include <slankdev/util.h>
 

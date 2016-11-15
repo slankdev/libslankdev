@@ -15,18 +15,17 @@ export MKDIR           := mkdir -p
 MAKEFLAGS += --no-print-directory
 
 all:
-	g++ -std=c++11 main.cc -Iinclude
+	@echo syntax check
+	@g++ -std=c++11 main.cc -Iinclude
 
 build-test:
 	$(MAKE) -C test
 
 install: all
-	$(CP) libslankdev.a  $(INSTALL_LIB_DIR)
 	$(CP) include/slankdev.h $(INSTALL_HDR_DIR)
 	$(CP) include/slankdev   $(INSTALL_HDR_DIR)
 
 uninstall:
-	$(RM) $(INSTALL_LIB_DIR)/libslankdev.a
 	$(RM) $(INSTALL_HDR_DIR)/slankdev.h
 	$(RM) $(INSTALL_HDR_DIR)/slankdev
 

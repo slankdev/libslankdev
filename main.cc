@@ -1,12 +1,16 @@
 
-// #include <slankdev/exception.h>
+#if 1
+#include <slankdev.h>
+#else
+#include <slankdev/exception.h>
 #include <slankdev/net/protocol.h>
-// #include <slankdev/filefd.h>
-// #include <slankdev/intfd.h>
-// #include <slankdev/log.h>
-// #include <slankdev/system.h>
-// #include <slankdev/util.h>
-// #include <slankdev/socketfd.h>
+#include <slankdev/filefd.h>
+#include <slankdev/intfd.h>
+#include <slankdev/log.h>
+#include <slankdev/system.h>
+#include <slankdev/util.h>
+#include <slankdev/socketfd.h>
+#endif
 
 int main()
 {
