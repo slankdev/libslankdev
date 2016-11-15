@@ -11,6 +11,7 @@
 #include <slankdev/system.h>
 #include <slankdev/util.h>
 
+#warning "This header should not be included"
 
 
 namespace slankdev {
