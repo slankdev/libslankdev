@@ -1,8 +1,7 @@
 
 
-#pragma once 
-#include <stdio.h>
-#include <stdint.h>
+#pragma once
+
 #include <string>
 #include <exception>
 #include <sstream>
@@ -16,11 +15,8 @@ class exception : public std::exception {
         std::string str;
     public:
         explicit exception(const char* s="") noexcept {
-            int e = errno;
-            str = s; 
-            if (e != 0)
-                str += strerror(e);
-        } 
+            str = s;
+        }
 
         template<class T>
         exception& operator<<(const T& t) noexcept {
@@ -30,7 +26,7 @@ class exception : public std::exception {
             return *this;
         }
         const char* what() const noexcept {
-            return str.c_str(); 
+            return str.c_str();
         }
 };
 

@@ -15,7 +15,7 @@ export MKDIR           := mkdir -p
 MAKEFLAGS += --no-print-directory
 
 all:
-	@echo slankdev
+	g++ -std=c++11 main.cc -Iinclude
 
 build-test:
 	$(MAKE) -C test

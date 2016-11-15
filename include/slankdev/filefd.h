@@ -3,11 +3,6 @@
 #pragma once
 
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
-
-#include <iostream>
 #include <string>
 
 namespace slankdev {
@@ -21,14 +16,14 @@ class filefd {
         filefd() : fp(NULL) {}
         ~filefd()
         {
-            close();
+            fclose();
         }
 
 
-        void open(const char* path, const char* mode)
+        void fopen(const char* path, const char* mode)
         {
             if (fp)
-                close();
+                fclose();
 
             fp = ::fopen(path, mode);
             if (!fp) {
@@ -37,13 +32,13 @@ class filefd {
             }
             name = path;
         }
-        void close()
+        void fclose()
         {
             if (fp)
                 ::fclose(fp);
             name = "";
         }
-        void write(const void* ptr, size_t size, size_t nmemb)
+        void fwrite(const void* ptr, size_t size, size_t nmemb)
         {
             size_t res = ::fwrite(ptr, size, nmemb, fp);
             if (res != nmemb) {
@@ -56,7 +51,7 @@ class filefd {
            char* res = ::fgets(s, size, fp);
            return res;
         }
-        size_t read(void* ptr, size_t size, size_t nmemb)
+        size_t fread(void* ptr, size_t size, size_t nmemb)
         {
             size_t res = ::fread(ptr, size, nmemb, fp);
             if (res != nmemb) {
@@ -67,7 +62,7 @@ class filefd {
             }
             return res;
         }
-        void flush()
+        void fflush()
         {
             int res = ::fflush(fp);
             if (res == EOF) {
@@ -76,15 +71,9 @@ class filefd {
             }
         }
         template<typename... ARG>
-        void printf(const char* fmt, const ARG&... arg)
+        void fprintf(const char* fmt, const ARG&... arg)
         {
             ::fprintf(fp, fmt, arg...);
-        }
-        template<typename... ARG>
-        void printf_imediate(const char* fmt, const ARG&... arg)
-        {
-            printf(fmt, arg...);
-            flush();
         }
 };
 
