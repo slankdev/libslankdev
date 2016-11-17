@@ -10,6 +10,7 @@
 #include <slankdev/socketfd.h>
 #include <slankdev/system.h>
 #include <slankdev/util.h>
+#include <slankdev/matrix.h>
 
 #warning "This header should not be included"
 

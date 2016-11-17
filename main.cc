@@ -10,6 +10,7 @@
 #include <slankdev/system.h>
 #include <slankdev/util.h>
 #include <slankdev/socketfd.h>
+#include <slankdev/matrix.h>
 #endif
 
 int main()
