@@ -95,8 +95,8 @@ struct ip {
         printf("+ len  : %u        \n", ntohs(len));
         printf("+ id   : 0x%04x    \n", ntohs(id ));
         printf("+ off  : 0x%04x    \n", ntohs(off));
-        printf("+ ttl  : %u (0x%x) \n", ttl       );
-        printf("+ proto: %u (0x%x) \n", proto     );
+        printf("+ ttl  : %u (0x%x) \n", ttl  , ttl  );
+        printf("+ proto: %u (0x%x) \n", proto, proto);
         printf("+ sum  : 0x%04x    \n", ntohs(sum ));
         printf("+ src  : %s  \n", src.c_str() );
         printf("+ dst  : %s  \n", dst.c_str() );

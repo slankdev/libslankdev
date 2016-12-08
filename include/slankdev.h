@@ -11,6 +11,7 @@
 #include <slankdev/system.h>
 #include <slankdev/util.h>
 #include <slankdev/matrix.h>
+#include <slankdev/ncurses.h>
 
 #warning "This header should not be included"
 
