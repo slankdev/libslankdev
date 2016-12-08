@@ -181,7 +181,7 @@ public:
     {
         if (x_size <= x || y_size <= y) {
             char errstr[256];
-            sprintf(errstr, "set(%2d, %2d, %d)", x,y,val);
+            sprintf(errstr, "set(%2zd, %2zd, %d)", x,y,val);
             throw matrix_exception(errstr);
         }
         p[y][x] = val;
@@ -190,7 +190,7 @@ public:
     {
         if (x_size <= x || y_size <= y) {
             char errstr[256];
-            sprintf(errstr, "get(%2d, %2d)", x,y);
+            sprintf(errstr, "get(%2zd, %2zd)", x,y);
             throw matrix_exception(errstr);
         }
         return p[y][x];
