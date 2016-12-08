@@ -13,7 +13,7 @@ class filefd {
         std::string name;
 
     public:
-        filefd() : fp(NULL) {}
+        filefd() : fp(nullptr) {}
         ~filefd()
         {
             fclose();
@@ -34,9 +34,11 @@ class filefd {
         }
         void fclose()
         {
-            if (fp)
+            if (fp != nullptr) {
                 ::fclose(fp);
-            name = "";
+                fp = nullptr;
+                name = "";
+            }
         }
         void fwrite(const void* ptr, size_t size, size_t nmemb)
         {
