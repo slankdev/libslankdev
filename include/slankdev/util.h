@@ -101,6 +101,7 @@ void bindump(const char* title, const void* buffer, size_t bufferlen)
 }
 
 
+#if 0
 uint16_t htons(uint16_t n)
 {
     return ::htons(n);
@@ -108,6 +109,18 @@ uint16_t htons(uint16_t n)
 uint16_t ntohs(uint16_t n)
 {
     return ::ntohs(n);
+}
+#endif
+
+uint16_t bswap16(uint16_t n)
+{
+    return (n << 8)&0xff00 | (n>>8)&0x00ff;
+}
+
+uint32_t bswap32(uint32_t n)
+{
+    return (n << 24)&0xff000000 | (n<<8)&0x00ff0000
+        | (n>>8)&0x0000ff00 | (n>>24)&0x000000ff;
 }
 
 
