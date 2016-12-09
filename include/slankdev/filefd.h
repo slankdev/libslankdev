@@ -18,6 +18,7 @@ class filefd {
         {
             fclose();
         }
+        FILE* getfp() { return fp; }
 
 
         void fopen(const char* path, const char* mode)
