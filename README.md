@@ -12,3 +12,6 @@ $ sudo make install   // install
 $ sudo make uninstall // uninstall
 ```
 
+## Licence
+
+see LICINCE

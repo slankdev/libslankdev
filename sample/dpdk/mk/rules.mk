@@ -1,10 +1,9 @@
 
 
-
-.SUFFIXES: .out .c .cc .o .h 
-.cc.o: 
+.SUFFIXES: .out .c .cc .o .h
+.cc.o:
 	@echo "CXX $@"
-	@$(CXX) $(CXXFLAGS) -c $< -o $@ 
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 
 $(TARGET): $(OBJS)

@@ -18,6 +18,9 @@ all:
 	@echo syntax check
 	@g++ -std=c++11 main.cc -Iinclude
 
+clean:
+	rm -f a.out
+
 build-test:
 	$(MAKE) -C test
 
