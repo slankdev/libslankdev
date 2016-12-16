@@ -109,7 +109,7 @@ inline void dpdk_boot(int argc, char** argv)
 
 
 
-inline void port_init(uint16_t port, pool& mp, port_conf* conf,
+inline void port_init(uint16_t port, pool* mp, port_conf* conf,
         size_t nb_rx_rings, size_t nb_tx_rings,
         size_t rx_ring_size, size_t tx_ring_size)
 {
@@ -128,7 +128,7 @@ inline void port_init(uint16_t port, pool& mp, port_conf* conf,
      */
 	for (uint16_t q = 0; q < nb_rx_rings; q++) {
 		retval = rte_eth_rx_queue_setup(port, q, rx_ring_size,
-				rte_eth_dev_socket_id(port), NULL, mp.get_raw());
+				rte_eth_dev_socket_id(port), NULL, mp->get_raw());
 		if (retval < 0)
             throw slankdev::exception("rte_eth_rx_queue_setup failed");
 	}
