@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     slankdev::port_conf conf;
     uint16_t nb_ports = rte_eth_dev_count();
 	for (uint16_t portid = 0; portid < nb_ports; portid++) {
-        port_init(portid, mp, &conf, 1, 1, RX_RING_SIZE, TX_RING_SIZE);
+        port_init(portid, &mp, &conf, 1, 1, RX_RING_SIZE, TX_RING_SIZE);
 
         slankdev::ether_addr addr;
         rte_eth_macaddr_get(portid, &addr);
