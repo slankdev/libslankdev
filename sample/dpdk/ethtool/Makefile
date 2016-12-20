@@ -8,6 +8,11 @@ include $(prefix)/mk/vars.mk
 LDFLAGS += -lreadline
 
 
+# INTERFACE0 = eth1
+INTERFACE0 = vboxnet1
+INTERFACE1 = lo
+
+
 all: $(TARGET)
 
 clean:
@@ -16,8 +21,8 @@ clean:
 
 run:
 	sudo ./a.out \
-		--vdev=eth_pcap0,iface=eth1 \
-		--vdev=eth_pcap1,iface=lo
+		--vdev=eth_pcap0,iface=$(INTERFACE0) \
+		--vdev=eth_null0
 
 runtest:
 	sudo ./a.out \

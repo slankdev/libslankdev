@@ -100,21 +100,23 @@ static int slave_main(__attribute__((unused)) void *nouse)
 
 void ethapp_main()
 {
-    int ret = rte_ethtool_get_link(0);
-    printf("ret: %d \n", ret);
 
-    while (char* line = readline("slankdev> ")) {
-        printf("readline: \"%s\"  \n", line);
-        add_history(line);
+    printf("\n\n");
+    printf("ETHTOOL: number of devices is %u \n", rte_eth_dev_count());
 
-        if (strcmp(line, "exit")==0) {
-            free(line);
-            break;
-        }
-        free(line);
+    for (uint16_t i=0; i<rte_eth_dev_count(); i++) {
+        printf("\n PORT%u\n", i);
+        int ret = rte_ethtool_get_link(0);
+        printf(" + link: %s \n", ret==1?"Yes":"No");
+
+        printf(" + \n");
+
     }
 
-    printf("bye...\n");
+    printf("\nbye...\n");
+    printf("\n\n");
+
+    app_cfg.exit_now = 1;
 }
 
 
