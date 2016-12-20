@@ -16,8 +16,9 @@ clean:
 
 run:
 	sudo ./a.out \
-		--vdev=eth_pcap0,iface=eth1 \
-		--vdev=eth_pcap1,iface=lo
+		--vdev=eth_pcap0,iface=eth0 \
+		--vdev=eth_pcap1,iface=eth1
+
 
 runtest:
 	sudo ./a.out \

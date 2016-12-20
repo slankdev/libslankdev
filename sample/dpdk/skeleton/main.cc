@@ -84,7 +84,7 @@ int main(int argc, char** argv)
         printf("\n");
     }
 
-	if (rte_lcore_count() > 1)
+	if (rte_eth_dev_count() > 1)
 		printf("\nWARNING: Too many lcores enabled. Only 1 used.\n");
 
 	lcore_main(); /* Call lcore_main on the master core only. */
