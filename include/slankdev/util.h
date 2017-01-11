@@ -18,12 +18,14 @@ static uint16_t read_as_little_endian(const void* data)
     const uint8_t* p = reinterpret_cast<const uint8_t*>(data);
     return uint16_t(p[0]) | (uint16_t(p[1]) << 8);
 }
+#if 0
 /* Thanks @herumi, Isn't used yet */
 static uint16_t read_as_big_endian(const void* data)
 {
     const uint8_t* p = reinterpret_cast<const uint8_t*>(data);
     return uint16_t(p[1]) | (uint16_t(p[0]) << 8);
 }
+#endif
 
 uint16_t checksum(const void* data, size_t len)
 {
@@ -116,13 +118,13 @@ uint16_t ntohs(uint16_t n)
 
 uint16_t bswap16(uint16_t n)
 {
-    return (n << 8)&0xff00 | (n>>8)&0x00ff;
+    return ((n << 8)&0xff00) | ((n>>8)&0x00ff);
 }
 
 uint32_t bswap32(uint32_t n)
 {
-    return (n << 24)&0xff000000 | (n<<8)&0x00ff0000
-        | (n>>8)&0x0000ff00 | (n>>24)&0x000000ff;
+    return ((n << 24)&0xff000000) | ((n<<8)&0x00ff0000)
+        | ((n>>8)&0x0000ff00) | ((n>>24)&0x000000ff);
 }
 
 
