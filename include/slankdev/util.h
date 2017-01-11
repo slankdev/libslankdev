@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <arpa/inet.h>
 
+#define UNUSED(x) (void)(x)
+
 namespace slankdev {
 
 

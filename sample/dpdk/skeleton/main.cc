@@ -17,13 +17,12 @@
 void lcore_main()
 {
     const uint8_t nb_ports = rte_eth_dev_count();
-    uint8_t port;
 
 	/*
 	 * Check that the port is on the same NUMA node as the polling thread
 	 * for best performance.
 	 */
-	for (port = 0; port < nb_ports; port++)
+	for (uint8_t port = 0; port < nb_ports; port++)
 		if (rte_eth_dev_socket_id(port) > 0 &&
 				rte_eth_dev_socket_id(port) !=
 						(int)rte_socket_id())
@@ -39,7 +38,7 @@ void lcore_main()
 		 * Receive packets on a port and forward them on the paired
 		 * port. The mapping is 0 -> 1, 1 -> 0, 2 -> 3, 3 -> 2, etc.
 		 */
-		for (port = 0; port < nb_ports; port++) {
+		for (uint8_t port = 0; port < nb_ports; port++) {
 
 			/* Get burst of RX packets, from first port of pair. */
 			struct rte_mbuf *bufs[BURST_SIZE];

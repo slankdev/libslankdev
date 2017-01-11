@@ -6,6 +6,7 @@
 #include <sstream>
 #include <ostream>
 
+#include <rte_ring.h>
 #include <rte_config.h>
 #include <rte_version.h>
 #include <rte_eal.h>
