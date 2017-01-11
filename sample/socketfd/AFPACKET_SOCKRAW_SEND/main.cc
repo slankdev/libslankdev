@@ -1,18 +1,26 @@
 
 #include <stdlib.h>
-#include <slankdev.h>
+#include <slankdev/socketfd.h>
+#include <slankdev/util.h>
 using namespace slankdev;
+
+const char* IFNAME="lo";
+
+uint8_t arp_raw[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x08, 0x06, 0x00, 0x01,
+    0x08, 0x00, 0x06, 0x04, 0x00, 0x01, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
+    0x00, 0x00 };
+
+
 
 int main(int argc, char** argv)
 {
-    if (argc < 3) {
-        fprintf(stderr, "Usage: %s iface cnt\n", argv[0]);
-        return -1;
-    }
     socketfd fd;
-    fd.open_if(argv[1]);
+    fd.open_if(IFNAME);
 
     hexdump("Sending", arp_raw, sizeof(arp_raw));
-    for (int i=0; i<atoi(argv[2]); i++)
-        fd.write(arp_raw, sizeof(arp_raw));
+    fd.write(arp_raw, sizeof(arp_raw));
 }

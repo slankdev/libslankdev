@@ -27,5 +27,10 @@
 *.out
 *.app
 
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+
 
 test/main.cc

@@ -16,8 +16,12 @@ clean:
 
 run:
 	sudo ./a.out \
-		--vdev=eth_pcap0,iface=eth0
+		--vdev=eth_pcap0,iface=lo
 
+gdb:
+	sudo gdb --args a.out \
+		--vdev=eth_pcap0,iface=lo \
+		--vdev=eth_null3
 
 runtest:
 	sudo ./a.out \

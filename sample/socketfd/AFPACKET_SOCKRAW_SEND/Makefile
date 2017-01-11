@@ -3,13 +3,13 @@
 CPP = g++ -std=c++11
 RM  = rm -rf
 SRC = main.cc
-TARGET = sendarp
+TARGET = a.out
 
 all: $(TARGET)
 
 
 $(TARGET): $(SRC)
-	$(CPP) $(SRC) -o $@ -lslankdev
+	$(CPP) $(SRC) -o $@
 
 clean:
 	$(RM) $(TARGET) *.o
