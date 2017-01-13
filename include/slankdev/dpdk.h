@@ -35,6 +35,14 @@ public:
                 addr_bytes[2], addr_bytes[3],
                 addr_bytes[4], addr_bytes[5]);
     }
+    void sprint(char* str) const
+    {
+        sprintf(str, "%02" PRIx8 " %02" PRIx8 " %02" PRIx8
+                   " %02" PRIx8 " %02" PRIx8 " %02" PRIx8,
+                addr_bytes[0], addr_bytes[1],
+                addr_bytes[2], addr_bytes[3],
+                addr_bytes[4], addr_bytes[5]);
+    }
 };
 
 
