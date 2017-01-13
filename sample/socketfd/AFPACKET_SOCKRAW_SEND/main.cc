@@ -4,7 +4,6 @@
 #include <slankdev/util.h>
 using namespace slankdev;
 
-const char* IFNAME="lo";
 
 uint8_t arp_raw[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -18,9 +17,20 @@ uint8_t arp_raw[] = {
 
 int main(int argc, char** argv)
 {
+	if (argc < 2) {
+		fprintf(stderr, "Usage: %s ifname\n", argv[0]);
+		return -1;
+	}
+
     socketfd fd;
-    fd.open_if(IFNAME);
+    fd.open_if(argv[1]);
 
     hexdump("Sending", arp_raw, sizeof(arp_raw));
-    fd.write(arp_raw, sizeof(arp_raw));
+
+	if (argc > 2) {
+		for (int i=0; i<atoi(argv[2]); i++)
+			fd.write(arp_raw, sizeof(arp_raw));
+	} else {
+		fd.write(arp_raw, sizeof(arp_raw));
+	}
 }
