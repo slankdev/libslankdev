@@ -11,7 +11,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <net/if.h>
-#include <netinet/if_ether.h>
 
 #ifdef __linux__
 #include <netpacket/packet.h>
