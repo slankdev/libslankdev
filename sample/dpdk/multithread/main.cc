@@ -1,6 +1,7 @@
 
 
 #include <stdio.h>
+#include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -11,66 +12,100 @@
 #include <slankdev/util.h>
 #include <slankdev/exception.h>
 
-#include "ring.h"
 #include "system.h"
-#include "wrap.h"
 
 
-ring<rte_mbuf> ring0;
+System sys;
+
 
 int thread_worker(void* arg)
 {
-    UNUSED(arg);
-    while (1) {
-        sleep(1);
-        printf("fa\n");
-    }
-    return 0;
-}
-
-int thread_txrx(void* arg)
-{
-    UNUSED(arg);
-	const size_t burst_size = 32;
-    const uint8_t nb_ports = rte_eth_dev_count();
+	UNUSED(arg);
 	for (;;) {
-        for (uint8_t port = 0; port < nb_ports; port++) {
-            struct rte_mbuf *bufs[burst_size];
-            const uint16_t nb_rx = rx_burst(port, bufs, burst_size);
-            if (nb_rx == 0) continue;
+		const uint8_t nb_ports = sys.ports.size();
+		for (uint8_t i=0; i<nb_ports; i++) {
+			const uint8_t nb_rxque = sys.ports[i].rxq.size();
+			const uint8_t nb_txque = sys.ports[i].txq.size();
+			assert(nb_rxque != nb_txque);
 
-            static uint8_t C = 0x01;
-            uint8_t* p = rte_pktmbuf_mtod(bufs[0], uint8_t*);
-            for (int i=0; i<6; i++) p[i] = C;
-            C++;
+			for (uint8_t qid=0; qid<nb_rxque; qid++) {
+				Port& in_port = sys.ports[i];
+				Port& out_port = sys.ports[i^1];
 
-            ring0.push(bufs[0]);
-            printf("enque %p \n", bufs[0]);
-
-            if (ring0.size() > 4) {
-                struct rte_mbuf *bb[100];
-                ring0.pop_bulk(bb, 5);
-                tx_burst(port, bb, 5);
-                printf("deque_bulk\n");
-            }
+				rte_mbuf* m = nullptr;
+				in_port.rxq[qid].pop(&m);
+				if (m)
+					out_port.txq[qid].push(m);
+			}
 	    }
 	}
     return 0;
 }
-
-
-
+#if 1
+int thread_tx(void* arg)
+{
+    UNUSED(arg);
+    const uint8_t nb_ports = sys.ports.size();
+	for (;;) {
+        for (uint8_t pid = 0; pid < nb_ports; pid++) {
+            sys.ports[pid].tx_burst();
+	    }
+	}
+}
+int thread_rx(void* arg)
+{
+    UNUSED(arg);
+    const uint8_t nb_ports = sys.ports.size();
+	for (;;) {
+        for (uint8_t pid = 0; pid < nb_ports; pid++) {
+            sys.ports[pid].rx_burst();
+	    }
+	}
+    return 0;
+}
+#else
+int thread_txrx(void* arg)
+{
+    UNUSED(arg);
+    const uint8_t nb_ports = sys.ports.size();
+	for (;;) {
+        for (uint8_t pid = 0; pid < nb_ports; pid++) {
+            sys.ports[pid].rx_burst();
+            sys.ports[pid].tx_burst();
+	    }
+	}
+    return 0;
+}
+#endif
+int thread_viewer(void* arg)
+{
+    UNUSED(arg);
+	while (1) {
+		sys.show_state();
+		usleep(50000);
+	}
+	return 0;
+}
 
 int main(int argc, char** argv)
 {
-	System sys;
-	sys.init(argc, argv);
-	ring0.init("SLANKDEV", 16, 0);
+	sys.boot(argc, argv);
+	sys.show_state();
+	sys.ports[0].nb_rx_rings = 2;
+	sys.ports[0].nb_tx_rings = 1;
+	sys.ports[1].nb_rx_rings = 2;
+	sys.ports[1].nb_tx_rings = 1;
+	sys.show_config();
 
-	sys.show();
-	sys.cpus[1].set_func(thread_worker);
-	sys.cpus[2].set_func(thread_txrx);
-	sys.launch();
+
+	sys.configure();
+	sys.cpus[1].func = thread_tx;
+	sys.cpus[2].func = thread_worker;
+	sys.cpus[3].func = thread_rx;
+	sys.cpus[4].func = thread_viewer;
+	sys.show_state();
+
+	// sys.launch();
 }
 
 
