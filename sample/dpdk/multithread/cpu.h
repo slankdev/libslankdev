@@ -1,0 +1,39 @@
+
+
+
+#pragma once
+#include "types.h"
+
+
+namespace dpdk {
+
+
+using function = int(*)(void*);
+using func_arg = void*;
+class Cpu {
+public:
+	uint8_t lcore_id;
+	function func;
+	func_arg arg;
+
+	Cpu() : lcore_id(0), func(nullptr), arg(nullptr) {}
+
+	void boot(uint8_t id)
+	{
+		lcore_id = id;
+	}
+	void configure() {}
+	void show_state()
+	{
+		printf("   - lcore%u : %p(%p) \n", lcore_id, func, arg);
+	}
+	void launch()
+	{
+		rte_eal_remote_launch(func, arg, lcore_id);
+	}
+};
+
+
+} /* namespace dpdk */
+
+
