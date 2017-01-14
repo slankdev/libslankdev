@@ -18,6 +18,11 @@ clean:
 run:
 	sudo ./a.out -c 0x1f
 
+run_dummy:
+	sudo ./a.out -c 0x1f  \
+		--vdev=eth_null0  \
+		--vdev=eth_null1
+
 gdb:
 	sudo gdb --args a.out -c 0x1f \
 		--vdev=eth_null0  \

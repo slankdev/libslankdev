@@ -6,12 +6,9 @@
 
 
 
-extern dpdk::System sys;
-
-
-static void ifconfig(dpdk::System& sys)
+static void ifconfig(dpdk::System* sys)
 {
-    for (dpdk::Port& port : sys.ports) {
+    for (dpdk::Port& port : sys->ports) {
         port.stats.update();
         size_t nb_rxq = port.rxq.size();
         size_t nb_txq = port.txq.size();
@@ -38,17 +35,17 @@ static void ifconfig(dpdk::System& sys)
 
 int thread_worker(void* arg)
 {
-	UNUSED(arg);
+    dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
 	for (;;) {
-		const uint8_t nb_ports = sys.ports.size();
+		const uint8_t nb_ports = sys->ports.size();
 		for (uint8_t pid=0; pid<nb_ports; pid++) {
-			const uint8_t nb_rxque = sys.ports[pid].rxq.size();
-			const uint8_t nb_txque = sys.ports[pid].txq.size();
+			const uint8_t nb_rxque = sys->ports[pid].rxq.size();
+			const uint8_t nb_txque = sys->ports[pid].txq.size();
 			assert(nb_rxque != nb_txque);
 
 			for (uint8_t rx_qid=0; rx_qid<nb_rxque; rx_qid++) {
-				dpdk::Port& in_port = sys.ports[pid];
-				dpdk::Port& out_port = sys.ports[pid^1];
+				dpdk::Port& in_port  = sys->ports[pid];
+				dpdk::Port& out_port = sys->ports[pid^1];
 
 				rte_mbuf* m = nullptr;
 				in_port.rxq[rx_qid].pop(&m);
@@ -64,40 +61,40 @@ int thread_worker(void* arg)
 }
 int thread_tx(void* arg)
 {
-    UNUSED(arg);
-    const uint8_t nb_ports = sys.ports.size();
+    dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
+    const uint8_t nb_ports = sys->ports.size();
 	for (;;) {
         for (uint8_t pid = 0; pid < nb_ports; pid++) {
-            sys.ports[pid].tx_burst();
+            sys->ports[pid].tx_burst();
 	    }
 	}
 }
 int thread_rx(void* arg)
 {
-    UNUSED(arg);
-    const uint8_t nb_ports = sys.ports.size();
+    dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
+    const uint8_t nb_ports = sys->ports.size();
 	for (;;) {
         for (uint8_t pid = 0; pid < nb_ports; pid++) {
-            sys.ports[pid].rx_burst();
+            sys->ports[pid].rx_burst();
 	    }
 	}
     return 0;
 }
 int thread_txrx(void* arg)
 {
-    UNUSED(arg);
-    const uint8_t nb_ports = sys.ports.size();
+    dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
+    const uint8_t nb_ports = sys->ports.size();
 	for (;;) {
         for (uint8_t pid = 0; pid < nb_ports; pid++) {
-            sys.ports[pid].rx_burst();
-            sys.ports[pid].tx_burst();
+            sys->ports[pid].rx_burst();
+            sys->ports[pid].tx_burst();
 	    }
 	}
     return 0;
 }
 int thread_viewer(void* arg)
 {
-    UNUSED(arg);
+    dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
 	while (1) {
         slankdev::clear_screen();
         ifconfig(sys);

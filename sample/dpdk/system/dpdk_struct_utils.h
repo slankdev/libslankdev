@@ -15,7 +15,8 @@
 #include <rte_ip_frag.h>
 
 
-namespace dpdk_struct_utils {
+namespace dpdk {
+namespace util {
 
 #define DEPTHSTR "    "
 #define for_i(begin, end) for(size_t i=begin; i<end; i++)
@@ -170,7 +171,7 @@ inline const char* rte_fdir_status_mode2str(enum rte_fdir_status_mode e)
 }
 
 
-inline void print(const struct rte_eth_stats* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_stats* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_stats %s {\n", name);
     printf_depth(depth, "ipackets  : %lu \n", raw->ipackets );
@@ -195,7 +196,7 @@ inline void print(const struct rte_eth_stats* raw, const char* name, size_t dept
 }
 
 
-inline void print(const struct rte_eth_rxmode* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_rxmode* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_rxmode %s {\n", name);
 
@@ -217,7 +218,7 @@ inline void print(const struct rte_eth_rxmode* raw, const char* name, size_t dep
     printf_depth(depth, "}\n");
 }
 
-inline void print(const struct rte_eth_txmode* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_txmode* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_txmode %s {\n", name);
 
@@ -232,7 +233,7 @@ inline void print(const struct rte_eth_txmode* raw, const char* name, size_t dep
 }
 
 
-inline void print(const struct rte_eth_rss_conf* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_rss_conf* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_rss_conf %s {\n", name);
 
@@ -253,7 +254,7 @@ inline void print(const struct rte_eth_rss_conf* raw, const char* name, size_t d
 
 
 
-inline void print(const struct rte_eth_vmdq_dcb_conf* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_vmdq_dcb_conf* raw, const char* name="", size_t depth=0)
 {
 
     printf_depth(depth, "rte_eth_vmdq_dcb_conf %s {\n", name);
@@ -284,7 +285,7 @@ inline void print(const struct rte_eth_vmdq_dcb_conf* raw, const char* name, siz
 
 
 
-inline void print(const struct rte_eth_dcb_rx_conf* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_dcb_rx_conf* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_dcb_rx_conf %s {\n", name);
 
@@ -300,7 +301,7 @@ inline void print(const struct rte_eth_dcb_rx_conf* raw, const char* name, size_
 
 
 
-inline void print(const struct rte_eth_vmdq_rx_conf* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_vmdq_rx_conf* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_vmdq_rx_conf %s {\n", name);
 
@@ -323,7 +324,7 @@ inline void print(const struct rte_eth_vmdq_rx_conf* raw, const char* name, size
 }
 
 
-inline void print(const struct rte_eth_vmdq_dcb_tx_conf* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_vmdq_dcb_tx_conf* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_vmdq_dcb_tx_conf %s {\n", name);
 
@@ -338,7 +339,7 @@ inline void print(const struct rte_eth_vmdq_dcb_tx_conf* raw, const char* name, 
 }
 
 
-inline void print(const struct rte_eth_dcb_tx_conf* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_dcb_tx_conf* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_dcb_tx_conf %s {\n", name);
 
@@ -351,7 +352,7 @@ inline void print(const struct rte_eth_dcb_tx_conf* raw, const char* name, size_
     printf_depth(depth, "}\n");
 }
 
-inline void print(const struct rte_eth_vmdq_tx_conf* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_vmdq_tx_conf* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_vmdq_tx_conf %s {\n", name);
 
@@ -364,7 +365,7 @@ inline void print(const struct rte_eth_vmdq_tx_conf* raw, const char* name, size
 
 
 
-inline void print(const struct rte_eth_flex_payload_cfg* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_flex_payload_cfg* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_flex_payload_cfg %s {\n", name);
 
@@ -381,7 +382,7 @@ inline void print(const struct rte_eth_flex_payload_cfg* raw, const char* name, 
 
     printf_depth(depth, "}\n");
 }
-inline void print(const struct rte_eth_fdir_flex_mask* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_fdir_flex_mask* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_fdir_flex_mask %s {\n", name);
 
@@ -397,7 +398,7 @@ inline void print(const struct rte_eth_fdir_flex_mask* raw, const char* name, si
 
     printf_depth(depth, "}\n");
 }
-inline void print(const struct rte_eth_fdir_flex_conf* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_fdir_flex_conf* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_fdir_flex_conf %s {\n", name);
 
@@ -414,7 +415,7 @@ inline void print(const struct rte_eth_fdir_flex_conf* raw, const char* name, si
 
     printf_depth(depth, "}\n");
 }
-inline void print(const struct rte_fdir_conf* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_fdir_conf* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_fdir_conf %s {\n", name);
 
@@ -431,7 +432,7 @@ inline void print(const struct rte_fdir_conf* raw, const char* name, size_t dept
 
 
 
-inline void print(const struct rte_intr_conf* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_intr_conf* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_intr_conf %s {\n", name);
 
@@ -445,7 +446,7 @@ inline void print(const struct rte_intr_conf* raw, const char* name, size_t dept
 
 
 
-inline void print(const struct rte_eth_conf* raw, const char* name, size_t depth=0)
+inline void print(const struct rte_eth_conf* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_conf %s {\n", name);
 
@@ -475,4 +476,5 @@ inline void print(const struct rte_eth_conf* raw, const char* name, size_t depth
 }
 
 
-} /* namespace dpdk_struct_utils */
+} /* namespace util */
+} /* namespace dpdk */
