@@ -46,15 +46,16 @@ int thread_worker(void* arg)
 			const uint8_t nb_txque = sys.ports[pid].txq.size();
 			assert(nb_rxque != nb_txque);
 
-			for (uint8_t qid=0; qid<nb_rxque; qid++) {
+			for (uint8_t rx_qid=0; rx_qid<nb_rxque; rx_qid++) {
 				dpdk::Port& in_port = sys.ports[pid];
 				dpdk::Port& out_port = sys.ports[pid^1];
 
 				rte_mbuf* m = nullptr;
-				in_port.rxq[qid].pop(&m);
+				in_port.rxq[rx_qid].pop(&m);
 				if (m) {
-                    printf("pid=%u qid=%u\n", pid, qid);
-					out_port.txq[qid].push(m);
+                    for (uint8_t tx_qid=0; tx_qid<nb_txque; tx_qid++) {
+                        out_port.txq[tx_qid].push(m);
+                    }
                 }
 			}
 	    }
