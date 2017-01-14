@@ -63,8 +63,7 @@ public:
     }
 	void boot(int argc, char** argv)
 	{
-        printf("Booting...\n");
-        printf("[+] boot dpdk...\n");
+        printf("[+] Booting ...\n");
         print_banner();
 
 		int ret = rte_eal_init(argc, argv);
@@ -72,23 +71,16 @@ public:
 			throw slankdev::exception("rte_eal_init");
 		}
 
-        printf("[+] boot dpdk... done\n");
-
 		uint8_t nb_cpus  = rte_lcore_count();
 		uint16_t nb_ports = rte_eth_dev_count();
 		cpus.resize(nb_cpus);
 		ports.resize(nb_ports);
 
 		for (uint8_t i=0; i<nb_cpus; i++) {
-            printf("[+] Init lcore%u ...", i);
 			cpus[i].boot(i);
-            printf("done\n");
 		}
 		for (uint16_t i=0; i<nb_ports; i++) {
-            printf("[+] Init port%u ", i);
 			ports[i].boot(i, &mp);
-            printf("address=%s ", ports[i].addr.toString().c_str());
-            printf(" ... done\n");
 		}
 
         printf("[+] DPDK boot Done! \n");
@@ -96,6 +88,8 @@ public:
 	void configure(size_t nb_rx_rings, size_t nb_tx_rings,
             size_t rx_ring_size, size_t tx_ring_size)
 	{
+        printf("[+] configure \n");
+
 		uint8_t nb_cpus  = rte_lcore_count();
 		uint16_t nb_ports = rte_eth_dev_count();
 
@@ -116,6 +110,7 @@ public:
 			ports[i].configure(nb_rx_rings, nb_tx_rings, rx_ring_size, tx_ring_size);
 		}
 
+        printf("[+] configure ... done\n");
 	}
 	void launch()
 	{

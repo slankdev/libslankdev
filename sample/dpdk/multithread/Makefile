@@ -19,7 +19,9 @@ run:
 	sudo ./a.out -c 0x1f
 
 gdb:
-	sudo gdb --args a.out -c 0x1f
+	sudo gdb --args a.out -c 0x1f \
+		--vdev=eth_null0  \
+		--vdev=eth_null1
 
 # run:
 # 	sudo ./a.out \

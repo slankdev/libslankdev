@@ -14,12 +14,14 @@ class Ring {
 	size_t ring_depth;
 public:
     Ring() : ring_(nullptr), ring_depth(0) {}
-    void init(const char* name, size_t count, uint16_t socket_id)
+    void init(const char* n, size_t count, uint16_t socket_id)
     {
 		ring_depth = count;
-        ring_ = rte_ring_create(name, count, socket_id, 0);
+        ring_ = rte_ring_create(n, count, socket_id, 0);
         if (!ring_)
             throw slankdev::exception("rte_ring_create");
+
+        printf("init ring %s ... done\n", name());
     }
     ~Ring()
     {

@@ -9,13 +9,6 @@ dpdk::System sys;
 
 int main(int argc, char** argv)
 {
-    rte_eth_conf c;
-    memset(&c, 0, sizeof(c));
-    printf("\n\n\n\n");
-    dpdk_struct_utils::print(&c, "conf");
-    return 0;
-
-
     sys.boot(argc, argv);
 
     sys.configure(2, 1, 128, 512);

@@ -41,19 +41,21 @@ int thread_worker(void* arg)
 	UNUSED(arg);
 	for (;;) {
 		const uint8_t nb_ports = sys.ports.size();
-		for (uint8_t i=0; i<nb_ports; i++) {
-			const uint8_t nb_rxque = sys.ports[i].rxq.size();
-			const uint8_t nb_txque = sys.ports[i].txq.size();
+		for (uint8_t pid=0; pid<nb_ports; pid++) {
+			const uint8_t nb_rxque = sys.ports[pid].rxq.size();
+			const uint8_t nb_txque = sys.ports[pid].txq.size();
 			assert(nb_rxque != nb_txque);
 
 			for (uint8_t qid=0; qid<nb_rxque; qid++) {
-				dpdk::Port& in_port = sys.ports[i];
-				dpdk::Port& out_port = sys.ports[i^1];
+				dpdk::Port& in_port = sys.ports[pid];
+				dpdk::Port& out_port = sys.ports[pid^1];
 
 				rte_mbuf* m = nullptr;
 				in_port.rxq[qid].pop(&m);
-				if (m)
+				if (m) {
+                    printf("pid=%u qid=%u\n", pid, qid);
 					out_port.txq[qid].push(m);
+                }
 			}
 	    }
 	}
@@ -96,8 +98,8 @@ int thread_viewer(void* arg)
 {
     UNUSED(arg);
 	while (1) {
-        slankdev::clear_screen();
-        ifconfig(sys);
+        // slankdev::clear_screen();
+        // ifconfig(sys);
 		usleep(50000);
 	}
 	return 0;
