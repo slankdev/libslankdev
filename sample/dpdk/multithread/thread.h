@@ -9,6 +9,33 @@
 extern dpdk::System sys;
 
 
+static void ifconfig(dpdk::System& sys)
+{
+    for (dpdk::Port& port : sys.ports) {
+        port.stats.update();
+        size_t nb_rxq = port.rxq.size();
+        size_t nb_txq = port.txq.size();
+
+        printf("%s \n", port.name.c_str());
+
+        auto& stats = port.stats;
+        printf("  RX packets:%lu errors:%lu dropped:%lu allocmiss:%lu \n",
+                stats.ipackets(), stats.ierrors(), stats.imissed(), stats.rx_nombuf());
+        printf("  TX packets:%lu errors:%lu  \n", stats.opackets(), stats.oerrors());
+        printf("  RX bytes:%lu TX bytes:%lu \n", stats.ibytes(), stats.obytes());
+
+        for (size_t qid=0; qid<nb_rxq; qid++) {
+            printf("  RING:%s RX packets:%lu bytes:%lu \n", port.rxq[qid].name(),
+                    stats.q_ipackets(qid), stats.q_ibytes(qid));
+        }
+        for (size_t qid=0; qid<nb_txq; qid++) {
+            printf("  RING:%s TX packets:%lu bytes:%lu errors:%lu \n", port.txq[qid].name(),
+                stats.q_opackets(qid), stats.q_obytes(qid), stats.q_errors(qid));
+        }
+    }
+}
+
+
 int thread_worker(void* arg)
 {
 	UNUSED(arg);
@@ -69,7 +96,8 @@ int thread_viewer(void* arg)
 {
     UNUSED(arg);
 	while (1) {
-        sys.ports[0].stats.show();
+        slankdev::clear_screen();
+        ifconfig(sys);
 		usleep(50000);
 	}
 	return 0;

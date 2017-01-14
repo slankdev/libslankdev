@@ -63,10 +63,6 @@ public:
     {
         return (const char*)ring_->name;
     }
-    void stats() const
-    {
-        printf("     - %s: %zu/%zu \n", name(), count(), size());
-    }
 };
 
 

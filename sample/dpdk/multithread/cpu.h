@@ -23,10 +23,6 @@ public:
 		lcore_id = id;
 	}
 	void configure() {}
-	void show_state()
-	{
-		printf("   - lcore%u : %p(%p) \n", lcore_id, func, arg);
-	}
 	void launch()
 	{
 		rte_eal_remote_launch(func, arg, lcore_id);

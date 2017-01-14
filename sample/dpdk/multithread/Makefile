@@ -5,11 +5,12 @@ TARGET = a.out
 SRCS   = main.cc
 OBJS   = $(SRCS:.cc=.o)
 include $(prefix)/mk/vars.mk
+CXXFLAGS += -Wno-format-security
 LDFLAGS +=
 
 
 all: $(TARGET)
-main.o: system.h main.cc thread.h types.h port.h cpu.h ring.h util.h
+main.o: system.h main.cc thread.h types.h port.h cpu.h ring.h dpdk_struct_utils.h
 
 clean:
 	$(RM) $(TARGET) $(OBJS)

@@ -21,6 +21,12 @@ namespace dpdk {
 
 
 
+
+
+
+
+
+
 class System {
 public:
 	std::vector<Cpu>  cpus;
@@ -32,10 +38,34 @@ public:
 		rte_eal_mp_wait_lcore();
     }
 
+    void print_banner() const
+    {
+		// printf("+------------------------------------------------------------------------------+\n");
+		// printf("|  ######  ######  ######  #    #     #####                                    |\n");
+		// printf("|  #     # #     # #     # #   #     #     # #   #  ####  ##### ###### #    #  |\n");
+		// printf("|  #     # #     # #     # #  #      #        # #  #        #   #      ##  ##  |\n");
+		// printf("|  #     # ######  #     # ###        #####    #    ####    #   #####  # ## #  |\n");
+		// printf("|  #     # #       #     # #  #            #   #        #   #   #      #    #  |\n");
+		// printf("|  #     # #       #     # #   #     #     #   #   #    #   #   #      #    #  |\n");
+		// printf("|  ######  #       ######  #    #     #####    #    ####    #   ###### #    #  |\n");
+		// printf("+------------------------------------------------------------------------------+\n");
+
+		printf("+-------------------------------------------------------------------+\n");
+		printf("|  _____  _____  _____  _  __   _____           _                   |\n");
+		printf("| |  __ \\|  __ \\|  __ \\| |/ /  / ____|         | |                  |\n");
+		printf("| | |  | | |__) | |  | | ' /  | (___  _   _ ___| |_ ___ _ __ ___    |\n");
+		printf("| | |  | |  ___/| |  | |  <    \\___ \\| | | / __| __/ _ \\ '_ ` _ \\   |\n");
+		printf("| | |__| | |    | |__| | . \\   ____) | |_| \\__ \\ ||  __/ | | | | |  |\n");
+		printf("| |_____/|_|    |_____/|_|\\_\\ |_____/ \\__, |___/\\__\\___|_| |_| |_|  |\n");
+		printf("|                                      __/ |                        |\n");
+        printf("|                                     |___/                         |\n");
+		printf("+-------------------------------------------------------------------+\n");
+    }
 	void boot(int argc, char** argv)
 	{
         printf("Booting...\n");
         printf("[+] boot dpdk...\n");
+        print_banner();
 
 		int ret = rte_eal_init(argc, argv);
 		if (ret < 0) {
@@ -61,7 +91,6 @@ public:
             printf(" ... done\n");
 		}
 
-        show_state();
         printf("[+] DPDK boot Done! \n");
 	}
 	void configure(size_t nb_rx_rings, size_t nb_tx_rings,
@@ -99,14 +128,6 @@ public:
 				cpus[i].launch();
 		}
 		rte_eal_mp_wait_lcore();
-	}
-	void show_state()
-	{
-		printf("System\n");
-		printf(" [+] processors\n");
-		for (uint8_t i=0; i<cpus.size(); i++) cpus[i].show_state();
-		printf(" [+] interfaces\n");
-		for (uint16_t i=0; i<ports.size(); i++) ports[i].show_queues_state();
 	}
 };
 
