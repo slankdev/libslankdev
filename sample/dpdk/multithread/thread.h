@@ -99,8 +99,8 @@ int thread_viewer(void* arg)
 {
     UNUSED(arg);
 	while (1) {
-        // slankdev::clear_screen();
-        // ifconfig(sys);
+        slankdev::clear_screen();
+        ifconfig(sys);
 		usleep(50000);
 	}
 	return 0;

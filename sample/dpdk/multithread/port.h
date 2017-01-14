@@ -3,6 +3,7 @@
 #pragma once
 #include "types.h"
 #include "ring.h"
+#include "log.h"
 #include "dpdk_struct_utils.h"
 
 
@@ -79,20 +80,20 @@ public:
 
     void boot(uint8_t id, dpdk::pool* mp)
     {
-        printf("boot port%u ", id);
+        kernel_log(SYSTEM, "boot port%u ", id);
 
         mempool = mp;
         port_id = id;
         rte_eth_macaddr_get(id, &addr);
         name = "port" + std::to_string(port_id);
 
-        printf("address=%s ", addr.toString().c_str());
-        printf(" ... done\n");
+        kernel_log(SYSTEM, "address=%s ", addr.toString().c_str());
+        kernel_log(SYSTEM, " ... done\n");
     }
     void configure(size_t nb_rx_rings, size_t nb_tx_rings,
             size_t rx_ring_size, size_t tx_ring_size)
     {
-        printf("configure %s ...\n", name.c_str());
+        kernel_log(SYSTEM, "configure %s ...\n", name.c_str());
 
         if (port_id >= rte_eth_dev_count())
             throw slankdev::exception("port is not exist");
@@ -151,7 +152,7 @@ public:
             sprintf(ringname, "port%u-tx%zd", port_id, i);
             txq[i].init(ringname, tx_ring_size, 0);
         }
-        printf("configure %s ... done\n", name.c_str());
+        kernel_log(SYSTEM, "configure %s ... done\n", name.c_str());
 
     }
     void rx_burst()

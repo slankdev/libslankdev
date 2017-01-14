@@ -15,16 +15,14 @@
 #include "types.h"
 #include "cpu.h"
 #include "port.h"
+#include "log.h"
+
+#define MESGTYPE 1
 
 
 namespace dpdk {
 
-
-
-
-
-
-
+void print_message();
 
 
 class System {
@@ -38,33 +36,10 @@ public:
 		rte_eal_mp_wait_lcore();
     }
 
-    void print_banner() const
-    {
-		// printf("+------------------------------------------------------------------------------+\n");
-		// printf("|  ######  ######  ######  #    #     #####                                    |\n");
-		// printf("|  #     # #     # #     # #   #     #     # #   #  ####  ##### ###### #    #  |\n");
-		// printf("|  #     # #     # #     # #  #      #        # #  #        #   #      ##  ##  |\n");
-		// printf("|  #     # ######  #     # ###        #####    #    ####    #   #####  # ## #  |\n");
-		// printf("|  #     # #       #     # #  #            #   #        #   #   #      #    #  |\n");
-		// printf("|  #     # #       #     # #   #     #     #   #   #    #   #   #      #    #  |\n");
-		// printf("|  ######  #       ######  #    #     #####    #    ####    #   ###### #    #  |\n");
-		// printf("+------------------------------------------------------------------------------+\n");
-
-		printf("+-------------------------------------------------------------------+\n");
-		printf("|  _____  _____  _____  _  __   _____           _                   |\n");
-		printf("| |  __ \\|  __ \\|  __ \\| |/ /  / ____|         | |                  |\n");
-		printf("| | |  | | |__) | |  | | ' /  | (___  _   _ ___| |_ ___ _ __ ___    |\n");
-		printf("| | |  | |  ___/| |  | |  <    \\___ \\| | | / __| __/ _ \\ '_ ` _ \\   |\n");
-		printf("| | |__| | |    | |__| | . \\   ____) | |_| \\__ \\ ||  __/ | | | | |  |\n");
-		printf("| |_____/|_|    |_____/|_|\\_\\ |_____/ \\__, |___/\\__\\___|_| |_| |_|  |\n");
-		printf("|                                      __/ |                        |\n");
-        printf("|                                     |___/                         |\n");
-		printf("+-------------------------------------------------------------------+\n");
-    }
 	void boot(int argc, char** argv)
 	{
-        printf("[+] Booting ...\n");
-        print_banner();
+        kernel_log(SYSTEM, "[+] Booting ...\n");
+        print_message();
 
 		int ret = rte_eal_init(argc, argv);
 		if (ret < 0) {
@@ -83,12 +58,12 @@ public:
 			ports[i].boot(i, &mp);
 		}
 
-        printf("[+] DPDK boot Done! \n");
+        kernel_log(SYSTEM, "DPDK boot Done! \n");
 	}
 	void configure(size_t nb_rx_rings, size_t nb_tx_rings,
             size_t rx_ring_size, size_t tx_ring_size)
 	{
-        printf("[+] configure \n");
+        kernel_log(SYSTEM, "configure \n");
 
 		uint8_t nb_cpus  = rte_lcore_count();
 		uint16_t nb_ports = rte_eth_dev_count();
@@ -110,7 +85,7 @@ public:
 			ports[i].configure(nb_rx_rings, nb_tx_rings, rx_ring_size, tx_ring_size);
 		}
 
-        printf("[+] configure ... done\n");
+        kernel_log(SYSTEM, "configure ... done\n");
 	}
 	void launch()
 	{
@@ -122,9 +97,78 @@ public:
 			if (cpus[i].func)
 				cpus[i].launch();
 		}
+        kernel_log(SYSTEM, "launch thread to each-cores \n");
 		rte_eal_mp_wait_lcore();
 	}
 };
+
+
+void print_message()
+{
+    switch (MESGTYPE) {
+        case 1:
+            kernel_log(SYSTEM, "\n");
+            kernel_log(SYSTEM, " oooooooooo.   8@slankdev.   oYoooooooo.   oooo    oooo       .oooooo..o                          \n");
+            kernel_log(SYSTEM, " `888'   `Y8b  `888   `Y88. `8U8'   `Y8b  `888   .8P'       d8P'    `Y8         @slankdev         \n");
+            kernel_log(SYSTEM, "   888     888  888   .d88'   KB8     888  888  d8'         Y88bo.      oooo    ooo  .oooo.o      \n");
+            kernel_log(SYSTEM, "   888     888  888ooo88P'    AO8     888  88888[            `\"Y8888o.   `88.  .8'  d88(  \"8    \n");
+            kernel_log(SYSTEM, "   888     888  888           RN8     888  888`88b.              `\"Y88b   `88..8'   `\"Y88b.     \n");
+            kernel_log(SYSTEM, "   888    d88'  888           IK8     d88'  888  `88b.       oo     .d8P    `888'    o.  )88b     \n");
+            kernel_log(SYSTEM, " o@slankdev'   o888o         o888bood8P'   o888o  o888o      8""88888P'      .8'     8""888P'     \n");
+            kernel_log(SYSTEM, "                                                                        .o..P'                    \n");
+            kernel_log(SYSTEM, "        @slankdev:please follow me on GitHub                            `Y8P'                     \n");
+            kernel_log(SYSTEM, "\n");
+            break;
+        case 2:
+            kernel_log(SYSTEM, "8888888b.  8888888b.  8888888b.  888    d8P       \n");
+            kernel_log(SYSTEM, "888  \"Y88b 888   Y88b 888  \"Y88b 888   d8P      \n");
+            kernel_log(SYSTEM, "888    888 888    888 888    888 888  d8P         \n");
+            kernel_log(SYSTEM, "888    888 888   d88P 888    888 888d88K          \n");
+            kernel_log(SYSTEM, "888    888 8888888P\"  888    888 8888888b        \n");
+            kernel_log(SYSTEM, "888    888 888        888    888 888  Y88b        \n");
+            kernel_log(SYSTEM, "888  .d88P 888        888  .d88P 888   Y88b       \n");
+            kernel_log(SYSTEM, "8888888P\"  888        8888888P\"  888    Y88b    \n");
+            kernel_log(SYSTEM, "\n");
+            break;
+        case 3:
+            kernel_log(SYSTEM, "+------------------------------------------------------------------------------+\n");
+            kernel_log(SYSTEM, "|  ######  ######  ######  #    #     #####                                    |\n");
+            kernel_log(SYSTEM, "|  #     # #     # #     # #   #     #     # #   #  ####  ##### ###### #    #  |\n");
+            kernel_log(SYSTEM, "|  #     # #     # #     # #  #      #        # #  #        #   #      ##  ##  |\n");
+            kernel_log(SYSTEM, "|  #     # ######  #     # ###        #####    #    ####    #   #####  # ## #  |\n");
+            kernel_log(SYSTEM, "|  #     # #       #     # #  #            #   #        #   #   #      #    #  |\n");
+            kernel_log(SYSTEM, "|  #     # #       #     # #   #     #     #   #   #    #   #   #      #    #  |\n");
+            kernel_log(SYSTEM, "|  ######  #       ######  #    #     #####    #    ####    #   ###### #    #  |\n");
+            kernel_log(SYSTEM, "+------------------------------------------------------------------------------+\n");
+            break;
+        case 4:
+            kernel_log(SYSTEM, "+-------------------------------------------------------------------+\n");
+            kernel_log(SYSTEM, "|  _____  _____  _____  _  __   _____           _                   |\n");
+            kernel_log(SYSTEM, "| |  __ \\|  __ \\|  __ \\| |/ /  / ____|         | |     @slankdev    |\n");
+            kernel_log(SYSTEM, "| | |  | | |__) | |  | | ' /  | (___  _   _ ___| |_ ___ _ __ ___    |\n");
+            kernel_log(SYSTEM, "| | |  | |  ___/| |  | |  <    \\___ \\| | | / __| __/ _ \\ '_ ` _ \\   |\n");
+            kernel_log(SYSTEM, "| | |__| | |    | |__| | . \\   ____) | |_| \\__ \\ ||  __/ | | | | |  |\n");
+            kernel_log(SYSTEM, "| |_____/|_|    |_____/|_|\\_\\ |_____/ \\__, |___/\\__\\___|_| |_| |_|  |\n");
+            kernel_log(SYSTEM, "|                                      __/ |                        |\n");
+            kernel_log(SYSTEM, "|            @slankdev                |___/                         |\n");
+            kernel_log(SYSTEM, "+-------------------------------------------------------------------+\n");
+            break;
+        case 5:
+            kernel_log(SYSTEM, "+----------------------------------------------------------------------------------------------+   \n");
+            kernel_log(SYSTEM, "| oooooooooo.   8@slankdev.   oYoooooooo.   oooo    oooo       .oooooo..o                      |    \n");
+            kernel_log(SYSTEM, "| `888'   `Y8b  `888   `Y88. `8U8'   `Y8b  `888   .8P'       d8P'    `Y8         @slankdev     |    \n");
+            kernel_log(SYSTEM, "|   888     888  888   .d88'   KB8     888  888  d8'         Y88bo.      oooo    ooo  .oooo.o  |    \n");
+            kernel_log(SYSTEM, "|   888     888  888ooo88P'    AO8     888  88888[            `\"Y8888o.   `88.  .8'  d88(  \"8  |  \n");
+            kernel_log(SYSTEM, "|   888     888  888           RN8     888  888`88b.              `\"Y88b   `88..8'   `\"Y88b.   |  \n");
+            kernel_log(SYSTEM, "|   888    d88'  888           IK8     d88'  888  `88b.       oo     .d8P    `888'    o.  )88b |    \n");
+            kernel_log(SYSTEM, "| o@slankdev'   o888o         o888bood8P'   o888o  o888o      8""88888P'      .8'     8""888P'     |\n");
+            kernel_log(SYSTEM, "|                                                                        .o..P'                |    \n");
+            kernel_log(SYSTEM, "|        @slankdev:please follow me on GitHub                            `Y8P'                 |    \n");
+            kernel_log(SYSTEM, "+----------------------------------------------------------------------------------------------+   \n");
+            break;
+        default: throw slankdev::exception("not found");
+    }
+}
 
 
 

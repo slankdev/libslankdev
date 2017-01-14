@@ -3,6 +3,7 @@
 
 #pragma once
 #include "types.h"
+#include "log.h"
 
 
 namespace dpdk {
@@ -20,9 +21,9 @@ public:
 
 	void boot(uint8_t id)
 	{
-        printf("boot lcore%u ...", id);
+        kernel_log(SYSTEM, "boot lcore%u ...", id);
 		lcore_id = id;
-        printf("done\n");
+        kernel_log(SYSTEM, "done\n");
 	}
 	void configure() {}
 	void launch()

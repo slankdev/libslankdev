@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     sys.cpus[3].func = thread_worker;
     sys.cpus[4].func = thread_viewer;
 
-    sys.launch();
+    // sys.launch();
 }
 
 

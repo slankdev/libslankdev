@@ -3,6 +3,7 @@
 
 #pragma once
 #include "types.h"
+#include "log.h"
 
 
 namespace dpdk {
@@ -21,7 +22,7 @@ public:
         if (!ring_)
             throw slankdev::exception("rte_ring_create");
 
-        printf("init ring %s ... done\n", name());
+        kernel_log(SYSTEM, "init ring %s ... done\n", name());
     }
     ~Ring()
     {
