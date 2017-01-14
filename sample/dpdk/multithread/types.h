@@ -25,23 +25,24 @@
 namespace dpdk {
 
 
+
 class ether_addr : public ::ether_addr {
 public:
     void print(FILE* fd) const
     {
-        fprintf(fd, "%02" PRIx8 " %02" PRIx8 " %02" PRIx8
-                   " %02" PRIx8 " %02" PRIx8 " %02" PRIx8,
-                addr_bytes[0], addr_bytes[1],
-                addr_bytes[2], addr_bytes[3],
-                addr_bytes[4], addr_bytes[5]);
+        fprintf(fd, "%s", toString().c_str());
     }
-    void sprint(char* str) const
+    std::string toString() const
     {
-        sprintf(str, "%02" PRIx8 " %02" PRIx8 " %02" PRIx8
-                   " %02" PRIx8 " %02" PRIx8 " %02" PRIx8,
+        char buf[32];
+        snprintf(buf, sizeof(buf),
+                "%02" PRIx8 ":%02" PRIx8 ":%02" PRIx8
+                   ":%02" PRIx8 ":%02" PRIx8 ":%02" PRIx8,
                 addr_bytes[0], addr_bytes[1],
                 addr_bytes[2], addr_bytes[3],
                 addr_bytes[4], addr_bytes[5]);
+
+        return buf;
     }
 };
 
@@ -90,9 +91,13 @@ public:
     }
     void free()
     {
-        if (raw_)
+        if (raw_) {
             rte_mempool_free(raw_);
+            raw_ = nullptr;
+        }
     }
+
+
     rte_mempool* get_raw() { return raw_; }
 };
 
