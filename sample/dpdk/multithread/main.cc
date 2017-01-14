@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     rte_eth_conf c;
     memset(&c, 0, sizeof(c));
     printf("\n\n\n\n");
-    dpdk_struct_utils::print(&c);
+    dpdk_struct_utils::print(&c, "conf");
     return 0;
 
 

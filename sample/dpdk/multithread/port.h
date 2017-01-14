@@ -36,7 +36,7 @@ class Port {
             memset(&raw, 0x00, sizeof(raw));
             raw.rxmode.max_rx_pkt_len = ETHER_MAX_LEN;
         }
-        void show() { dpdk_struct_utils::print(&raw); }
+        void show() { dpdk_struct_utils::print(&raw, "portconf"); }
     };
 
     class port_stats {
@@ -59,7 +59,7 @@ class Port {
         uint64_t q_ibytes  (size_t queue_id) const { return raw.q_ibytes  [queue_id]; }
         uint64_t q_obytes  (size_t queue_id) const { return raw.q_obytes  [queue_id]; }
         uint64_t q_errors  (size_t queue_id) const { return raw.q_errors  [queue_id]; }
-        void show() { update(); dpdk_struct_utils::print(&raw); }
+        void show() { update(); dpdk_struct_utils::print(&raw, "port_stats"); }
     };
 
 
