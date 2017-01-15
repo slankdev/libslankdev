@@ -15,16 +15,18 @@ main.o: system.h main.cc thread.h types.h port.h cpu.h ring.h dpdk_struct_utils.
 clean:
 	$(RM) $(TARGET) $(OBJS)
 
-run:
-	sudo ./a.out -c 0x1f
+run: run_dummy
+
+run_native:
+	sudo ./a.out
 
 run_dummy:
-	sudo ./a.out -c 0x1f  \
+	sudo ./a.out   \
 		--vdev=eth_null0  \
 		--vdev=eth_null1
 
 gdb:
-	sudo gdb --args a.out -c 0x1f \
+	sudo gdb --args a.out \
 		--vdev=eth_null0  \
 		--vdev=eth_null1
 
