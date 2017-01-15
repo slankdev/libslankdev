@@ -33,13 +33,51 @@ inline void printf_depth(size_t depth, const char* const fmt, Args... args)
 
 
 
+inline const char* rte_devtype2str(rte_devtype e)
+{
+    switch (e) {
+        case RTE_DEVTYPE_WHITELISTED_PCI: return "WHITELISTED_PCI";
+        case RTE_DEVTYPE_BLACKLISTED_PCI: return "BLACKLISTED_PCI";
+        case RTE_DEVTYPE_VIRTUAL        : return "VIRTUAL        ";
+        default: return "UNKNOWN_ERROR";
+    }
+}
+
+inline const char* rte_intr_handle_type2str(rte_intr_handle_type e)
+{
+    switch (e) {
+        case RTE_INTR_HANDLE_UNKNOWN    : return "UNKNOWN    ";
+        case RTE_INTR_HANDLE_UIO        : return "UIO        ";
+        case RTE_INTR_HANDLE_UIO_INTX   : return "UIO_INTX   ";
+        case RTE_INTR_HANDLE_VFIO_LEGACY: return "VFIO_LEGACY";
+        case RTE_INTR_HANDLE_VFIO_MSI   : return "VFIO_MSI   ";
+        case RTE_INTR_HANDLE_VFIO_MSIX  : return "VFIO_MSIX  ";
+        case RTE_INTR_HANDLE_ALARM      : return "ALARM      ";
+        case RTE_INTR_HANDLE_EXT        : return "EXT        ";
+        case RTE_INTR_HANDLE_MAX        : return "MAX        ";
+        default: return "UNKNOWN_ERROR";
+    }
+}
 
 inline const char* rte_eth_nb_tcs2str(rte_eth_nb_tcs e)
 {
     switch (e) {
         case ETH_4_TCS: return "4_TCS";
         case ETH_8_TCS: return "8_TCS";
-        default: return "UNKNOWN-ERROR";
+        default: return "UNKNOWN_ERROR";
+    }
+}
+
+inline const char* rte_kernel_driver2str(rte_kernel_driver e)
+{
+    switch (e) {
+        case RTE_KDRV_UNKNOWN    : return "UNKNOWN    ";
+        case RTE_KDRV_IGB_UIO    : return "IGB_UIO    ";
+        case RTE_KDRV_VFIO       : return "VFIO       ";
+        case RTE_KDRV_UIO_GENERIC: return "UIO_GENERIC";
+        case RTE_KDRV_NIC_UIO    : return "NIC_UIO    ";
+        case RTE_KDRV_NONE       : return "NONE       ";
+        default: return "UNKNOWN_ERROR";
     }
 }
 
@@ -51,7 +89,7 @@ inline const char* nb_queue_pools2str(rte_eth_nb_pools e)
         case ETH_16_POOLS: return "16_POOLS";
         case ETH_32_POOLS: return "32_POOLS";
         case ETH_64_POOLS: return "64_POOLS";
-        default: return "UNKNOWN-ERROR";
+        default: return "UNKNOWN_ERROR";
     }
 }
 
@@ -64,7 +102,7 @@ inline const char* rte_eth_payload_type2str(enum rte_eth_payload_type e)
         case RTE_FDIR_MODE_PERFECT 	       : return "PERFECT 	     ";
         case RTE_FDIR_MODE_PERFECT_MAC_VLAN: return "PERFECT_MAC_VLAN";
         case RTE_FDIR_MODE_PERFECT_TUNNEL  : return "PERFECT_TUNNEL  ";
-        default: return "UNKNOWN-ERROR";
+        default: return "UNKNOWN_ERROR";
     }
 }
 
@@ -78,7 +116,7 @@ inline const char* rte_eth_tx_mq_mode2str(enum rte_eth_tx_mq_mode mode)
         case ETH_MQ_TX_DCB      : return "ETH_MQ_TX_DCB      ";
         case ETH_MQ_TX_VMDQ_DCB : return "ETH_MQ_TX_VMDQ_DCB ";
         case ETH_MQ_TX_VMDQ_ONLY: return "ETH_MQ_TX_VMDQ_ONLY";
-        default: return "UNKNOWN-ERROR";
+        default: return "UNKNOWN_ERROR";
     }
 }
 
@@ -95,7 +133,7 @@ inline const char* rte_eth_rx_mq_mode2str(enum rte_eth_rx_mq_mode mode)
         case ETH_MQ_RX_VMDQ_RSS    : return "VMDQ_RSS    ";
         case ETH_MQ_RX_VMDQ_DCB    : return "VMDQ_DCB    ";
         case ETH_MQ_RX_VMDQ_DCB_RSS: return "VMDQ_DCB_RSS";
-        default: return "UNKNOWN-ERROR";
+        default: return "UNKNOWN_ERROR";
     }
 }
 
@@ -119,7 +157,7 @@ inline const char* linkspeed2str(uint32_t speed)
         case ETH_LINK_SPEED_50G    :  return "50G    ";
         case ETH_LINK_SPEED_56G    :  return "56G    ";
         case ETH_LINK_SPEED_100G   :  return "100G   ";
-        default: return "UNKNOWN-ERROR";
+        default: return "UNKNOWN_ERROR";
 	}
 }
 
@@ -131,7 +169,7 @@ inline const char* rte_eth_nb_pools2str(enum rte_eth_nb_pools e)
 		case ETH_16_POOLS: return "ETH_16_POOLS";
 		case ETH_32_POOLS: return "ETH_32_POOLS";
 		case ETH_64_POOLS: return "ETH_64_POOLS";
-        default: return "UNKNOWN-ERROR";
+        default: return "UNKNOWN_ERROR";
     }
 }
 
@@ -144,7 +182,7 @@ inline const char* rte_fdir_mode2str(enum rte_fdir_mode e)
         case RTE_FDIR_MODE_PERFECT         : return "PERFECT         ";
         case RTE_FDIR_MODE_PERFECT_MAC_VLAN: return "PERFECT_MAC_VLAN";
         case RTE_FDIR_MODE_PERFECT_TUNNEL  : return "PERFECT_TUNNEL  ";
-        default: return "UNKNOWN-ERROR";
+        default: return "UNKNOWN_ERROR";
     }
 }
 
@@ -155,7 +193,7 @@ inline const char* rte_fdir_pballoc_type2str(enum rte_fdir_pballoc_type e)
         case RTE_FDIR_PBALLOC_64K : return "64K ";
         case RTE_FDIR_PBALLOC_128K: return "128K";
         case RTE_FDIR_PBALLOC_256K: return "256K";
-        default: return "UNKNOWN-ERROR";
+        default: return "UNKNOWN_ERROR";
     }
 }
 
@@ -166,7 +204,7 @@ inline const char* rte_fdir_status_mode2str(enum rte_fdir_status_mode e)
         case RTE_FDIR_NO_REPORT_STATUS    : return "NO_REPORT_STATUS    ";
         case RTE_FDIR_REPORT_STATUS       : return "REPORT_STATUS       ";
         case RTE_FDIR_REPORT_STATUS_ALWAYS: return "REPORT_STATUS_ALWAYS";
-        default: return "UNKNOWN-ERROR";
+        default: return "UNKNOWN_ERROR";
     }
 }
 
@@ -521,12 +559,187 @@ inline void print(const struct rte_eth_txconf* raw, const char* name="", size_t 
 }
 
 
+
+inline void print(const struct rte_pci_addr* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "%s : %04x:%02x:%02x.%02x\n", name,
+            raw->domain, raw->bus, raw->devid, raw->function);
+}
+
+
+inline void print(const struct rte_pci_id* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_pci_id %s {\n", name);
+
+    depth++;
+    printf_depth(depth, "class_id            : %u \n", raw->class_id           );
+    printf_depth(depth, "vendor_id           : %u \n", raw->vendor_id          );
+    printf_depth(depth, "device_id           : %u \n", raw->device_id          );
+    printf_depth(depth, "subsystem_vendor_id : %u \n", raw->subsystem_vendor_id);
+    printf_depth(depth, "subsystem_device_id : %u \n", raw->subsystem_device_id);
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
+inline void print(const struct rte_pci_resource* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_pci_resource %s {\n", name);
+
+    depth++;
+    printf_depth(depth, "phys_addr : %lu \n", raw->phys_addr);
+    printf_depth(depth, "len       : %lu \n", raw->len      );
+    printf_depth(depth, "addr      : %p  \n", raw->addr     );
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
+inline void print(const struct rte_epoll_data* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_epoll_data %s {\n", name);
+
+    depth++;
+    printf_depth(depth, "event  : %u \n", raw->event);
+    printf_depth(depth, "data   : %p \n", raw->data );
+    printf_depth(depth, "cb_fun : %p \n", raw->cb_fun);
+    printf_depth(depth, "cb_arg : %p \n", raw->cb_arg);
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
+inline void print(const struct rte_epoll_event* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_epoll_event %s {\n", name);
+
+    depth++;
+    printf_depth(depth, "status : %u \n", raw->status);
+    printf_depth(depth, "fd     : %u \n", raw->fd    );
+    printf_depth(depth, "epfd   : %u \n", raw->epfd  );
+    print(&raw->epdata, "rpdata", depth);
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
+inline void print(const struct rte_intr_handle* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_intr_handle %s {\n", name);
+
+    depth++;
+    printf_depth(depth, "union {\n");
+    printf_depth(depth, DEPTHSTR "vfio_dev_fd : %d \n", raw->vfio_dev_fd);
+    printf_depth(depth, DEPTHSTR "uio_cfg_fd  : %d \n", raw->uio_cfg_fd );
+    printf_depth(depth, "}\n");
+    printf_depth(depth, "fd       : %u \n", raw->fd);
+    printf_depth(depth, "type     : %u \n", rte_intr_handle_type2str(raw->type));
+    printf_depth(depth, "max_intr : %u \n", raw->max_intr);
+    printf_depth(depth, "nb_efd   : %u \n", raw->nb_efd  );
+    printf_depth(depth, "efds[0-7]     : {%d, %d, %d, %d, %d, %d, %d, %d}\n",
+            raw->efds[0], raw->efds[1], raw->efds[2], raw->efds[3],
+            raw->efds[4], raw->efds[5], raw->efds[6], raw->efds[7]);
+    printf_depth(depth, "efds[8-15]      : {%d, %d, %d, %d, %d, %d, %d, %d}\n",
+            raw->efds[ 8], raw->efds[ 9], raw->efds[10], raw->efds[11],
+            raw->efds[12], raw->efds[13], raw->efds[14], raw->efds[15]);
+    printf_depth(depth, "efds[16-23]     : {%d, %d, %d, %d, %d, %d, %d, %d}\n",
+            raw->efds[17], raw->efds[18], raw->efds[19], raw->efds[20],
+            raw->efds[21], raw->efds[22], raw->efds[23], raw->efds[24]);
+    printf_depth(depth, "efds[24-31]     : {%d, %d, %d, %d, %d, %d, %d, %d}\n",
+            raw->efds[24], raw->efds[25], raw->efds[26], raw->efds[27],
+            raw->efds[28], raw->efds[29], raw->efds[30], raw->efds[31]);
+    print(&raw->elist[0], "elist[0]", depth);
+    printf_depth(depth, "elist[1-%zd] {}\n", RTE_MAX_RXTX_INTR_VEC_ID);
+    printf_depth(depth, "intr_vec : %p \n", raw->intr_vec);
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
+
+inline void print(const struct rte_pci_driver* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_pci_driver %s {\n", name);
+
+    depth++;
+    printf_depth(depth, "next      : %p \n", raw->next);
+    printf_depth(depth, "name      : %s \n", raw->name);
+    printf_depth(depth, "devinit   : %p \n", raw->devinit  );
+    printf_depth(depth, "devuninit : %p \n", raw->devuninit);
+    printf_depth(depth, "id_table  : %p \n", raw->id_table);
+    printf_depth(depth, "drv_flags : %u \n", raw->drv_flags);
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
+
+
+inline void print(const struct rte_devargs* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_devargs %s {\n", name);
+
+#if 1
+    UNUSED(raw);
+#else
+    /* unknown sugmentation fault */
+    depth++;
+    printf_depth(depth, "next : %p \n", raw->next);
+    printf_depth(depth, "type : %s \n", rte_devtype2str(raw->type));
+
+    printf_depth(depth, "union {\n");
+
+    printf_depth(depth, DEPTHSTR "struct {\n");
+    print(&raw->pci.addr, "addr" , depth);
+
+    printf_depth(depth, DEPTHSTR "} pci\n");
+    printf_depth(depth, DEPTHSTR "struct {\n");
+    printf_depth(depth, DEPTHSTR "drv_name : %s \n", raw->virt.drv_name);
+    printf_depth(depth, DEPTHSTR "} virt\n");
+    printf_depth(depth, "}\n");
+    printf_depth(depth, "args : %p \n", raw->args);
+    depth--;
+#endif
+
+    printf_depth(depth, "}\n");
+}
+
+
+
+inline void print(const struct rte_pci_device* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_pci_device %s {\n", name);
+
+    depth++;
+    printf_depth(depth, "next : %p \n", raw->next);
+    print(&raw->addr           , "addr"           , depth);
+    print(&raw->id             , "id"             , depth);
+    print(&raw->mem_resource[0], "mem_resource[0]", depth);
+    printf_depth(depth, "rte_pci_resource mem_resource[1-%zd]\n", PCI_MAX_RESOURCE);
+    print(&raw->intr_handle    , "intr_handle"    , depth);
+    print(raw->driver         , "driver"         , depth);
+    printf_depth(depth, "max_vfs     : %u \n", raw->max_vfs);
+    printf_depth(depth, "numa_node   : %d \n", raw->numa_node);
+    print(raw->devargs, "devargs", depth);
+    printf_depth(depth, "kdrv        : %s \n", rte_kernel_driver2str(raw->kdrv));
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
 inline void print(const struct rte_eth_dev_info* raw, const char* name="", size_t depth=0)
 {
     printf_depth(depth, "rte_eth_dev_info %s {\n", name);
 
     depth++;
-    printf_depth(depth, "pci_dev                : struct rte_pci_device*\n");
+    print(raw->pci_dev, "pci_dev", depth);
     printf_depth(depth, "driver_name            : %s  \n", raw->driver_name);
     printf_depth(depth, "if_index               : %u  \n", raw->if_index);
     printf_depth(depth, "min_rx_bufsize         : %u  \n", raw->min_rx_bufsize        );
@@ -559,3 +772,26 @@ inline void print(const struct rte_eth_dev_info* raw, const char* name="", size_
 
 } /* namespace util */
 } /* namespace dpdk */
+
+
+// inline void print(const struct SLANKDEV* raw, const char* name="", size_t depth=0)
+// {
+//     printf_depth(depth, "SLANKDEV %s {\n", name);
+//
+//     depth++;
+//     printf_depth(depth, " : %u \n", raw->);
+//     depth--;
+//
+//     printf_depth(depth, "}\n");
+// }
+
+
+// inline const char* SLANKDEV 2str(SLANKDEV e)
+// {
+//     switch (e) {
+//         case : return "";
+//         case : return "";
+//         default: return "UNKNOWN_ERROR";
+//     }
+// }
+
