@@ -476,5 +476,86 @@ inline void print(const struct rte_eth_conf* raw, const char* name="", size_t de
 }
 
 
+inline void print(const struct rte_eth_thresh* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_eth_thresh %s {\n", name);
+
+    depth++;
+    printf_depth(depth, "pthresh : %u  \n", raw->pthresh);
+    printf_depth(depth, "hthresh : %u  \n", raw->hthresh);
+    printf_depth(depth, "wthresh : %u  \n", raw->wthresh);
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
+inline void print(const struct rte_eth_rxconf* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_eth_rxconf %s {\n", name);
+
+    depth++;
+    print(&raw->rx_thresh, "rx_thresh", depth);
+    printf_depth(depth, "rx_free_thresh    : %u \n", raw->rx_free_thresh   );
+    printf_depth(depth, "rx_drop_en        : %u \n", raw->rx_drop_en       );
+    printf_depth(depth, "rx_deferred_start : %u \n", raw->rx_deferred_start);
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
+inline void print(const struct rte_eth_txconf* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_eth_txconf %s {\n", name);
+
+    depth++;
+    print(&raw->tx_thresh, "tx_thresh", depth);
+    printf_depth(depth, "tx_rs_thresh      : %u \n", raw->tx_rs_thresh     );
+    printf_depth(depth, "tx_free_thresh    : %u \n", raw->tx_free_thresh   );
+    printf_depth(depth, "txq_flags         : %u \n", raw->txq_flags        );
+    printf_depth(depth, "tx_deferred_start : %u \n", raw->tx_deferred_start);
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
+inline void print(const struct rte_eth_dev_info* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_eth_dev_info %s {\n", name);
+
+    depth++;
+    printf_depth(depth, "pci_dev                : struct rte_pci_device*\n");
+    printf_depth(depth, "driver_name            : %s  \n", raw->driver_name);
+    printf_depth(depth, "if_index               : %u  \n", raw->if_index);
+    printf_depth(depth, "min_rx_bufsize         : %u  \n", raw->min_rx_bufsize        );
+    printf_depth(depth, "max_rx_pktlen          : %u  \n", raw->max_rx_pktlen         );
+    printf_depth(depth, "max_rx_queues          : %u  \n", raw->max_rx_queues         );
+    printf_depth(depth, "max_tx_queues          : %u  \n", raw->max_tx_queues         );
+    printf_depth(depth, "max_mac_addrs          : %u  \n", raw->max_mac_addrs         );
+    printf_depth(depth, "max_vfs                : %u  \n", raw->max_vfs               );
+    printf_depth(depth, "max_vmdq_pools         : %u  \n", raw->max_vmdq_pools        );
+    printf_depth(depth, "rx_offload_capa        : %u  \n", raw->rx_offload_capa       );
+    printf_depth(depth, "tx_offload_capa        : %u  \n", raw->tx_offload_capa       );
+    printf_depth(depth, "reta_size              : %u  \n", raw->reta_size             );
+    printf_depth(depth, "hash_key_size          : %u  \n", raw->hash_key_size         );
+    printf_depth(depth, "flow_type_rss_offloads : %lu \n", raw->flow_type_rss_offloads);
+    print(&raw->default_rxconf, "default_rxconf", depth);
+    print(&raw->default_txconf, "default_txconf", depth);
+    printf_depth(depth, "vmdq_queue_base        : %u  \n", raw->vmdq_queue_base);
+    printf_depth(depth, "vmdq_queue_num         : %u  \n", raw->vmdq_queue_num );
+    printf_depth(depth, "vmdq_pool_base         : %u  \n", raw->vmdq_pool_base );
+    printf_depth(depth, "rx_desc_lim            : struct rte_eth_desc_lim \n" );
+    printf_depth(depth, "tx_desc_lim            : struct rte_eth_desc_lim \n" );
+    printf_depth(depth, "speed_capa             : %u  \n", raw->speed_capa  );
+    printf_depth(depth, "nb_rx_queues           : %u  \n", raw->nb_rx_queues);
+    printf_depth(depth, "nb_tx_queues           : %u  \n", raw->nb_tx_queues);
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
 } /* namespace util */
 } /* namespace dpdk */

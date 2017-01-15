@@ -28,6 +28,7 @@ namespace dpdk {
 
 
 class Port {
+
     class port_conf {
         Port* port;
     public:
@@ -63,6 +64,18 @@ class Port {
         void show() { update(); dpdk::util::print(&raw, "port_stats"); }
     };
 
+    class port_info {
+        const Port* port;
+    public:
+        struct rte_eth_dev_info raw;
+        port_info(Port* p) : port(p) {}
+        void get()
+        {
+            rte_eth_dev_info_get(port->port_id, &raw);
+        }
+        void show() { get(); dpdk::util::print(&raw); }
+    };
+
 
 public:
     std::string name;
@@ -75,8 +88,9 @@ public:
     pool*      mempool;
     port_conf  conf;
     port_stats stats;
+    port_info  info;
 
-    Port() : conf(this), stats(this) {}
+    Port() : conf(this), stats(this), info(this) {}
 
     void boot(uint8_t id, dpdk::pool* mp)
     {
@@ -86,6 +100,7 @@ public:
         port_id = id;
         rte_eth_macaddr_get(id, &addr);
         name = "port" + std::to_string(port_id);
+        info.get();
 
         kernel_log(SYSTEM, "address=%s ", addr.toString().c_str());
         kernel_log(SYSTEM, " ... done\n");
