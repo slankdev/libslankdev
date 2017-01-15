@@ -50,6 +50,7 @@ int thread_worker(void* arg)
 				rte_mbuf* m = nullptr;
 				in_port.rxq[rx_qid].pop(&m);
 				if (m) {
+                    printf("hash: %u \n", m->hash.rss);
                     for (uint8_t tx_qid=0; tx_qid<nb_txque; tx_qid++) {
                         out_port.txq[tx_qid].push(m);
                     }
@@ -97,7 +98,21 @@ int thread_viewer(void* arg)
     dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
 	while (1) {
         slankdev::clear_screen();
+#if 0
+#else
         ifconfig(sys);
+        for (dpdk::Port& p : sys->ports) {
+            int ret;
+            ret = rte_eth_rx_queue_count(p.port_id, 0);
+            printf("ret: %u \n", ret);
+            ret = rte_eth_rx_queue_count(p.port_id, 1);
+            printf("ret: %u \n", ret);
+            ret = rte_eth_rx_queue_count(p.port_id, 2);
+            printf("ret: %u \n", ret);
+            ret = rte_eth_rx_queue_count(p.port_id, 3);
+            printf("ret: %u \n", ret);
+        }
+#endif
 		usleep(50000);
 	}
 	return 0;
