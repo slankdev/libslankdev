@@ -35,7 +35,11 @@ public:
     {
 		rte_eal_mp_wait_lcore();
     }
-
+    void halt()
+    {
+        kernel_log(SYSTEM, "[+] System Halt ...\n");
+        rte_exit(0, "Bye...\n");
+    }
 	void boot(int argc, char** argv)
 	{
         kernel_log(SYSTEM, "[+] Booting ...\n");
