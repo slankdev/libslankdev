@@ -13,7 +13,8 @@ static void ifconfig(dpdk::System* sys)
         size_t nb_rxq = port.rxq.size();
         size_t nb_txq = port.txq.size();
 
-        printf("%s \n", port.name.c_str());
+        printf("%s\n", port.name.c_str());
+        printf("  HWaddr %s \n", port.addr.toString().c_str());
 
         auto& stats = port.stats;
         printf("  RX packets:%lu errors:%lu dropped:%lu allocmiss:%lu \n",
@@ -50,33 +51,11 @@ int thread_worker(void* arg)
 				rte_mbuf* m = nullptr;
 				in_port.rxq[rx_qid].pop(&m);
 				if (m) {
-                    printf("hash: %u \n", m->hash.rss);
                     for (uint8_t tx_qid=0; tx_qid<nb_txque; tx_qid++) {
                         out_port.txq[tx_qid].push(m);
                     }
                 }
 			}
-	    }
-	}
-    return 0;
-}
-int thread_tx(void* arg)
-{
-    dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
-    const uint8_t nb_ports = sys->ports.size();
-	for (;;) {
-        for (uint8_t pid = 0; pid < nb_ports; pid++) {
-            sys->ports[pid].tx_burst();
-	    }
-	}
-}
-int thread_rx(void* arg)
-{
-    dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
-    const uint8_t nb_ports = sys->ports.size();
-	for (;;) {
-        for (uint8_t pid = 0; pid < nb_ports; pid++) {
-            sys->ports[pid].rx_burst();
 	    }
 	}
     return 0;
@@ -98,9 +77,9 @@ int thread_viewer(void* arg)
     dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
 	while (1) {
         slankdev::clear_screen();
-#if 0
-#else
         ifconfig(sys);
+#if 1
+#else
         for (dpdk::Port& p : sys->ports) {
             int ret;
             ret = rte_eth_rx_queue_count(p.port_id, 0);
@@ -119,3 +98,30 @@ int thread_viewer(void* arg)
 }
 
 
+
+
+
+
+#if 0
+int thread_tx(void* arg)
+{
+    dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
+    const uint8_t nb_ports = sys->ports.size();
+	for (;;) {
+        for (uint8_t pid = 0; pid < nb_ports; pid++) {
+            sys->ports[pid].tx_burst();
+	    }
+	}
+}
+int thread_rx(void* arg)
+{
+    dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
+    const uint8_t nb_ports = sys->ports.size();
+	for (;;) {
+        for (uint8_t pid = 0; pid < nb_ports; pid++) {
+            sys->ports[pid].rx_burst();
+	    }
+	}
+    return 0;
+}
+#endif

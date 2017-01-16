@@ -75,6 +75,85 @@ class Port {
         }
         void show() { get(); dpdk::util::print(&raw); }
     };
+    class ether_addr : public ::ether_addr {
+        const Port* port;
+    public:
+        ether_addr(Port* p) : port(p) {}
+        void print(FILE* fd) const { fprintf(fd, "%s", toString().c_str()); }
+        std::string toString() const
+        {
+            char buf[32];
+            snprintf(buf, sizeof(buf),
+                    "%02" PRIx8 ":%02" PRIx8 ":%02" PRIx8
+                       ":%02" PRIx8 ":%02" PRIx8 ":%02" PRIx8,
+                    addr_bytes[0], addr_bytes[1],
+                    addr_bytes[2], addr_bytes[3],
+                    addr_bytes[4], addr_bytes[5]);
+
+            return buf;
+        }
+        void update() { rte_eth_macaddr_get(port->port_id, this); }
+        void set_addr(ether_addr* addr) {
+            int ret = rte_eth_dev_default_mac_addr_set(port->port_id, addr);
+            if (ret < 0) {
+                if (ret == -ENOTSUP) {
+                    throw slankdev::exception(
+                            "rte_eth_dev_default_mac_addr_set: hardware doesn't suppoer");
+                } else if (ret == -ENODEV) {
+                    throw slankdev::exception(
+                            "rte_eth_dev_default_mac_addr_set: port invalid");
+                } else if (ret == -EINVAL) {
+                    throw slankdev::exception(
+                            "rte_eth_dev_default_mac_addr_set: MAC address is invalid");
+                } else {
+                    throw slankdev::exception(
+                            "rte_eth_dev_default_mac_addr_set: unknown error");
+                }
+            }
+            update();
+        }
+        void add_addr(ether_addr* addr)
+        {
+            int ret = rte_eth_dev_mac_addr_add(port->port_id, addr, 0);
+            if (ret < 0) {
+                if (ret == -ENOTSUP) {
+                    throw slankdev::exception(
+                    "rte_eth_dev_mac_addr_add: hardware doesn't support this feature.");
+                } else if (ret == -ENODEV) {
+                    throw slankdev::exception(
+                        "rte_eth_dev_mac_addr_add: port is invalid.");
+                } else if (ret == -ENOSPC) {
+                    throw slankdev::exception(
+                        "rte_eth_dev_mac_addr_add: no more MAC addresses can be added.");
+                } else if (ret == -EINVAL) {
+                    throw slankdev::exception(
+                        "rte_eth_dev_mac_addr_add: MAC address is invalid.");
+                } else {
+                    throw slankdev::exception("rte_eth_dev_mac_addr_add: unknown");
+                }
+            }
+            update();
+        }
+        void del_addr(ether_addr* addr)
+        {
+            int ret = rte_eth_dev_mac_addr_remove(port->port_id, addr);
+            if (ret < 0) {
+                if (ret == -ENOTSUP) {
+                    throw slankdev::exception(
+                            "rte_eth_dev_mac_addr_remove: hardware doesn't support.");
+                } else if (ret == -ENODEV) {
+                    throw slankdev::exception(
+                            "rte_eth_dev_mac_addr_remove: if port invalid.");
+                } else if (ret == -EADDRINUSE) {
+                    std::string errstr = "rte_eth_dev_mac_addr_remove: ";
+                    errstr += "attempting to remove the default MAC address";
+                    throw slankdev::exception(errstr.c_str());
+                }
+            }
+            update();
+        }
+    };
+
 
 
 public:
@@ -90,7 +169,7 @@ public:
     port_stats stats;
     port_info  info;
 
-    Port() : conf(this), stats(this), info(this) {}
+    Port() : addr(this), conf(this), stats(this), info(this) {}
 
     void boot(uint8_t id, dpdk::pool* mp)
     {

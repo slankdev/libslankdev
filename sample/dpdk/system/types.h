@@ -26,26 +26,6 @@ namespace dpdk {
 
 
 
-class ether_addr : public ::ether_addr {
-public:
-    void print(FILE* fd) const
-    {
-        fprintf(fd, "%s", toString().c_str());
-    }
-    std::string toString() const
-    {
-        char buf[32];
-        snprintf(buf, sizeof(buf),
-                "%02" PRIx8 ":%02" PRIx8 ":%02" PRIx8
-                   ":%02" PRIx8 ":%02" PRIx8 ":%02" PRIx8,
-                addr_bytes[0], addr_bytes[1],
-                addr_bytes[2], addr_bytes[3],
-                addr_bytes[4], addr_bytes[5]);
-
-        return buf;
-    }
-};
-
 
 
 class pool {
