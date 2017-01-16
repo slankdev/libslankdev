@@ -78,6 +78,13 @@ int thread_viewer(void* arg)
 	while (1) {
         slankdev::clear_screen();
         ifconfig(sys);
+        printf("\n\n");
+
+        dpdk::Port& port = sys->ports[0];
+        ether_addr a = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
+        port.addr.add((ether_addr*)&a);
+        ifconfig(sys);
+        sys->halt();
 #if 1
 #else
         for (dpdk::Port& p : sys->ports) {

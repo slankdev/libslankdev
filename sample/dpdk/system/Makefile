@@ -15,7 +15,7 @@ main.o: system.h main.cc thread.h types.h port.h cpu.h ring.h dpdk_struct_utils.
 clean:
 	$(RM) $(TARGET) $(OBJS)
 
-run: run_dummy
+run: run_native
 
 run_native:
 	sudo ./a.out

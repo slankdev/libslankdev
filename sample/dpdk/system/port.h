@@ -7,18 +7,6 @@
 #include "dpdk_struct_utils.h"
 
 
-#if 0
-static bool filter(const rte_mbuf* m)
-{
-    uint8_t* p = rte_pktmbuf_mtod(m, uint8_t*);
-    if (p[12] == 0x08 && p[13]==0x06) {
-        return true;
-    } else {
-        return false;
-    }
-}
-#endif
-
 
 
 
@@ -93,7 +81,15 @@ class Port {
             return buf;
         }
         void update() { rte_eth_macaddr_get(port->port_id, this); }
-        void set_addr(ether_addr* addr) {
+
+        /*
+         * TODO
+         * Not Test these functions
+         *  set();
+         *  add();
+         *  del();
+         */
+        void set(::ether_addr* addr) {
             int ret = rte_eth_dev_default_mac_addr_set(port->port_id, addr);
             if (ret < 0) {
                 if (ret == -ENOTSUP) {
@@ -112,7 +108,7 @@ class Port {
             }
             update();
         }
-        void add_addr(ether_addr* addr)
+        void add(::ether_addr* addr)
         {
             int ret = rte_eth_dev_mac_addr_add(port->port_id, addr, 0);
             if (ret < 0) {
@@ -134,7 +130,7 @@ class Port {
             }
             update();
         }
-        void del_addr(ether_addr* addr)
+        void del(::ether_addr* addr)
         {
             int ret = rte_eth_dev_mac_addr_remove(port->port_id, addr);
             if (ret < 0) {
