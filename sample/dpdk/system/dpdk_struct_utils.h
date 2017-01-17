@@ -770,6 +770,87 @@ inline void print(const struct rte_eth_dev_info* raw, const char* name="", size_
 }
 
 
+
+
+template<class T>
+const char* num2binstr(T num)
+{
+    size_t bit_length = sizeof(T) * 8;
+    static std::string str = "";
+    str = "";
+    T bit = T(1) << (bit_length-1);
+    for (size_t i=0 ;i<bit_length; i++) {
+        if (i % 8 == 0)  str += " ";
+        if (num & bit) str += "1";
+        else           str += "0";
+
+        bit >>= 1;
+    }
+    return str.c_str();
+}
+
+
+
+inline void print(const struct rte_eth_rss_reta_entry64* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_eth_rss_reta_entry64 %s {\n", name);
+
+    depth++;
+    printf_depth(depth, "mask : %lu %s \n", raw->mask, num2binstr<uint64_t>(raw->mask));
+    for_i (0, RTE_RETA_GROUP_SIZE) {
+        printf_depth(depth, "reta[%2zd] : %5lu %s\n", i, raw->reta[i], num2binstr<uint16_t>(raw->reta[i]));
+    }
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+inline void print(const struct rte_eth_rxq_info* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_eth_rxq_info %s {\n", name);
+
+    depth++;
+    printf_depth(depth, "mp           : %p \n", raw->mp);
+    print(&raw->conf, "conf", depth);
+    printf_depth(depth, "scattered_rx : %u \n", raw->scattered_rx);
+    printf_depth(depth, "nb_desc      : %u \n", raw->nb_desc);
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
+inline const char* rte_eth_fc_mode2str(rte_eth_fc_mode e)
+{
+    switch (e) {
+        case RTE_FC_NONE    : return "NONE    ";
+        case RTE_FC_RX_PAUSE: return "RX_PAUSE";
+        case RTE_FC_TX_PAUSE: return "TX_PAUSE";
+        case RTE_FC_FULL    : return "FULL    ";
+        default: return "UNKNOWN_ERROR";
+    }
+}
+
+
+
+inline void print(const struct rte_eth_fc_conf* raw, const char* name="", size_t depth=0)
+{
+    printf_depth(depth, "rte_eth_fc_conf %s {\n", name);
+
+    depth++;
+    printf_depth(depth, "high_water         : %u \n", raw->high_water);
+    printf_depth(depth, "low_water          : %u \n", raw->low_water );
+    printf_depth(depth, "pause_time         : %u \n", raw->pause_time);
+    printf_depth(depth, "send_xon           : %u \n", raw->send_xon  );
+    printf_depth(depth, "mode               : %s \n", rte_eth_fc_mode2str(raw->mode));
+    printf_depth(depth, "mac_ctrl_frame_fwd : %u \n", raw->mac_ctrl_frame_fwd);
+    printf_depth(depth, "autoneg            : %u \n", raw->autoneg           );
+    depth--;
+
+    printf_depth(depth, "}\n");
+}
+
+
 } /* namespace util */
 } /* namespace dpdk */
 
