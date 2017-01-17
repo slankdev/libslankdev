@@ -4,8 +4,8 @@
 #include <slankdev/util.h>
 using namespace slankdev;
 #define CONST_DEV true
-#define CONST_DEVNAME "enp2s0f0"
-#define CONST_CNT  10
+#define CONST_DEVNAME "eth4"
+#define CONST_CNT  100000000
 
 
 uint8_t arp_raw[] = {
