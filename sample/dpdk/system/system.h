@@ -69,8 +69,7 @@ public:
         rte_exit(0, "Bye...\n");
     }
 
-	void configure(size_t nb_rx_rings, size_t nb_tx_rings,
-            size_t rx_ring_size, size_t tx_ring_size)
+	void configure(size_t rx_ring_size, size_t tx_ring_size)
 	{
         kernel_log(SYSTEM, "configure \n");
 
@@ -91,7 +90,7 @@ public:
 			cpus[i].configure();
 		}
 		for (uint16_t i=0; i<nb_ports; i++) {
-			ports[i].configure(nb_rx_rings, nb_tx_rings, rx_ring_size, tx_ring_size);
+			ports[i].configure(rx_ring_size, tx_ring_size);
 		}
 
         kernel_log(SYSTEM, "configure ... done\n");

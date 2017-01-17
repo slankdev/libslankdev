@@ -8,7 +8,7 @@
 int main(int argc, char** argv)
 {
     dpdk::System sys(argc, argv);
-    sys.configure(1, 2, 128, 512);
+    sys.configure(128, 512);
 
     sys.cpus[1].func = thread_txrx;
     sys.cpus[1].arg  = &sys;

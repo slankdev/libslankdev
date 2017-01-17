@@ -143,8 +143,8 @@ public:
     uint8_t port_id;
     ether_addr addr;
 
-    std::vector<Ring> rxq;
-    std::vector<Ring> txq;
+    Ring rxq;
+    Ring txq;
 
     pool*      mempool;
     port_conf  conf;
@@ -153,51 +153,6 @@ public:
 
     Port() : addr(this), conf(this), stats(this), info(this) {}
 
-    // void rss_setup()
-    // {
-    //     auto RETA_SIZE_MAX  =   (ETH_RSS_RETA_SIZE_512 / RTE_RETA_GROUP_SIZE);
-    //     size_t n_rss_qs = 2; // TODO hardcode
-    //     uint32_t rss_qs[n_rss_qs];
-    //     memset(rss_qs, 0, sizeof rss_qs);
-    //     rss_qs[0] = 0;
-    //     rss_qs[1] = 1;
-    //
-    //
-    //     if (info.raw.reta_size == 0) {
-    //         throw slankdev::exception("RSS setup error (null RETA size)");
-    //     }
-    //
-    //     if (info.raw.reta_size > ETH_RSS_RETA_SIZE_512) {
-    //         throw slankdev::exception("RSS setup error (RETA size too big)");
-    //     }
-    //
-    //
-    //     struct rte_eth_rss_reta_entry64 reta_conf[RETA_SIZE_MAX];
-    //     memset(reta_conf, 0, sizeof(reta_conf));
-    //     for (uint32_t i = 0; i < info.raw.reta_size; i++)
-    //         reta_conf[i / RTE_RETA_GROUP_SIZE].mask = UINT64_MAX;
-    //
-    //     for (uint32_t i = 0; i < info.raw.reta_size; i++) {
-    //         uint32_t reta_id    = i / RTE_RETA_GROUP_SIZE;
-    //         uint32_t reta_pos   = i % RTE_RETA_GROUP_SIZE;
-    //         uint32_t rss_qs_pos = i % n_rss_qs;
-    //
-    //         reta_conf[reta_id].reta[reta_pos] = (uint16_t)rss_qs[rss_qs_pos];
-    //     }
-    //
-    //     dpdk::util::print(reta_conf);
-    //     int ret = rte_eth_dev_rss_reta_update(port_id, reta_conf, info.raw.reta_size);
-    //     if (ret != 0) {
-    //         if (ret == -ENOTSUP) {
-    //             throw slankdev::exception("rte_eth_dev_rss_reta_update: hardware doesn't support.");
-    //         } else if (ret == -EINVAL) {
-    //             printf("port_id: %u \n", port_id);
-    //             throw slankdev::exception("rte_eth_dev_rss_reta_update: bad parameter.");
-    //         } else {
-    //             throw slankdev::exception("rte_eth_dev_rss_reta_update: unknown error.");
-    //         }
-    //     }
-    // }
     void boot(uint8_t id, dpdk::pool* mp)
     {
         kernel_log(SYSTEM, "boot port%u ", id);
@@ -211,8 +166,7 @@ public:
         kernel_log(SYSTEM, "address=%s ", addr.toString().c_str());
         kernel_log(SYSTEM, " ... done\n");
     }
-    void configure(size_t nb_rx_rings, size_t nb_tx_rings,
-            size_t rx_ring_size, size_t tx_ring_size)
+    void configure(size_t rx_ring_size, size_t tx_ring_size)
     {
         kernel_log(SYSTEM, "configure %s ...\n", name.c_str());
 
@@ -222,6 +176,8 @@ public:
         /*
          * Configure the Ethernet device.
          */
+        const uint16_t nb_rx_rings = 1;
+        const uint16_t nb_tx_rings = 1;
         int retval = rte_eth_dev_configure(port_id, nb_rx_rings, nb_tx_rings, &conf.raw);
         if (retval != 0)
             throw slankdev::exception("rte_eth_dev_configure failed");
@@ -261,45 +217,33 @@ public:
         /*
          * Setup DPDK-Rings
          */
-        rxq.resize(nb_rx_rings);
-        txq.resize(nb_tx_rings);
-        for (size_t i=0; i<nb_rx_rings; i++) {
-            char ringname[32];
-            sprintf(ringname, "port%u-rx%zd", port_id, i);
-            rxq[i].init(ringname, rx_ring_size, 0);
-        }
-        for (size_t i=0; i<nb_tx_rings; i++) {
-            char ringname[32];
-            sprintf(ringname, "port%u-tx%zd", port_id, i);
-            txq[i].init(ringname, tx_ring_size, 0);
-        }
+        char ringname[32];
+        sprintf(ringname, "port%u-rx", port_id);
+        rxq.init(ringname, rx_ring_size, 0);
+        sprintf(ringname, "port%u-tx", port_id);
+        txq.init(ringname, tx_ring_size, 0);
+
         kernel_log(SYSTEM, "configure %s ... done\n", name.c_str());
 
     }
     void rx_burst()
     {
-        const uint8_t nb_rxq = rxq.size();
-        for (uint8_t qid=0; qid<nb_rxq; qid++) {
-            const size_t burst_size = 32;
-            struct rte_mbuf* rx_pkts[burst_size];
-            uint16_t nb_rx = rte_eth_rx_burst(port_id, qid, rx_pkts, burst_size);
-            for (uint16_t i=0; i<nb_rx; i++) {
-                rxq[qid].push(rx_pkts[i]);
-            }
+        const size_t burst_size = 32;
+        struct rte_mbuf* rx_pkts[burst_size];
+        uint16_t nb_rx = rte_eth_rx_burst(port_id, 0, rx_pkts, burst_size);
+        for (uint16_t i=0; i<nb_rx; i++) {
+            rxq.push(rx_pkts[i]);
         }
     }
     void tx_burst()
     {
-        const uint8_t nb_txq = txq.size();
-        for (uint8_t qid=0; qid<nb_txq; qid++) {
-            while (txq[qid].size() > 0) {
-                struct rte_mbuf* m = nullptr;
-                txq[qid].pop(&m);
-                if (m == nullptr) {
-                    break;
-                }
-                rte_eth_tx_burst(port_id, qid, &m, 1);
+        while (txq.size() > 0) {
+            struct rte_mbuf* m = nullptr;
+            txq.pop(&m);
+            if (m == nullptr) {
+                break;
             }
+            rte_eth_tx_burst(port_id, 0, &m, 1);
         }
     }
 };
