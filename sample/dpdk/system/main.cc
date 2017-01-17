@@ -6,7 +6,8 @@
 #include "types.h"
 
 
-int thread_worker(void* arg);
+int thread_worker_1shot(void* arg);
+int thread_worker_bulk(void* arg);
 int thread_txrx(void* arg);
 int thread_viewer(void* arg);
 
@@ -19,7 +20,8 @@ int main(int argc, char** argv)
 
     sys.cpus[1].func = thread_txrx;
     sys.cpus[1].arg  = &sys;
-    sys.cpus[2].func = thread_worker;
+    // sys.cpus[2].func = thread_worker_1shot;
+    sys.cpus[2].func = thread_worker_bulk;
     sys.cpus[2].arg  = &sys;
     sys.cpus[3].func = thread_viewer;
     sys.cpus[3].arg  = &sys;
@@ -28,7 +30,25 @@ int main(int argc, char** argv)
 }
 
 
-int thread_worker(void* arg)
+int thread_worker_1shot(void* arg)
+{
+    dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
+    const uint8_t nb_ports = sys->ports.size();
+	for (;;) {
+		for (uint8_t pid=0; pid<nb_ports; pid++) {
+            dpdk::Port& in_port  = sys->ports[pid];
+            dpdk::Port& out_port = sys->ports[pid^1];
+
+            rte_mbuf* m;
+            in_port.rxq.pop(&m);
+            if (m) {
+                out_port.txq.push(m);
+            }
+	    }
+	}
+    return 0;
+}
+int thread_worker_bulk(void* arg)
 {
     dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
 	for (;;) {
@@ -74,6 +94,9 @@ static void ifconfig(dpdk::System* sys)
         printf("  TX packets:%lu errors:%lu  \n",
                 stats.raw.opackets, stats.raw.oerrors);
         printf("  RX bytes:%lu TX bytes:%lu \n", stats.raw.ibytes, stats.raw.obytes);
+        printf("  RX ring:%zd/%zd TX ring:%zd/%zd\n",
+                port.rxq.count(), port.rxq.size(),
+                port.txq.count(), port.txq.size());
 
     }
 }
