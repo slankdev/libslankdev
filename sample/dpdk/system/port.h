@@ -141,8 +141,8 @@ public:
     pool*             mempool;
     ether_addr        addr;
 
-    Ring              rxq;
-    Ring              txq;
+    std::vector<Ring> rxq;
+    std::vector<Ring> txq;
 
     port_conf         conf;
     port_stats        stats;
@@ -210,6 +210,7 @@ public:
         if (retval != 0)
             throw slankdev::exception("rte_eth_dev_configure failed");
 
+
         /*
          * Allocate and set up RX $nb_rx_rings queue(s) per Ethernet port.
          */
@@ -219,6 +220,10 @@ public:
                     socket_id, NULL, mempool->get_raw());
             if (retval < 0)
                 throw slankdev::exception("rte_eth_rx_queue_setup failed");
+
+            std::string ringname = "PORT" + std::to_string(id);
+            ringname += "RX" + std::to_string(qid);
+            rxq.push_back(Ring(ringname.c_str(), rx_ring_size, socket_id));
         }
 
         /*
@@ -229,6 +234,10 @@ public:
                     socket_id, NULL);
             if (retval < 0)
                 throw slankdev::exception("rte_eth_tx_queue_setup failed");
+
+            std::string ringname = "PORT" + std::to_string(id);
+            ringname += "TX" + std::to_string(qid);
+            txq.push_back(Ring(ringname.c_str(), tx_ring_size, socket_id));
         }
 
         kernel_log(SYSTEM, "%s configure \n", name.c_str());
@@ -241,7 +250,7 @@ public:
         struct rte_mbuf* rx_pkts[burst_size];
         uint16_t nb_rx = rte_eth_rx_burst(id, 0, rx_pkts, burst_size);
         if (nb_rx == 0) return;
-        rxq.push_bulk(rx_pkts, nb_rx);
+        rxq[0].push_bulk(rx_pkts, nb_rx);
     }
     void rx_burst()
     {
@@ -249,7 +258,7 @@ public:
         struct rte_mbuf* rx_pkts[burst_size];
         uint16_t nb_rx = rte_eth_rx_burst(id, 0, rx_pkts, burst_size);
         for (uint16_t i=0; i<nb_rx; i++) {
-            rxq.push(rx_pkts[i]);
+            rxq[0].push(rx_pkts[i]);
         }
     }
     void tx_burst_bulk()
@@ -257,7 +266,7 @@ public:
         const size_t burst_size = 32;
         if (txq.size() >= burst_size) {
             struct rte_mbuf* tx_pkts[burst_size];
-            txq.pop_bulk(tx_pkts, burst_size);
+            txq[0].pop_bulk(tx_pkts, burst_size);
             uint16_t nb_tx = rte_eth_tx_burst(id, 0, tx_pkts, burst_size);
             if (nb_tx != burst_size) {
                 for (size_t i=nb_tx; i<burst_size; i++)
@@ -270,7 +279,7 @@ public:
     void tx_burst()
     {
         struct rte_mbuf* m = nullptr;
-        txq.pop(&m);
+        txq[0].pop(&m);
         if (m) {
             rte_eth_tx_burst(id, 0, &m, 1);
         }

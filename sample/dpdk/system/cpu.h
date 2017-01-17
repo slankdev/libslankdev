@@ -20,9 +20,11 @@ public:
 	function func;
 	func_arg arg;
 
-	Cpu(uint8_t id) : lcore_id(id)
-        ,name("lcore" + std::to_string(id))
-        ,func(nullptr), arg(nullptr)
+	Cpu(uint8_t id) :
+        lcore_id(id),
+        name("lcore" + std::to_string(id)),
+        func(nullptr),
+        arg(nullptr)
     {
         kernel_log(SYSTEM, "boot  %s ... done\n", name.c_str());
     }

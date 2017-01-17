@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stddef.h>
+
 #include <vector>
 
 #include <slankdev/util.h>
@@ -121,29 +122,6 @@ void print_message()
             kernel_log(SYSTEM, "888  .d88P 888        888  .d88P 888   Y88b       \n");
             kernel_log(SYSTEM, "8888888P\"  888        8888888P\"  888    Y88b    \n");
             kernel_log(SYSTEM, "\n");
-            break;
-        case 3:
-            kernel_log(SYSTEM, "+------------------------------------------------------------------------------+\n");
-            kernel_log(SYSTEM, "|  ######  ######  ######  #    #     #####                                    |\n");
-            kernel_log(SYSTEM, "|  #     # #     # #     # #   #     #     # #   #  ####  ##### ###### #    #  |\n");
-            kernel_log(SYSTEM, "|  #     # #     # #     # #  #      #        # #  #        #   #      ##  ##  |\n");
-            kernel_log(SYSTEM, "|  #     # ######  #     # ###        #####    #    ####    #   #####  # ## #  |\n");
-            kernel_log(SYSTEM, "|  #     # #       #     # #  #            #   #        #   #   #      #    #  |\n");
-            kernel_log(SYSTEM, "|  #     # #       #     # #   #     #     #   #   #    #   #   #      #    #  |\n");
-            kernel_log(SYSTEM, "|  ######  #       ######  #    #     #####    #    ####    #   ###### #    #  |\n");
-            kernel_log(SYSTEM, "+------------------------------------------------------------------------------+\n");
-            break;
-        case 4:
-            kernel_log(SYSTEM, "+-------------------------------------------------------------------+\n");
-            kernel_log(SYSTEM, "|  _____  _____  _____  _  __   _____           _                   |\n");
-            kernel_log(SYSTEM, "| |  __ \\|  __ \\|  __ \\| |/ /  / ____|         | |     @slankdev    |\n");
-            kernel_log(SYSTEM, "| | |  | | |__) | |  | | ' /  | (___  _   _ ___| |_ ___ _ __ ___    |\n");
-            kernel_log(SYSTEM, "| | |  | |  ___/| |  | |  <    \\___ \\| | | / __| __/ _ \\ '_ ` _ \\   |\n");
-            kernel_log(SYSTEM, "| | |__| | |    | |__| | . \\   ____) | |_| \\__ \\ ||  __/ | | | | |  |\n");
-            kernel_log(SYSTEM, "| |_____/|_|    |_____/|_|\\_\\ |_____/ \\__, |___/\\__\\___|_| |_| |_|  |\n");
-            kernel_log(SYSTEM, "|                                      __/ |                        |\n");
-            kernel_log(SYSTEM, "|            @slankdev                |___/                         |\n");
-            kernel_log(SYSTEM, "+-------------------------------------------------------------------+\n");
             break;
         case 5:
             kernel_log(SYSTEM, "+--------------------------------------------------------------------+\n");

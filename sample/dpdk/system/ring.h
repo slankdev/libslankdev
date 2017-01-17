@@ -14,10 +14,9 @@ class Ring {
     struct rte_ring* ring_;
 	size_t ring_depth;
 public:
-    Ring() : ring_(nullptr), ring_depth(0) {}
-    void init(const char* n, size_t count, uint16_t socket_id)
+    Ring(const char* n, size_t count, uint16_t socket_id)
+        : ring_depth(count)
     {
-		ring_depth = count;
         ring_ = rte_ring_create(n, count, socket_id, 0);
         if (!ring_)
             throw slankdev::exception("rte_ring_create");
@@ -125,26 +124,11 @@ public:
     }
 
 
-    /*
-     * Return number of elements in the ring.
-     */
-	size_t count() const
-	{
-        return rte_ring_count(ring_);
-	}
-
-    /*
-     * Return depth of ring.
-     */
-    size_t size() const
-    {
-		return ring_depth;
-    }
-
-    const char* name() const
-    {
-        return (const char*)ring_->name;
-    }
+	size_t count() const { return rte_ring_count(ring_);    }
+    size_t size()  const { return ring_depth;               }
+    bool   empty() const { return rte_ring_empty(ring_)==1; }
+    bool   full()  const { return rte_ring_full(ring_)==1;  }
+    const char* name() const { return (const char*)ring_->name; }
 };
 
 

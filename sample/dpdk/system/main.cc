@@ -32,7 +32,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    // sys.launch();
+    sys.launch();
 }
 
 
@@ -46,9 +46,9 @@ int thread_worker_1shot(void* arg)
             dpdk::Port& out_port = sys->ports[pid^1];
 
             rte_mbuf* m;
-            in_port.rxq.pop(&m);
+            in_port.rxq[0].pop(&m);
             if (m) {
-                out_port.txq.push(m);
+                out_port.txq[0].push(m);
             }
 	    }
 	}
@@ -65,9 +65,9 @@ int thread_worker_bulk(void* arg)
             dpdk::Port& out_port = sys->ports[pid^1];
 
             rte_mbuf* m = nullptr;
-            in_port.rxq.pop(&m);
+            in_port.rxq[0].pop(&m);
             if (m) {
-                out_port.txq.push(m);
+                out_port.txq[0].push(m);
             }
 	    }
 	}
@@ -101,8 +101,8 @@ static void ifconfig(dpdk::System* sys)
                 stats.raw.opackets, stats.raw.oerrors);
         printf("  RX bytes:%lu TX bytes:%lu \n", stats.raw.ibytes, stats.raw.obytes);
         printf("  RX ring:%zd/%zd TX ring:%zd/%zd\n",
-                port.rxq.count(), port.rxq.size(),
-                port.txq.count(), port.txq.size());
+                port.rxq[0].count(), port.rxq[0].size(),
+                port.txq[0].count(), port.txq[0].size());
 
     }
 }
