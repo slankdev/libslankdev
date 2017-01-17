@@ -27,6 +27,9 @@ void print_message();
 
 class System {
 public:
+    static size_t rx_ring_size;
+    static size_t tx_ring_size;
+
 	std::vector<Cpu>  cpus;
 	std::vector<Port> ports;
 	dpdk::pool    mp;
@@ -57,6 +60,8 @@ public:
 		}
 
         kernel_log(SYSTEM, "DPDK boot Done! \n");
+
+        configure();
 	}
     ~System()
     {
@@ -69,7 +74,7 @@ public:
         rte_exit(0, "Bye...\n");
     }
 
-	void configure(size_t rx_ring_size, size_t tx_ring_size)
+	void configure()
 	{
         kernel_log(SYSTEM, "configure \n");
 

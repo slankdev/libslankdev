@@ -11,20 +11,26 @@ int thread_worker_bulk(void* arg);
 int thread_txrx(void* arg);
 int thread_viewer(void* arg);
 
+size_t dpdk::System::rx_ring_size = 128;
+size_t dpdk::System::tx_ring_size = 512;
 
 
 int main(int argc, char** argv)
 {
+    dpdk::System::rx_ring_size = 128;
+    dpdk::System::tx_ring_size = 512;
     dpdk::System sys(argc, argv);
-    sys.configure(128, 512);
 
     sys.cpus[1].func = thread_txrx;
     sys.cpus[1].arg  = &sys;
-    // sys.cpus[2].func = thread_worker_1shot;
     sys.cpus[2].func = thread_worker_bulk;
     sys.cpus[2].arg  = &sys;
     sys.cpus[3].func = thread_viewer;
     sys.cpus[3].arg  = &sys;
+    if (sys.ports.size() != 2) {
+        fprintf(stderr, "number of ports is not 2 \n");
+        return -1;
+    }
 
     sys.launch();
 }
