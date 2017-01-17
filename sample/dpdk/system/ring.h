@@ -60,9 +60,9 @@ public:
 			}
 		}
     }
-    void push_bulk(void* const* obj_table, size_t n)
+    void push_bulk(rte_mbuf** obj_table, size_t n)
     {
-        int ret = rte_ring_enqueue_bulk(ring_, obj_table, n);
+        int ret = rte_ring_enqueue_bulk(ring_, reinterpret_cast<void**>(obj_table), n);
         if (ret < 0) {
             if (ret == -EDQUOT ) {
                 /*

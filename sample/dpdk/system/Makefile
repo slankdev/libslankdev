@@ -22,12 +22,8 @@ run_native:
 
 run_dummy:
 	sudo ./a.out   \
-		--vdev=eth_pcap0,iface=lo \
-		--vdev=eth_null0
-
-
-		# --vdev=eth_pcap1,iface=lo
-		# --vdev=eth_null1
+		--vdev=eth_null0 \
+		--vdev=eth_null1
 
 gdb:
 	sudo gdb --args a.out \

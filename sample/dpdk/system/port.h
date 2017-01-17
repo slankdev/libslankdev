@@ -39,8 +39,8 @@ class Port {
     public:
         struct rte_eth_stats raw;
         port_stats(Port* p) : port(p) {}
-        void reset()  { rte_eth_stats_reset(port->port_id);     }
-        void update() { rte_eth_stats_get(port->port_id, &raw); }
+        void reset()  { rte_eth_stats_reset(port->id);       }
+        void update() { rte_eth_stats_get  (port->id, &raw); }
     };
 
     /*
@@ -53,7 +53,7 @@ class Port {
         dev_info(Port* p) : port(p) {}
         void get()
         {
-            rte_eth_dev_info_get(port->port_id, &raw);
+            rte_eth_dev_info_get(port->id, &raw);
         }
     };
     class ether_addr : public ::ether_addr {
@@ -70,13 +70,12 @@ class Port {
                     addr_bytes[0], addr_bytes[1],
                     addr_bytes[2], addr_bytes[3],
                     addr_bytes[4], addr_bytes[5]);
-
             return buf;
         }
-        void update() { rte_eth_macaddr_get(port->port_id, this); }
+        void update() { rte_eth_macaddr_get(port->id, this); }
         void set(::ether_addr* addr)
         {
-            int ret = rte_eth_dev_default_mac_addr_set(port->port_id, addr);
+            int ret = rte_eth_dev_default_mac_addr_set(port->id, addr);
             if (ret < 0) {
                 if (ret == -ENOTSUP) {
                     throw slankdev::exception(
@@ -96,7 +95,7 @@ class Port {
         }
         void add(::ether_addr* addr)
         {
-            int ret = rte_eth_dev_mac_addr_add(port->port_id, addr, 0);
+            int ret = rte_eth_dev_mac_addr_add(port->id, addr, 0);
             if (ret < 0) {
                 if (ret == -ENOTSUP) {
                     throw slankdev::exception(
@@ -118,7 +117,7 @@ class Port {
         }
         void del(::ether_addr* addr)
         {
-            int ret = rte_eth_dev_mac_addr_remove(port->port_id, addr);
+            int ret = rte_eth_dev_mac_addr_remove(port->id, addr);
             if (ret < 0) {
                 if (ret == -ENOTSUP) {
                     throw slankdev::exception(
@@ -136,58 +135,88 @@ class Port {
         }
     };
 
-
-
 public:
-    std::string name;
-    uint8_t port_id;
-    ether_addr addr;
+    const std::string name;
+    const uint8_t     id;
+    pool*             mempool;
+    ether_addr        addr;
 
-    Ring rxq;
-    Ring txq;
+    Ring              rxq;
+    Ring              txq;
 
-    pool*      mempool;
-    port_conf  conf;
-    port_stats stats;
-    dev_info   info;
+    port_conf         conf;
+    port_stats        stats;
+    dev_info          info;
 
-    Port() : addr(this), conf(this), stats(this), info(this) {}
-
-    void boot(uint8_t id, dpdk::pool* mp)
+    Port(uint8_t pid, dpdk::pool* mp,
+            size_t rx_ring_size, size_t tx_ring_size) :
+        name   ("port" + std::to_string(id)),
+        id     (pid),
+        mempool(mp),
+        addr   (this),
+        conf   (this),
+        stats  (this),
+        info   (this)
     {
-        kernel_log(SYSTEM, "boot port%u ", id);
-
-        mempool = mp;
-        port_id = id;
+        kernel_log(SYSTEM, "boot port%u ... \n", id);
         rte_eth_macaddr_get(id, &addr);
-        name = "port" + std::to_string(port_id);
         info.get();
 
-        kernel_log(SYSTEM, "address=%s ", addr.toString().c_str());
-        kernel_log(SYSTEM, " ... done\n");
-    }
-    void configure(size_t rx_ring_size, size_t tx_ring_size)
-    {
-        kernel_log(SYSTEM, "configure %s ...\n", name.c_str());
+        kernel_log(SYSTEM, "%s address=%s \n", name.c_str(), addr.toString().c_str());
 
-        if (port_id >= rte_eth_dev_count())
+        if (id >= rte_eth_dev_count())
             throw slankdev::exception("port is not exist");
 
         /*
          * Configure the Ethernet device.
          */
-        const uint16_t nb_rx_rings = 1;
-        const uint16_t nb_tx_rings = 1;
-        int retval = rte_eth_dev_configure(port_id, nb_rx_rings, nb_tx_rings, &conf.raw);
+        size_t nb_rx_rings = 1;
+        size_t nb_tx_rings = 1;
+        configure(nb_rx_rings, nb_tx_rings, rx_ring_size, tx_ring_size);
+
+        /*
+         * Start the Ethernet port.
+         */
+        start();
+
+        promiscuous_set(true);
+        kernel_log(SYSTEM, "%s configure ... done\n", name.c_str());
+    }
+    void linkup  ()
+    {
+        int ret = rte_eth_dev_set_link_up  (id);
+        if (ret < 0) {
+            throw slankdev::exception("rte_eth_dev_link_up: failed");
+        }
+    }
+    void linkdown() { rte_eth_dev_set_link_down(id); }
+    void start()
+    {
+        int ret = rte_eth_dev_start(id);
+        if (ret < 0) {
+            throw slankdev::exception("rte_eth_dev_start: failed");
+        }
+    }
+    void stop () { rte_eth_dev_stop (id); }
+    void promiscuous_set(bool on)
+    {
+        if (on) rte_eth_promiscuous_enable(id);
+        else    rte_eth_promiscuous_disable(id);
+    }
+    void configure(size_t nb_rx_rings, size_t nb_tx_rings,
+            size_t rx_ring_size, size_t tx_ring_size)
+    {
+        int retval = rte_eth_dev_configure(id, nb_rx_rings, nb_tx_rings, &conf.raw);
         if (retval != 0)
             throw slankdev::exception("rte_eth_dev_configure failed");
 
         /*
          * Allocate and set up RX $nb_rx_rings queue(s) per Ethernet port.
          */
+        int socket_id = rte_eth_dev_socket_id(id);
         for (uint16_t qid = 0; qid < nb_rx_rings; qid++) {
-            retval = rte_eth_rx_queue_setup(port_id, qid, rx_ring_size,
-                    rte_eth_dev_socket_id(port_id), NULL, mempool->get_raw());
+            retval = rte_eth_rx_queue_setup(id, qid, rx_ring_size,
+                    socket_id, NULL, mempool->get_raw());
             if (retval < 0)
                 throw slankdev::exception("rte_eth_rx_queue_setup failed");
         }
@@ -196,54 +225,54 @@ public:
          * Allocate and set up $nb_tx_rings TX queue per Ethernet port.
          */
         for (uint16_t qid = 0; qid < nb_tx_rings; qid++) {
-            retval = rte_eth_tx_queue_setup(port_id, qid, tx_ring_size,
-                    rte_eth_dev_socket_id(port_id), NULL);
+            retval = rte_eth_tx_queue_setup(id, qid, tx_ring_size,
+                    socket_id, NULL);
             if (retval < 0)
                 throw slankdev::exception("rte_eth_tx_queue_setup failed");
         }
 
-        /*
-         * Start the Ethernet port.
-         */
-        retval = rte_eth_dev_start(port_id);
-        if (retval < 0)
-            throw slankdev::exception("rte_eth_dev_start failed");
-
-        /*
-         * Enable Promiscous mode
-         */
-        rte_eth_promiscuous_enable(port_id);
-
-        /*
-         * Setup DPDK-Rings
-         */
-        char ringname[32];
-        sprintf(ringname, "port%u-rx", port_id);
-        rxq.init(ringname, rx_ring_size, 0);
-        sprintf(ringname, "port%u-tx", port_id);
-        txq.init(ringname, tx_ring_size, 0);
-
-        kernel_log(SYSTEM, "configure %s ... done\n", name.c_str());
-
+        kernel_log(SYSTEM, "%s configure \n", name.c_str());
+        kernel_log(SYSTEM, "  nb_rx_rings=%zd size=%zd\n", nb_rx_rings, rx_ring_size);
+        kernel_log(SYSTEM, "  nb_tx_rings=%zd size=%zd\n", nb_tx_rings, tx_ring_size);
+    }
+    void rx_burst_bulk()
+    {
+        const size_t burst_size = 32;
+        struct rte_mbuf* rx_pkts[burst_size];
+        uint16_t nb_rx = rte_eth_rx_burst(id, 0, rx_pkts, burst_size);
+        if (nb_rx == 0) return;
+        rxq.push_bulk(rx_pkts, nb_rx);
     }
     void rx_burst()
     {
         const size_t burst_size = 32;
         struct rte_mbuf* rx_pkts[burst_size];
-        uint16_t nb_rx = rte_eth_rx_burst(port_id, 0, rx_pkts, burst_size);
+        uint16_t nb_rx = rte_eth_rx_burst(id, 0, rx_pkts, burst_size);
         for (uint16_t i=0; i<nb_rx; i++) {
             rxq.push(rx_pkts[i]);
         }
     }
+    void tx_burst_bulk()
+    {
+        const size_t burst_size = 32;
+        if (txq.size() >= burst_size) {
+            struct rte_mbuf* tx_pkts[burst_size];
+            txq.pop_bulk(tx_pkts, burst_size);
+            uint16_t nb_tx = rte_eth_tx_burst(id, 0, tx_pkts, burst_size);
+            if (nb_tx != burst_size) {
+                for (size_t i=nb_tx; i<burst_size; i++)
+                    rte_pktmbuf_free(tx_pkts[i]);
+            }
+        } else if (txq.size() > 0) {
+            tx_burst();
+        }
+    }
     void tx_burst()
     {
-        while (txq.size() > 0) {
-            struct rte_mbuf* m = nullptr;
-            txq.pop(&m);
-            if (m == nullptr) {
-                break;
-            }
-            rte_eth_tx_burst(port_id, 0, &m, 1);
+        struct rte_mbuf* m = nullptr;
+        txq.pop(&m);
+        if (m) {
+            rte_eth_tx_burst(id, 0, &m, 1);
         }
     }
 };

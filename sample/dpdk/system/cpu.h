@@ -12,26 +12,21 @@ namespace dpdk {
 
 using function = int(*)(void*);
 using func_arg = void*;
+
 class Cpu {
 public:
-	uint8_t lcore_id;
+	const uint8_t lcore_id;
+    const std::string name;
 	function func;
 	func_arg arg;
-    std::string name;
 
-	Cpu() : lcore_id(0), func(nullptr), arg(nullptr)
+	Cpu(uint8_t id) : lcore_id(id)
+        ,name("lcore" + std::to_string(id))
+        ,func(nullptr), arg(nullptr)
     {
-    }
-	void boot(uint8_t id)
-	{
-        name = "lcore" + std::to_string(id);
-		lcore_id = id;
         kernel_log(SYSTEM, "boot  %s ... done\n", name.c_str());
-	}
-	void configure()
-    {
-        kernel_log(SYSTEM, "configure %s ... done\n", name.c_str());
     }
+    ~Cpu() { rte_eal_wait_lcore(lcore_id); }
 	void launch()
 	{
         kernel_log(SYSTEM, "%s lanching ... \n", name.c_str());
