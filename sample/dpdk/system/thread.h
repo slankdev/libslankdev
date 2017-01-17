@@ -18,17 +18,20 @@ static void ifconfig(dpdk::System* sys)
 
         auto& stats = port.stats;
         printf("  RX packets:%lu errors:%lu dropped:%lu allocmiss:%lu \n",
-                stats.ipackets(), stats.ierrors(), stats.imissed(), stats.rx_nombuf());
-        printf("  TX packets:%lu errors:%lu  \n", stats.opackets(), stats.oerrors());
-        printf("  RX bytes:%lu TX bytes:%lu \n", stats.ibytes(), stats.obytes());
+                    stats.raw.ipackets, stats.raw.ierrors,
+                    stats.raw.imissed, stats.raw.rx_nombuf);
+        printf("  TX packets:%lu errors:%lu  \n",
+                stats.raw.opackets, stats.raw.oerrors);
+        printf("  RX bytes:%lu TX bytes:%lu \n", stats.raw.ibytes, stats.raw.obytes);
 
         for (size_t qid=0; qid<nb_rxq; qid++) {
             printf("  RING:%s RX packets:%lu bytes:%lu \n", port.rxq[qid].name(),
-                    stats.q_ipackets(qid), stats.q_ibytes(qid));
+                    stats.raw.q_ipackets[qid], stats.raw.q_ibytes[qid]);
         }
         for (size_t qid=0; qid<nb_txq; qid++) {
-            printf("  RING:%s TX packets:%lu bytes:%lu errors:%lu \n", port.txq[qid].name(),
-                stats.q_opackets(qid), stats.q_obytes(qid), stats.q_errors(qid));
+            printf("  RING:%s TX packets:%lu bytes:%lu errors:%lu \n",
+                    port.txq[qid].name(), stats.raw.q_opackets[qid],
+                    stats.raw.q_obytes[qid], stats.raw.q_errors[qid]);
         }
     }
 }
@@ -42,7 +45,6 @@ int thread_worker(void* arg)
 		for (uint8_t pid=0; pid<nb_ports; pid++) {
 			const uint8_t nb_rxque = sys->ports[pid].rxq.size();
 			const uint8_t nb_txque = sys->ports[pid].txq.size();
-			assert(nb_rxque != nb_txque);
 
 			for (uint8_t rx_qid=0; rx_qid<nb_rxque; rx_qid++) {
 				dpdk::Port& in_port  = sys->ports[pid];
@@ -51,6 +53,7 @@ int thread_worker(void* arg)
 				rte_mbuf* m = nullptr;
 				in_port.rxq[rx_qid].pop(&m);
 				if (m) {
+                    out_port.txq[1].push(m);
                     for (uint8_t tx_qid=0; tx_qid<nb_txque; tx_qid++) {
                         out_port.txq[tx_qid].push(m);
                     }
@@ -78,27 +81,6 @@ int thread_viewer(void* arg)
 	while (1) {
         slankdev::clear_screen();
         ifconfig(sys);
-        printf("\n\n");
-
-        dpdk::Port& port = sys->ports[0];
-        ether_addr a = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
-        port.addr.add((ether_addr*)&a);
-        ifconfig(sys);
-        sys->halt();
-#if 1
-#else
-        for (dpdk::Port& p : sys->ports) {
-            int ret;
-            ret = rte_eth_rx_queue_count(p.port_id, 0);
-            printf("ret: %u \n", ret);
-            ret = rte_eth_rx_queue_count(p.port_id, 1);
-            printf("ret: %u \n", ret);
-            ret = rte_eth_rx_queue_count(p.port_id, 2);
-            printf("ret: %u \n", ret);
-            ret = rte_eth_rx_queue_count(p.port_id, 3);
-            printf("ret: %u \n", ret);
-        }
-#endif
 		usleep(50000);
 	}
 	return 0;

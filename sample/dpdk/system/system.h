@@ -31,16 +31,10 @@ public:
 	std::vector<Port> ports;
 	dpdk::pool    mp;
 
-    ~System()
-    {
-		rte_eal_mp_wait_lcore();
-    }
-    void halt()
-    {
-        kernel_log(SYSTEM, "[+] System Halt ...\n");
-        rte_exit(0, "Bye...\n");
-    }
-	void boot(int argc, char** argv)
+    /*
+     * Boot DPDK System.
+     */
+	System(int argc, char** argv)
 	{
         kernel_log(SYSTEM, "[+] Booting ...\n");
         print_message();
@@ -64,6 +58,17 @@ public:
 
         kernel_log(SYSTEM, "DPDK boot Done! \n");
 	}
+    ~System()
+    {
+		rte_eal_mp_wait_lcore();
+    }
+
+    void halt()
+    {
+        kernel_log(SYSTEM, "[+] System Halt ...\n");
+        rte_exit(0, "Bye...\n");
+    }
+
 	void configure(size_t nb_rx_rings, size_t nb_tx_rings,
             size_t rx_ring_size, size_t tx_ring_size)
 	{

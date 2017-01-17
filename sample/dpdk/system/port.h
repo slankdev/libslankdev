@@ -17,6 +17,9 @@ namespace dpdk {
 
 class Port {
 
+    /*
+     * This class has dynamically infomations.
+     */
     class port_conf {
         Port* port;
     public:
@@ -26,42 +29,32 @@ class Port {
             memset(&raw, 0x00, sizeof(raw));
             raw.rxmode.max_rx_pkt_len = ETHER_MAX_LEN;
         }
-        void show() { dpdk::util::print(&raw, "portconf"); }
     };
 
+    /*
+     * This class has dynamically informations.
+     */
     class port_stats {
-        struct rte_eth_stats raw;
         const Port* port;
     public:
+        struct rte_eth_stats raw;
         port_stats(Port* p) : port(p) {}
         void reset()  { rte_eth_stats_reset(port->port_id);     }
         void update() { rte_eth_stats_get(port->port_id, &raw); }
-        uint64_t ipackets  () const { return raw.ipackets ; }
-        uint64_t opackets  () const { return raw.opackets ; }
-        uint64_t ibytes    () const { return raw.ibytes   ; }
-        uint64_t obytes    () const { return raw.obytes   ; }
-        uint64_t imissed   () const { return raw.imissed  ; }
-        uint64_t ierrors   () const { return raw.ierrors  ; }
-        uint64_t oerrors   () const { return raw.oerrors  ; }
-        uint64_t rx_nombuf () const { return raw.rx_nombuf; }
-        uint64_t q_ipackets(size_t queue_id) const { return raw.q_ipackets[queue_id]; }
-        uint64_t q_opackets(size_t queue_id) const { return raw.q_opackets[queue_id]; }
-        uint64_t q_ibytes  (size_t queue_id) const { return raw.q_ibytes  [queue_id]; }
-        uint64_t q_obytes  (size_t queue_id) const { return raw.q_obytes  [queue_id]; }
-        uint64_t q_errors  (size_t queue_id) const { return raw.q_errors  [queue_id]; }
-        void show() { update(); dpdk::util::print(&raw, "port_stats"); }
     };
 
-    class port_info {
+    /*
+     * This class has statically infomations.
+     */
+    class dev_info {
         const Port* port;
     public:
         struct rte_eth_dev_info raw;
-        port_info(Port* p) : port(p) {}
+        dev_info(Port* p) : port(p) {}
         void get()
         {
             rte_eth_dev_info_get(port->port_id, &raw);
         }
-        void show() { get(); dpdk::util::print(&raw); }
     };
     class ether_addr : public ::ether_addr {
         const Port* port;
@@ -81,15 +74,8 @@ class Port {
             return buf;
         }
         void update() { rte_eth_macaddr_get(port->port_id, this); }
-
-        /*
-         * TODO
-         * Not Test these functions
-         *  set();
-         *  add();
-         *  del();
-         */
-        void set(::ether_addr* addr) {
+        void set(::ether_addr* addr)
+        {
             int ret = rte_eth_dev_default_mac_addr_set(port->port_id, addr);
             if (ret < 0) {
                 if (ret == -ENOTSUP) {
@@ -163,10 +149,55 @@ public:
     pool*      mempool;
     port_conf  conf;
     port_stats stats;
-    port_info  info;
+    dev_info   info;
 
     Port() : addr(this), conf(this), stats(this), info(this) {}
 
+    // void rss_setup()
+    // {
+    //     auto RETA_SIZE_MAX  =   (ETH_RSS_RETA_SIZE_512 / RTE_RETA_GROUP_SIZE);
+    //     size_t n_rss_qs = 2; // TODO hardcode
+    //     uint32_t rss_qs[n_rss_qs];
+    //     memset(rss_qs, 0, sizeof rss_qs);
+    //     rss_qs[0] = 0;
+    //     rss_qs[1] = 1;
+    //
+    //
+    //     if (info.raw.reta_size == 0) {
+    //         throw slankdev::exception("RSS setup error (null RETA size)");
+    //     }
+    //
+    //     if (info.raw.reta_size > ETH_RSS_RETA_SIZE_512) {
+    //         throw slankdev::exception("RSS setup error (RETA size too big)");
+    //     }
+    //
+    //
+    //     struct rte_eth_rss_reta_entry64 reta_conf[RETA_SIZE_MAX];
+    //     memset(reta_conf, 0, sizeof(reta_conf));
+    //     for (uint32_t i = 0; i < info.raw.reta_size; i++)
+    //         reta_conf[i / RTE_RETA_GROUP_SIZE].mask = UINT64_MAX;
+    //
+    //     for (uint32_t i = 0; i < info.raw.reta_size; i++) {
+    //         uint32_t reta_id    = i / RTE_RETA_GROUP_SIZE;
+    //         uint32_t reta_pos   = i % RTE_RETA_GROUP_SIZE;
+    //         uint32_t rss_qs_pos = i % n_rss_qs;
+    //
+    //         reta_conf[reta_id].reta[reta_pos] = (uint16_t)rss_qs[rss_qs_pos];
+    //     }
+    //
+    //     dpdk::util::print(reta_conf);
+    //     int ret = rte_eth_dev_rss_reta_update(port_id, reta_conf, info.raw.reta_size);
+    //     if (ret != 0) {
+    //         if (ret == -ENOTSUP) {
+    //             throw slankdev::exception("rte_eth_dev_rss_reta_update: hardware doesn't support.");
+    //         } else if (ret == -EINVAL) {
+    //             printf("port_id: %u \n", port_id);
+    //             throw slankdev::exception("rte_eth_dev_rss_reta_update: bad parameter.");
+    //         } else {
+    //             throw slankdev::exception("rte_eth_dev_rss_reta_update: unknown error.");
+    //         }
+    //     }
+    // }
     void boot(uint8_t id, dpdk::pool* mp)
     {
         kernel_log(SYSTEM, "boot port%u ", id);
