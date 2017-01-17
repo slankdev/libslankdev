@@ -10,7 +10,7 @@ LDFLAGS +=
 
 
 all: $(TARGET)
-main.o: system.h main.cc thread.h types.h port.h cpu.h ring.h dpdk_struct_utils.h
+main.o: system.h main.cc types.h port.h cpu.h ring.h dpdk_struct_utils.h
 
 clean:
 	$(RM) $(TARGET) $(OBJS)
