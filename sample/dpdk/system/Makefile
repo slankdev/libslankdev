@@ -15,15 +15,19 @@ main.o: system.h main.cc types.h port.h cpu.h ring.h dpdk_struct_utils.h
 clean:
 	$(RM) $(TARGET) $(OBJS)
 
-run: run_native
+run: run_dummy
 
 run_native:
 	sudo ./a.out
 
 run_dummy:
 	sudo ./a.out   \
-		--vdev=eth_null0  \
-		--vdev=eth_null1
+		--vdev=eth_pcap0,iface=lo \
+		--vdev=eth_null0
+
+
+		# --vdev=eth_pcap1,iface=lo
+		# --vdev=eth_null1
 
 gdb:
 	sudo gdb --args a.out \

@@ -23,12 +23,23 @@ namespace util {
 
 
 
-// TODO Prease Review
 template<class... Args>
 inline void printf_depth(size_t depth, const char* const fmt, Args... args)
 {
     for_i (0, depth) printf(DEPTHSTR);
     printf(fmt, args...);
+}
+
+
+inline const char* rte_eth_fc_mode2str(rte_eth_fc_mode e)
+{
+    switch (e) {
+        case RTE_FC_NONE    : return "NONE    ";
+        case RTE_FC_RX_PAUSE: return "RX_PAUSE";
+        case RTE_FC_TX_PAUSE: return "TX_PAUSE";
+        case RTE_FC_FULL    : return "FULL    ";
+        default: return "UNKNOWN_ERROR";
+    }
 }
 
 
@@ -817,18 +828,6 @@ inline void print(const struct rte_eth_rxq_info* raw, const char* name="", size_
     depth--;
 
     printf_depth(depth, "}\n");
-}
-
-
-inline const char* rte_eth_fc_mode2str(rte_eth_fc_mode e)
-{
-    switch (e) {
-        case RTE_FC_NONE    : return "NONE    ";
-        case RTE_FC_RX_PAUSE: return "RX_PAUSE";
-        case RTE_FC_TX_PAUSE: return "TX_PAUSE";
-        case RTE_FC_FULL    : return "FULL    ";
-        default: return "UNKNOWN_ERROR";
-    }
 }
 
 
