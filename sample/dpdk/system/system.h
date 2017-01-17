@@ -13,7 +13,7 @@
 #include <slankdev/util.h>
 #include <slankdev/exception.h>
 
-#include "types.h"
+#include "mempool.h"
 #include "cpu.h"
 #include "port.h"
 #include "log.h"
@@ -27,13 +27,14 @@ void print_message();
 
 
 class System {
+
 public:
     static size_t rx_ring_size;
     static size_t tx_ring_size;
 
 	std::vector<Cpu>  cpus;
 	std::vector<Port> ports;
-	dpdk::pool    mp;
+	dpdk::Mempool    mp;
 
 	System(int argc, char** argv)
 	{

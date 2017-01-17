@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include "system.h"
-#include "types.h"
 
 
 int thread_worker_1shot(void* arg);

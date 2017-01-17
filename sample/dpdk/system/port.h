@@ -1,7 +1,7 @@
 
 
 #pragma once
-#include "types.h"
+#include "mempool.h"
 #include "ring.h"
 #include "log.h"
 #include "dpdk_struct_utils.h"
@@ -138,7 +138,7 @@ class Port {
 public:
     const std::string name;
     const uint8_t     id;
-    pool*             mempool;
+    Mempool*          mempool;
     ether_addr        addr;
 
     std::vector<Ring> rxq;
@@ -148,7 +148,7 @@ public:
     port_stats        stats;
     dev_info          info;
 
-    Port(uint8_t pid, dpdk::pool* mp,
+    Port(uint8_t pid, dpdk::Mempool* mp,
             size_t rx_ring_size, size_t tx_ring_size) :
         name   ("port" + std::to_string(id)),
         id     (pid),
