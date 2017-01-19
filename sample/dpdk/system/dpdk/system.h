@@ -96,6 +96,11 @@ public:
 	}
 };
 
+size_t dpdk::System::rx_ring_size = 128;
+size_t dpdk::System::tx_ring_size = 512;
+
+
+
 
 void print_message()
 {

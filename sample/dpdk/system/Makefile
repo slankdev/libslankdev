@@ -8,14 +8,29 @@ include $(prefix)/mk/vars.mk
 CXXFLAGS += -Wno-format-security
 LDFLAGS +=
 
+DPDK_SRC = \
+	dpdk/system.h \
+	dpdk/mempool.h  \
+	dpdk/port.h  \
+	dpdk/cpu.h \
+	dpdk/ring.h \
+	dpdk/log.h \
+	dpdk/struct_utils.h
+
+
+THRD_SRC = \
+	thread/shot.h \
+	thread/bulk.h \
+	thread/omake.h \
+	thread/rtc.h
 
 all: $(TARGET)
-main.o: system.h main.cc mempool.h port.h cpu.h ring.h dpdk_struct_utils.h
+main.o: main.cc  $(DPDK_SRC) $(THRD_SRC)
 
 clean:
 	$(RM) $(TARGET) $(OBJS)
 
-run: run_dummy
+run: run_native
 
 run_native:
 	sudo ./a.out
@@ -26,9 +41,11 @@ run_dummy:
 		--vdev=eth_null1
 
 gdb:
-	sudo gdb --args a.out \
-		--vdev=eth_null0  \
-		--vdev=eth_null1
+	sudo gdb --args a.out
+
+
+		# --vdev=eth_null0  \
+		# --vdev=eth_null1
 
 # run:
 # 	sudo ./a.out \

@@ -40,6 +40,8 @@ public:
      */
     void push(rte_mbuf* data)
     {
+        if (!data) return;
+
         int ret = rte_ring_enqueue(ring_, data);
 		if (ret < 0) {
 			if (ret == -EDQUOT) {

@@ -4,7 +4,7 @@
 #include "mempool.h"
 #include "ring.h"
 #include "log.h"
-#include "dpdk_struct_utils.h"
+#include "struct_utils.h"
 
 
 
@@ -244,9 +244,8 @@ public:
         kernel_log(SYSTEM, "  nb_rx_rings=%zd size=%zd\n", nb_rx_rings, rx_ring_size);
         kernel_log(SYSTEM, "  nb_tx_rings=%zd size=%zd\n", nb_tx_rings, tx_ring_size);
     }
-    void rx_burst_bulk()
+    void rx_burst_bulk(size_t burst_size)
     {
-        const size_t burst_size = 32;
         struct rte_mbuf* rx_pkts[burst_size];
         uint16_t nb_rx = rte_eth_rx_burst(id, 0, rx_pkts, burst_size);
         if (nb_rx == 0) return;
@@ -261,9 +260,8 @@ public:
             rxq[0].push(rx_pkts[i]);
         }
     }
-    void tx_burst_bulk()
+    void tx_burst_bulk(size_t burst_size)
     {
-        const size_t burst_size = 32;
         if (txq.size() >= burst_size) {
             struct rte_mbuf* tx_pkts[burst_size];
             txq[0].pop_bulk(tx_pkts, burst_size);
