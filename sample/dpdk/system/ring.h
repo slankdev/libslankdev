@@ -18,8 +18,13 @@ public:
         : ring_depth(count)
     {
         ring_ = rte_ring_create(n, count, socket_id, 0);
-        if (!ring_)
-            throw slankdev::exception("rte_ring_create");
+        if (!ring_) {
+            char errstr[256];
+            snprintf(errstr, sizeof(errstr),
+                    "rte_ring_create(%s, %zd, %u)",
+                    n, count, socket_id);
+            throw slankdev::exception(errstr);
+        }
 
         kernel_log(SYSTEM, "init ring %s ... done\n", name());
     }

@@ -214,7 +214,7 @@ public:
         /*
          * Allocate and set up RX $nb_rx_rings queue(s) per Ethernet port.
          */
-        int socket_id = rte_eth_dev_socket_id(id);
+        int socket_id = rte_socket_id();
         for (uint16_t qid = 0; qid < nb_rx_rings; qid++) {
             retval = rte_eth_rx_queue_setup(id, qid, rx_ring_size,
                     socket_id, NULL, mempool->get_raw());
