@@ -150,7 +150,7 @@ public:
 
     Port(uint8_t pid, dpdk::Mempool* mp,
             size_t rx_ring_size, size_t tx_ring_size) :
-        name   ("port" + std::to_string(id)),
+        name   ("port" + std::to_string(pid)),
         id     (pid),
         mempool(mp),
         addr   (this),

@@ -30,7 +30,7 @@ main.o: main.cc  $(DPDK_SRC) $(THRD_SRC)
 clean:
 	$(RM) $(TARGET) $(OBJS)
 
-run: run_native
+run: run_vagrant
 
 run_native:
 	sudo ./a.out
@@ -40,10 +40,18 @@ run_dummy:
 		--vdev=eth_null0 \
 		--vdev=eth_null1
 
+run_vagrant:
+	sudo ./a.out   \
+		--vdev=eth_pcap0,iface=vboxnet2 \
+		--vdev=eth_pcap1,iface=lo
+
+
 gdb:
-	sudo gdb --args a.out
+	sudo gdb --args a.out \
+		--vdev=eth_pcap0,iface=vboxnet2 \
+		--vdev=eth_pcap1,iface=vboxnet3
 
-
+		# --args a.out
 		# --vdev=eth_null0  \
 		# --vdev=eth_null1
 

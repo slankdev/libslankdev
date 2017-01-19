@@ -50,16 +50,22 @@ int main(int argc, char** argv)
     dpdk::System::tx_ring_size = 512;
     dpdk::System sys(argc, argv);
 
+    if (sys.ports.size() != 2) {
+        fprintf(stderr, "number of ports is not 2 \n");
+        return -1;
+    }
+
+#if 0
+    sys.cpus[1].func = thread_txrxwk;
+    sys.cpus[1].arg  = &sys;
+#else
     sys.cpus[1].func = thread_txrx;
     sys.cpus[1].arg  = &sys;
     sys.cpus[2].func = thread_wk;
     sys.cpus[2].arg  = &sys;
     sys.cpus[3].func = thread_viewer;
     sys.cpus[3].arg  = &sys;
-    if (sys.ports.size() != 2) {
-        fprintf(stderr, "number of ports is not 2 \n");
-        return -1;
-    }
+#endif
 
     sys.launch();
 }
