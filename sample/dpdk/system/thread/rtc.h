@@ -53,7 +53,7 @@ int thread_txrxwk_bulk(void* _arg)
             in_port.rxq[0].pop_bulk(pkts, bulk_size);
             out_port.txq[0].push_bulk(pkts, bulk_size);
 
-            out_port.hk(bulk_size);
+            out_port.tx_burst_bulk(bulk_size);
 	    }
 	}
     return 0;

@@ -5,6 +5,7 @@
 #include "dpdk/system.h"
 #include "thread/shot.h"
 #include "thread/bulk.h"
+#include "thread/rtc.h"
 #include "thread/omake.h"
 
 
