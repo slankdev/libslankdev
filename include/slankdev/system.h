@@ -15,5 +15,11 @@ uint64_t rdtsc()
     return ((uint64_t)edx << 32) | eax;
 }
 
+void delay_clk(size_t num_clks)
+{
+    uint64_t begin = rdtsc();
+    while (rdtsc() - begin < num_clks) ;
+}
+
 
 } /* namespace slankdev */
