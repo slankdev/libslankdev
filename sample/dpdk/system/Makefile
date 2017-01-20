@@ -19,14 +19,12 @@ DPDK_SRC = \
 
 
 THRD_SRC = \
-	thread/shot.h \
-	thread/bulk.h \
+	thread/txrx.h \
+	thread/worker.h \
 	thread/omake.h \
 	thread/rtc.h
 
-FUNC_SRC = \
-	funcs/txrx.h
-
+FUNC_SRC =
 
 
 

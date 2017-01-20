@@ -88,11 +88,17 @@ public:
 		 * The lcore0 is com cpu core.
 		 * So it must not launch that.
 		 */
+        kernel_log(SYSTEM, "launch thread to each-cores \n");
+		for (size_t i=1; i<cpus.size(); i++) {
+			if (cpus[i].thrd.func)
+                kernel_log(SYSTEM, "%s lanching ... \n", cpus[i].name.c_str());
+		}
+        sleep(1);
+
 		for (size_t i=1; i<cpus.size(); i++) {
 			if (cpus[i].thrd.func)
 				cpus[i].launch();
 		}
-        kernel_log(SYSTEM, "launch thread to each-cores \n");
 		rte_eal_mp_wait_lcore();
 	}
 };

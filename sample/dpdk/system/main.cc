@@ -3,9 +3,8 @@
 
 #include <stdio.h>
 #include "dpdk/system.h"
-#include "funcs/txrx.h"
-#include "thread/shot.h"
-#include "thread/bulk.h"
+#include "thread/txrx.h"
+#include "thread/worker.h"
 #include "thread/rtc.h"
 #include "thread/omake.h"
 
@@ -31,8 +30,6 @@ static void ifconfig(dpdk::System* sys)
 
     }
 }
-
-
 int thread_viewer(void* arg)
 {
     dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
@@ -44,6 +41,32 @@ int thread_viewer(void* arg)
 	return 0;
 }
 
+enum thread_pattern {
+    TXRXWK,
+    TXRX_WK,
+    TX_RX_WK,
+};
+void configure(dpdk::System* sys, thread_pattern pattern)
+{
+    sys->cpus[1].thrd = {thread_viewer, sys};
+    switch (pattern) {
+        case TXRXWK:
+            sys->cpus[2].thrd = {thread_txrxwk, sys};
+            break;
+        case TXRX_WK:
+            sys->cpus[2].thrd = {thread_txrx  , sys};
+            sys->cpus[3].thrd = {thread_wk    , sys};
+            break;
+        case TX_RX_WK:
+            sys->cpus[2].thrd = {thread_tx    , sys};
+            sys->cpus[3].thrd = {thread_rx    , sys};
+            sys->cpus[4].thrd = {thread_wk    , sys};
+            break;
+        default:
+            throw slankdev::exception("FAAAAAAA!!!!!");
+            break;
+    }
+}
 
 int main(int argc, char** argv)
 {
@@ -58,18 +81,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-#if 0
-    sys.cpus[1].thrd = {thread_txrx , &sys};
-#else
-    sys.cpus[1 ].thrd = {thread_tx  , &sys};
-    sys.cpus[2 ].thrd = {thread_tx  , &sys};
-    sys.cpus[3 ].thrd = {thread_rx  , &sys};
-    sys.cpus[4 ].thrd = {thread_rx  , &sys};
-#endif
-
-    sys.cpus[8 ].thrd = {thread_wk    , &sys};
-    sys.cpus[11].thrd = {thread_viewer, &sys};
-
+    configure(&sys, TXRXWK);
     sys.launch();
 }
 

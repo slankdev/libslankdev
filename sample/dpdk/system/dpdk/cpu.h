@@ -35,7 +35,6 @@ public:
     ~Cpu() { rte_eal_wait_lcore(lcore_id); }
 	void launch()
 	{
-        kernel_log(SYSTEM, "%s lanching ... \n", name.c_str());
 		rte_eal_remote_launch(thrd.func, thrd.arg, lcore_id);
 	}
 };
