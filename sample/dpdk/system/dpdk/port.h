@@ -137,6 +137,7 @@ class Port {
 
 public:
     const std::string name;
+    const size_t      bulk_size;
     const uint8_t     id;
     ether_addr        addr;
 
@@ -149,15 +150,16 @@ public:
 
     Mempool*          mempool;
 
-    Port(uint8_t pid, dpdk::Mempool* mp,
+    Port(uint8_t pid, size_t bs, dpdk::Mempool* mp,
             size_t rx_ring_size, size_t tx_ring_size) :
-        name   ("port" + std::to_string(pid)),
-        id     (pid),
-        addr   (pid),
-        conf   (pid),
-        stats  (pid),
-        info   (pid),
-        mempool(mp)
+        name     ("port" + std::to_string(pid)),
+        bulk_size(bs),
+        id       (pid),
+        addr     (pid),
+        conf     (pid),
+        stats    (pid),
+        info     (pid),
+        mempool  (mp)
     {
         kernel_log(SYSTEM, "boot port%u ... \n", id);
         rte_eth_macaddr_get(id, &addr);
@@ -245,75 +247,29 @@ public:
         kernel_log(SYSTEM, "  nb_rx_rings=%zd size=%zd\n", nb_rx_rings, rx_ring_size);
         kernel_log(SYSTEM, "  nb_tx_rings=%zd size=%zd\n", nb_tx_rings, tx_ring_size);
     }
-#if 0
-    void rx_burst_bulk(size_t burst_size)
-    {
-        struct rte_mbuf* rx_pkts[burst_size];
-        uint16_t nb_rx = rte_eth_rx_burst(id, 0, rx_pkts, burst_size);
-        if (nb_rx == 0) return;
-        rxq[0].push_bulk(rx_pkts, nb_rx);
-    }
-    void rx_burst()
-    {
-        const size_t burst_size = 32;
-        struct rte_mbuf* rx_pkts[burst_size];
-        uint16_t nb_rx = rte_eth_rx_burst(id, 0, rx_pkts, burst_size);
-        for (uint16_t i=0; i<nb_rx; i++) {
-            rxq[0].push(rx_pkts[i]);
-        }
-    }
-#else
+
     void rx_burst()
     {
         const size_t queue_id   = 0;
-        const size_t burst_size = 32;
-        struct rte_mbuf* rx_pkts[burst_size];
-        uint16_t nb_rx = rte_eth_rx_burst(id, queue_id, rx_pkts, burst_size);
+        struct rte_mbuf* rx_pkts[bulk_size];
+        uint16_t nb_rx = rte_eth_rx_burst(id, queue_id, rx_pkts, bulk_size);
         if (nb_rx == 0) return;
         rxq[queue_id].push_bulk(rx_pkts, nb_rx);
     }
-#endif
-
-#if 0
-    void tx_burst_bulk(size_t burst_size)
-    {
-        if (txq.size() >= burst_size) {
-            struct rte_mbuf* tx_pkts[burst_size];
-            txq[0].pop_bulk(tx_pkts, burst_size);
-            uint16_t nb_tx = rte_eth_tx_burst(id, 0, tx_pkts, burst_size);
-            if (nb_tx != burst_size) {
-                for (size_t i=nb_tx; i<burst_size; i++)
-                    rte_pktmbuf_free(tx_pkts[i]);
-            }
-        } else if (txq.size() > 0) {
-            tx_burst();
-        }
-    }
-    void tx_burst()
-    {
-        struct rte_mbuf* m = nullptr;
-        txq[0].pop(&m);
-        if (m) {
-            rte_eth_tx_burst(id, 0, &m, 1);
-        }
-    }
-#else
     void tx_burst()
     {
         const size_t queue_id   = 0;
-        const size_t burst_size = 32;
-        struct rte_mbuf* pkts[burst_size];
+        struct rte_mbuf* pkts[bulk_size];
 
-        bool  ret = txq[queue_id].pop_bulk(pkts, burst_size);
+        bool  ret = txq[queue_id].pop_bulk(pkts, bulk_size);
         if (ret == true) {
-            uint16_t nb_tx = rte_eth_tx_burst(id, queue_id, pkts, burst_size);
-            if (nb_tx != burst_size) {
-                rte_pktmbuf_free_bulk(&pkts[nb_tx], burst_size-nb_tx);
+            uint16_t nb_tx = rte_eth_tx_burst(id, queue_id, pkts, bulk_size);
+            if (nb_tx != bulk_size) {
+                rte_pktmbuf_free_bulk(&pkts[nb_tx], bulk_size-nb_tx);
             }
         }
 
     }
-#endif
 };
 
 

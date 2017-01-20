@@ -31,6 +31,7 @@ class System {
 public:
     static size_t rx_ring_size;
     static size_t tx_ring_size;
+    static size_t port_bulk_size;
 
 	std::vector<Cpu>  cpus;
 	std::vector<Port> ports;
@@ -72,7 +73,7 @@ public:
         for (size_t i=0; i<nb_cpus; i++)
             cpus.push_back(Cpu(i));
         for (size_t i=0; i<nb_ports; i++)
-            ports.push_back(Port(i, &mp, rx_ring_size, tx_ring_size));
+            ports.push_back(Port(i, port_bulk_size, &mp, rx_ring_size, tx_ring_size));
 
         kernel_log(SYSTEM, "[+] DPDK boot Done! \n");
 	}
@@ -96,8 +97,9 @@ public:
 	}
 };
 
-size_t dpdk::System::rx_ring_size = 128;
-size_t dpdk::System::tx_ring_size = 512;
+size_t dpdk::System::rx_ring_size   = 128;
+size_t dpdk::System::tx_ring_size   = 512;
+size_t dpdk::System::port_bulk_size = 32;
 
 
 

@@ -47,8 +47,10 @@ int thread_viewer(void* arg)
 
 int main(int argc, char** argv)
 {
-    dpdk::System::rx_ring_size = 128;
-    dpdk::System::tx_ring_size = 512;
+    dpdk::System::rx_ring_size   = 128;
+    dpdk::System::tx_ring_size   = 512;
+    dpdk::System::port_bulk_size = 32;
+
     dpdk::System sys(argc, argv);
 
     if (sys.ports.size()%2 != 0) {
@@ -60,10 +62,12 @@ int main(int argc, char** argv)
     sys.cpus[1].thrd = {thread_txrx , &sys};
 #else
     sys.cpus[1 ].thrd = {thread_tx  , &sys};
-    sys.cpus[2 ].thrd = {thread_rx  , &sys};
+    sys.cpus[2 ].thrd = {thread_tx  , &sys};
+    sys.cpus[3 ].thrd = {thread_rx  , &sys};
+    sys.cpus[4 ].thrd = {thread_rx  , &sys};
 #endif
 
-    sys.cpus[3 ].thrd = {thread_wk    , &sys};
+    sys.cpus[8 ].thrd = {thread_wk    , &sys};
     sys.cpus[11].thrd = {thread_viewer, &sys};
 
     sys.launch();
