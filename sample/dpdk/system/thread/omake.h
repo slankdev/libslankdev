@@ -2,7 +2,7 @@
 #pragma once
 
 
-int thread_rxwk(void* arg)
+int thread_rxwk_AP(void* arg)
 {
     dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
 
@@ -23,7 +23,7 @@ int thread_rxwk(void* arg)
     return 0;
 }
 
-int thread_txwk(void* arg)
+int thread_txwk_AP(void* arg)
 {
     dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
 
