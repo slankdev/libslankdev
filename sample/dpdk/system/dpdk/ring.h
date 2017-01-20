@@ -8,6 +8,13 @@
 
 namespace dpdk {
 
+static inline void __attribute__((always_inline))
+rte_pktmbuf_free_bulk(struct rte_mbuf *m_list[], int16_t npkts)
+{
+	while (npkts--)
+		rte_pktmbuf_free(*m_list++);
+}
+
 
 
 class Ring {
@@ -34,6 +41,7 @@ public:
             rte_ring_free(ring_);
     }
 
+#if 0
     /*
      * If ring is already full, this container
      * frees 10 element and re-enqueue.
@@ -66,6 +74,8 @@ public:
 			}
 		}
     }
+#endif
+
     void push_bulk(rte_mbuf** obj_table, size_t n)
     {
         int ret = rte_ring_enqueue_bulk(ring_, reinterpret_cast<void**>(obj_table), n);
@@ -82,11 +92,9 @@ public:
                  * Not enough room in the ring to enqueue;
                  * no object is enqueued.
                  */
-                rte_mbuf* free_buf[n];
-                pop_bulk(free_buf, n);
-                for (size_t i=0; i<n; i++) {
-                    rte_pktmbuf_free(free_buf[i]);
-                }
+                rte_mbuf* pkts[n];
+                pop_bulk(pkts, n);
+                rte_pktmbuf_free_bulk(pkts, n);
                 push_bulk(obj_table, n);
             } else {
                 throw slankdev::exception("rte_ring_enqueue_bulk: unknown");
@@ -95,6 +103,7 @@ public:
     }
 
 
+#if 0
     /*
      * If ring is empty, *data = nullptr;
      */
@@ -113,8 +122,9 @@ public:
 			}
 		}
     }
+#endif
 
-    void pop_bulk(rte_mbuf** obj_table, size_t n)
+    bool pop_bulk(rte_mbuf** obj_table, size_t n)
     {
         int ret = rte_ring_dequeue_bulk(ring_, reinterpret_cast<void**>(obj_table), n);
         if (ret < 0) {
@@ -123,11 +133,10 @@ public:
                  * Not enough entries in the ring to dequeue,
                  * no object is dequeued.
                  */
-                *obj_table = nullptr;
-            } else {
-				throw slankdev::exception("rte_ring_dequeue_bulk: unknown");
             }
+            return false;
         }
+        return true;
     }
 
 

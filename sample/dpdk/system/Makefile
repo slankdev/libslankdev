@@ -24,8 +24,14 @@ THRD_SRC = \
 	thread/omake.h \
 	thread/rtc.h
 
+FUNC_SRC = \
+	funcs/txrx.h
+
+
+
+
 all: $(TARGET)
-main.o: main.cc  $(DPDK_SRC) $(THRD_SRC)
+main.o: main.cc  $(DPDK_SRC) $(THRD_SRC) $(FUNC_SRC)
 
 clean:
 	$(RM) $(TARGET) $(OBJS)

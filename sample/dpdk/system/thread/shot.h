@@ -45,11 +45,11 @@ int thread_wk(void* arg)
             dpdk::Port& in_port  = sys->ports[pid];
             dpdk::Port& out_port = sys->ports[pid^1];
 
-            rte_mbuf* m;
-            in_port.rxq[0].pop(&m);
-            if (m) {
-                out_port.txq[0].push(m);
-            }
+            const size_t burst_size = 32;
+            rte_mbuf* pkts[burst_size];
+            bool ret = in_port.rxq[0].pop_bulk(pkts, burst_size);
+            if (ret)
+                out_port.txq[0].push_bulk(pkts, burst_size);
 	    }
 	}
     return 0;

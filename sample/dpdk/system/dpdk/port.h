@@ -245,6 +245,7 @@ public:
         kernel_log(SYSTEM, "  nb_rx_rings=%zd size=%zd\n", nb_rx_rings, rx_ring_size);
         kernel_log(SYSTEM, "  nb_tx_rings=%zd size=%zd\n", nb_tx_rings, tx_ring_size);
     }
+#if 0
     void rx_burst_bulk(size_t burst_size)
     {
         struct rte_mbuf* rx_pkts[burst_size];
@@ -261,6 +262,19 @@ public:
             rxq[0].push(rx_pkts[i]);
         }
     }
+#else
+    void rx_burst()
+    {
+        const size_t queue_id   = 0;
+        const size_t burst_size = 32;
+        struct rte_mbuf* rx_pkts[burst_size];
+        uint16_t nb_rx = rte_eth_rx_burst(id, queue_id, rx_pkts, burst_size);
+        if (nb_rx == 0) return;
+        rxq[queue_id].push_bulk(rx_pkts, nb_rx);
+    }
+#endif
+
+#if 0
     void tx_burst_bulk(size_t burst_size)
     {
         if (txq.size() >= burst_size) {
@@ -283,7 +297,25 @@ public:
             rte_eth_tx_burst(id, 0, &m, 1);
         }
     }
+#else
+    void tx_burst()
+    {
+        const size_t queue_id   = 0;
+        const size_t burst_size = 32;
+        struct rte_mbuf* pkts[burst_size];
+
+        bool  ret = txq[queue_id].pop_bulk(pkts, burst_size);
+        if (ret == true) {
+            uint16_t nb_tx = rte_eth_tx_burst(id, queue_id, pkts, burst_size);
+            if (nb_tx != burst_size) {
+                rte_pktmbuf_free_bulk(&pkts[nb_tx], burst_size-nb_tx);
+            }
+        }
+
+    }
+#endif
 };
+
 
 
 

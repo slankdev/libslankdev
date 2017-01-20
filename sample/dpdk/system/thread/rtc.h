@@ -1,7 +1,7 @@
 
 #pragma once
 
-
+#if 0
 int thread_txrxwk(void* arg)
 {
     dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
@@ -58,3 +58,4 @@ int thread_txrxwk_bulk(void* _arg)
 	}
     return 0;
 }
+#endif

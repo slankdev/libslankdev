@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "dpdk/system.h"
+#include "funcs/txrx.h"
 #include "thread/shot.h"
 #include "thread/bulk.h"
 #include "thread/rtc.h"
@@ -56,13 +57,14 @@ int main(int argc, char** argv)
     }
 
 #if 0
-    sys.cpus[1].thrd = {thread_txrxwk, &sys};
+    sys.cpus[1].thrd = {thread_txrx , &sys};
 #else
     sys.cpus[1 ].thrd = {thread_tx  , &sys};
     sys.cpus[2 ].thrd = {thread_rx  , &sys};
+#endif
+
     sys.cpus[3 ].thrd = {thread_wk    , &sys};
     sys.cpus[11].thrd = {thread_viewer, &sys};
-#endif
 
     sys.launch();
 }

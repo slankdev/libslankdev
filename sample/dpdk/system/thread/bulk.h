@@ -2,7 +2,7 @@
 #pragma once
 
 
-
+#if 0
 struct thread_txrx_bulk_arg {
     dpdk::System* sys;
     size_t rx_bulk_size;
@@ -100,5 +100,5 @@ int thread_wk_bulk(void* _arg)
 	}
     return 0;
 }
-
+#endif
 
