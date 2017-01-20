@@ -10,21 +10,25 @@
 namespace dpdk {
 
 
+
 using function = int(*)(void*);
 using func_arg = void*;
+
+struct Thrd {
+	function func;
+	func_arg arg;
+};
 
 class Cpu {
 public:
 	const uint8_t lcore_id;
     const std::string name;
-	function func;
-	func_arg arg;
+    Thrd thrd;
 
 	Cpu(uint8_t id) :
         lcore_id(id),
         name("lcore" + std::to_string(id)),
-        func(nullptr),
-        arg(nullptr)
+        thrd({nullptr, nullptr})
     {
         kernel_log(SYSTEM, "boot  %s ... done\n", name.c_str());
     }
@@ -32,7 +36,7 @@ public:
 	void launch()
 	{
         kernel_log(SYSTEM, "%s lanching ... \n", name.c_str());
-		rte_eal_remote_launch(func, arg, lcore_id);
+		rte_eal_remote_launch(thrd.func, thrd.arg, lcore_id);
 	}
 };
 

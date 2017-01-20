@@ -88,7 +88,7 @@ public:
 		 * So it must not launch that.
 		 */
 		for (size_t i=1; i<cpus.size(); i++) {
-			if (cpus[i].func)
+			if (cpus[i].thrd.func)
 				cpus[i].launch();
 		}
         kernel_log(SYSTEM, "launch thread to each-cores \n");

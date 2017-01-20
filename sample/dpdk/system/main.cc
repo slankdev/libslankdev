@@ -56,15 +56,12 @@ int main(int argc, char** argv)
     }
 
 #if 0
-    sys.cpus[1].func = thread_txrxwk;
-    sys.cpus[1].arg  = &sys;
+    sys.cpus[1].thrd = {thread_txrxwk, &sys};
 #else
-    sys.cpus[1].func = thread_txrx;
-    sys.cpus[1].arg  = &sys;
-    sys.cpus[2].func = thread_wk;
-    sys.cpus[2].arg  = &sys;
-    sys.cpus[3].func = thread_viewer;
-    sys.cpus[3].arg  = &sys;
+    sys.cpus[1 ].thrd = {thread_tx  , &sys};
+    sys.cpus[2 ].thrd = {thread_rx  , &sys};
+    sys.cpus[3 ].thrd = {thread_wk    , &sys};
+    sys.cpus[11].thrd = {thread_viewer, &sys};
 #endif
 
     sys.launch();
