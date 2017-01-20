@@ -50,7 +50,7 @@ int main(int argc, char** argv)
     dpdk::System::tx_ring_size = 512;
     dpdk::System sys(argc, argv);
 
-    if (sys.ports.size() != 2) {
+    if (sys.ports.size()%2 != 0) {
         fprintf(stderr, "number of ports is not 2 \n");
         return -1;
     }

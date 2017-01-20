@@ -21,10 +21,10 @@ class Port {
      * This class has dynamically infomations.
      */
     class port_conf {
-        Port* port;
     public:
+        const size_t id;
         rte_eth_conf raw;
-        port_conf(Port* p) : port(p)
+        port_conf(size_t i) : id(i)
         {
             memset(&raw, 0x00, sizeof(raw));
             raw.rxmode.max_rx_pkt_len = ETHER_MAX_LEN;
@@ -35,31 +35,31 @@ class Port {
      * This class has dynamically informations.
      */
     class port_stats {
-        const Port* port;
     public:
+        const size_t id;
         struct rte_eth_stats raw;
-        port_stats(Port* p) : port(p) {}
-        void reset()  { rte_eth_stats_reset(port->id);       }
-        void update() { rte_eth_stats_get  (port->id, &raw); }
+        port_stats(size_t i) : id(i) {}
+        void reset()  { rte_eth_stats_reset(id);       }
+        void update() { rte_eth_stats_get  (id, &raw); }
     };
 
     /*
      * This class has statically infomations.
      */
     class dev_info {
-        const Port* port;
     public:
+        const size_t id;
         struct rte_eth_dev_info raw;
-        dev_info(Port* p) : port(p) {}
+        dev_info(size_t i) : id(i) {}
         void get()
         {
-            rte_eth_dev_info_get(port->id, &raw);
+            rte_eth_dev_info_get(id, &raw);
         }
     };
     class ether_addr : public ::ether_addr {
-        const Port* port;
     public:
-        ether_addr(Port* p) : port(p) {}
+        const size_t id;
+        ether_addr(size_t i) : id(i) {}
         void print(FILE* fd) const { fprintf(fd, "%s", toString().c_str()); }
         std::string toString() const
         {
@@ -72,10 +72,10 @@ class Port {
                     addr_bytes[4], addr_bytes[5]);
             return buf;
         }
-        void update() { rte_eth_macaddr_get(port->id, this); }
+        void update() { rte_eth_macaddr_get(id, this); }
         void set(::ether_addr* addr)
         {
-            int ret = rte_eth_dev_default_mac_addr_set(port->id, addr);
+            int ret = rte_eth_dev_default_mac_addr_set(id, addr);
             if (ret < 0) {
                 if (ret == -ENOTSUP) {
                     throw slankdev::exception(
@@ -95,7 +95,7 @@ class Port {
         }
         void add(::ether_addr* addr)
         {
-            int ret = rte_eth_dev_mac_addr_add(port->id, addr, 0);
+            int ret = rte_eth_dev_mac_addr_add(id, addr, 0);
             if (ret < 0) {
                 if (ret == -ENOTSUP) {
                     throw slankdev::exception(
@@ -117,7 +117,7 @@ class Port {
         }
         void del(::ether_addr* addr)
         {
-            int ret = rte_eth_dev_mac_addr_remove(port->id, addr);
+            int ret = rte_eth_dev_mac_addr_remove(id, addr);
             if (ret < 0) {
                 if (ret == -ENOTSUP) {
                     throw slankdev::exception(
@@ -138,7 +138,6 @@ class Port {
 public:
     const std::string name;
     const uint8_t     id;
-    Mempool*          mempool;
     ether_addr        addr;
 
     std::vector<Ring> rxq;
@@ -148,15 +147,17 @@ public:
     port_stats        stats;
     dev_info          info;
 
+    Mempool*          mempool;
+
     Port(uint8_t pid, dpdk::Mempool* mp,
             size_t rx_ring_size, size_t tx_ring_size) :
         name   ("port" + std::to_string(pid)),
         id     (pid),
-        mempool(mp),
-        addr   (this),
-        conf   (this),
-        stats  (this),
-        info   (this)
+        addr   (pid),
+        conf   (pid),
+        stats  (pid),
+        info   (pid),
+        mempool(mp)
     {
         kernel_log(SYSTEM, "boot port%u ... \n", id);
         rte_eth_macaddr_get(id, &addr);
