@@ -14,8 +14,7 @@ int thread_wk(void* arg)
             const size_t burst_size = 32;
             rte_mbuf* pkts[burst_size];
             bool ret = in_port.rxq[0].pop_bulk(pkts, burst_size);
-            if (ret)
-                out_port.txq[0].push_bulk(pkts, burst_size);
+            if (ret) out_port.txq[0].push_bulk(pkts, burst_size);
 	    }
 	}
     return 0;

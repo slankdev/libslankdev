@@ -11,8 +11,9 @@ namespace dpdk {
 static inline void __attribute__((always_inline))
 rte_pktmbuf_free_bulk(struct rte_mbuf *m_list[], int16_t npkts)
 {
-	while (npkts--)
+	while (npkts--) {
 		rte_pktmbuf_free(*m_list++);
+    }
 }
 
 
@@ -92,9 +93,9 @@ public:
                  * Not enough room in the ring to enqueue;
                  * no object is enqueued.
                  */
-                rte_mbuf* pkts[n];
-                pop_bulk(pkts, n);
-                rte_pktmbuf_free_bulk(pkts, n);
+                struct rte_mbuf* pkts[n];
+                bool ret = pop_bulk(pkts, n);
+                if (ret) rte_pktmbuf_free_bulk(pkts, n);
                 push_bulk(obj_table, n);
             } else {
                 throw slankdev::exception("rte_ring_enqueue_bulk: unknown");
