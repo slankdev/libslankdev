@@ -3,7 +3,7 @@
 
 
 
-int thread_txrxwk(void* arg)
+int thread_txrxwk_RTC(void* arg)
 {
     dpdk::System* sys = reinterpret_cast<dpdk::System*>(arg);
     const uint8_t nb_ports = sys->ports.size();
