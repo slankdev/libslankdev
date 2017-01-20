@@ -90,8 +90,10 @@ public:
 		 */
         kernel_log(SYSTEM, "launch thread to each-cores \n");
 		for (size_t i=1; i<cpus.size(); i++) {
-			if (cpus[i].thrd.func)
-                kernel_log(SYSTEM, "%s lanching ... \n", cpus[i].name.c_str());
+			if (cpus[i].thrd.func) {
+                kernel_log(SYSTEM, "%s lanching ... \n",
+                        cpus[i].name.c_str());
+            }
 		}
         sleep(1);
 
