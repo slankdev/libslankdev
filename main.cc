@@ -1,7 +1,4 @@
 
-#if 1
-#include <slankdev.h>
-#else
 #include <slankdev/exception.h>
 #include <slankdev/net/protocol.h>
 #include <slankdev/filefd.h>
@@ -11,7 +8,6 @@
 #include <slankdev/util.h>
 #include <slankdev/socketfd.h>
 #include <slankdev/matrix.h>
-#endif
 
 int main()
 {

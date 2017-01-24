@@ -43,6 +43,17 @@
 #endif
 
 
+
+
+uint8_t arp_raw[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x08, 0x06, 0x00, 0x01,
+    0x08, 0x00, 0x06, 0x04, 0x00, 0x01, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
+    0x00, 0x00 };
+
+
 namespace slankdev {
 
 void string2binary_in4(const char* src, struct ::sockaddr_in* dst)
@@ -68,11 +79,28 @@ void binary2string_in4(const struct sockaddr_in* src, char* dst, size_t dstlen)
 
 class socketfd : public safe_intfd {
     public:
+        socketfd() {}
+        socketfd(int fd)
+        {
+            set_fd(fd);
+        }
+        bool dead() const
+        {
+            return fd < 0;
+        }
         void socket(int domain, int type, int protocol)
         {
             fd = ::socket(domain, type, protocol);
             if (fd < 0) {
                 perror("socket");
+                exit(-1);
+            }
+        }
+        void connect(const struct sockaddr* addr, socklen_t addrlen)
+        {
+            int res = ::connect(fd, addr, addrlen);
+            if (res < 0) {
+                perror("connect");
                 exit(-1);
             }
         }

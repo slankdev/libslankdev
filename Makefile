@@ -25,10 +25,8 @@ build-test:
 	$(MAKE) -C test
 
 install: all
-	$(CP) include/slankdev.h $(INSTALL_HDR_DIR)
 	$(CP) include/slankdev   $(INSTALL_HDR_DIR)
 
 uninstall:
-	$(RM) $(INSTALL_HDR_DIR)/slankdev.h
 	$(RM) $(INSTALL_HDR_DIR)/slankdev
 
