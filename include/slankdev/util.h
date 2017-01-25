@@ -7,9 +7,29 @@
 #include <stddef.h>
 #include <arpa/inet.h>
 
+/* for split */
+#include <vector>
+#include <string>
+#include <sstream>
+
 #define UNUSED(x) (void)(x)
 
 namespace slankdev {
+
+
+
+std::vector<std::string> split(const std::string &str, char sep)
+{
+    std::vector<std::string> v;
+    std::stringstream ss(str);
+    std::string buffer;
+    while( std::getline(ss, buffer, sep) ) {
+        v.push_back(buffer);
+    }
+    return v;
+}
+
+
 
 
 /* Thanks @herumi */
