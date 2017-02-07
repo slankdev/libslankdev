@@ -17,8 +17,18 @@
 namespace slankdev {
 
 
+template <class T>
+static inline void vec_delete_all_ptr_elements(std::vector<T*>& vec)
+{
+    while (vec.size() > 0) {
+        T* tmp = vec.back();
+        vec.pop_back();
+        delete tmp;
+    }
+}
 
-std::vector<std::string> split(const std::string &str, char sep)
+
+static inline std::vector<std::string> split(const std::string &str, char sep)
 {
     std::vector<std::string> v;
     std::stringstream ss(str);
