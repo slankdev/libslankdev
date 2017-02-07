@@ -57,7 +57,7 @@ static uint16_t read_as_big_endian(const void* data)
 }
 #endif
 
-uint16_t checksum(const void* data, size_t len)
+inline uint16_t checksum(const void* data, size_t len)
 {
     uint32_t sum;
     const uint8_t* data_pointer = reinterpret_cast<const uint8_t*>(data);
@@ -83,7 +83,7 @@ uint16_t checksum(const void* data, size_t len)
 
 
 
-void hexdump(const char* title, const void *buffer, size_t bufferlen)
+inline void hexdump(const char* title, const void *buffer, size_t bufferlen)
 {
     printf("%s at [%p] length=%zd \n", title, buffer, bufferlen);
 
@@ -117,7 +117,7 @@ void hexdump(const char* title, const void *buffer, size_t bufferlen)
 }
 
 
-void bindump(const char* title, const void* buffer, size_t bufferlen)
+inline void bindump(const char* title, const void* buffer, size_t bufferlen)
 {
     printf("%s at [%p] length=%zd \n", title, buffer, bufferlen);
 
@@ -146,19 +146,19 @@ uint16_t ntohs(uint16_t n)
 }
 #endif
 
-uint16_t bswap16(uint16_t n)
+inline uint16_t bswap16(uint16_t n)
 {
     return ((n << 8)&0xff00) | ((n>>8)&0x00ff);
 }
 
-uint32_t bswap32(uint32_t n)
+inline uint32_t bswap32(uint32_t n)
 {
     return ((n << 24)&0xff000000) | ((n<<8)&0x00ff0000)
         | ((n>>8)&0x0000ff00) | ((n>>24)&0x000000ff);
 }
 
 
-void clear_screen()
+inline void clear_screen()
 {
     printf("\033[2J\n");
 }
