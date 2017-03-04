@@ -49,6 +49,23 @@ class safe_intfd {
             if (fd >= 0)
                 ::close(fd);
         }
+        int fcntl(int cmd)
+        {
+            int res = ::fcntl(fd, cmd);
+            if (res < 0) {
+                perror("fcntl");
+                throw slankdev::exception("fcntl");
+            }
+            return res;
+        }
+        void fcntl(int cmd, long arg)
+        {
+            int res = ::fcntl(fd, cmd, arg);
+            if (res < 0) {
+                perror("fcntl");
+                throw slankdev::exception("fcntl");
+            }
+        }
         void ioctl(unsigned long l, void* arg)
         {
             int res = ::ioctl(fd, l, arg);
