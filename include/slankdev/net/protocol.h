@@ -14,7 +14,7 @@ namespace slankdev {
 
 
 
-
+#pragma pack(1)
 
 
 struct ether_addr {
@@ -195,6 +195,6 @@ struct icmp {
 
 
 
-
+#pragma pack(0)
 
 } /* namespace slankdev */
