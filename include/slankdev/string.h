@@ -16,6 +16,12 @@ static inline std::string strfmt(const char* fmt, ARGS... args)
     sprintf(str, fmt, args...);
     return str;
 }
+static inline std::string fs(const char* fmt, ARGS... args)
+{
+    char str[1000];
+    sprintf(str, fmt, args...);
+    return str;
+}
 
 
 } /* namespace slankdev */
