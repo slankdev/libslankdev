@@ -179,6 +179,20 @@ struct tcp {
 };
 
 
+struct icmp {
+    uint8_t type;
+    uint8_t code;
+    uint16_t checksum;
+
+    void print() const
+    {
+        printf("ICMP header \n");
+        printf("+ type     : %u \n", type);
+        printf("+ code     : %u \n", code);
+        printf("+ checksum : %u \n", ntohs(checksum));
+    }
+};
+
 
 
 
