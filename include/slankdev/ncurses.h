@@ -31,6 +31,7 @@ public:
     }
     static void refresh() { ::refresh(); }
     static char getchar() { return ::getch(); }
+    static void clear() { ::clear(); }
 };
 
 
