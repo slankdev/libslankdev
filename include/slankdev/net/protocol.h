@@ -50,7 +50,7 @@ struct ether {
 struct in_addr {
     uint32_t s_addr;
 
-    const char* c_str() const
+    std::string to_string() const
     {
         union {
             uint8_t u8[4];
@@ -99,8 +99,8 @@ struct ip {
         printf("+ ttl  : %u (0x%x) \n", ttl  , ttl  );
         printf("+ proto: %u (0x%x) \n", proto, proto);
         printf("+ sum  : 0x%04x    \n", ntohs(sum ));
-        printf("+ src  : %s  \n", src.c_str() );
-        printf("+ dst  : %s  \n", dst.c_str() );
+        printf("+ src  : %s  \n", src.to_string().c_str());
+        printf("+ dst  : %s  \n", dst.to_string().c_str());
     }
 };
 
@@ -126,9 +126,9 @@ struct arp {
         printf("+ plen     : %u\n", plen     );
         printf("+ operation: %u\n", ntohs(operation));
         printf("+ hwsrc    : %s\n", hwsrc.to_string().c_str());
-        printf("+ psrc     : %s\n", psrc.c_str());
+        printf("+ psrc     : %s\n", psrc.to_string().c_str());
         printf("+ hwdst    : %s\n", hwdst.to_string().c_str());
-        printf("+ pdst     : %s\n", pdst.c_str());
+        printf("+ pdst     : %s\n", pdst.to_string().c_str());
     }
 };
 
