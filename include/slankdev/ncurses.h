@@ -29,6 +29,11 @@ public:
     {
         ::mvprintw(y, x, fmt, args...);
     }
+    template<class... Args>
+    static void printw(const char* fmt, Args... args)
+    {
+        ::printw(fmt, args...);
+    }
     static void refresh() { ::refresh(); }
     static char getchar() { return ::getch(); }
     static void clear() { ::clear(); }
