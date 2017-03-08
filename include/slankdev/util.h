@@ -28,19 +28,6 @@ static inline void vec_delete_all_ptr_elements(std::vector<T*>& vec)
 }
 
 
-static inline std::vector<std::string> split(const std::string &str, char sep)
-{
-    std::vector<std::string> v;
-    std::stringstream ss(str);
-    std::string buffer;
-    while( std::getline(ss, buffer, sep) ) {
-        v.push_back(buffer);
-    }
-    return v;
-}
-
-
-
 
 /* Thanks @herumi */
 static uint16_t read_as_little_endian(const void* data)

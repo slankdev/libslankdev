@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
+#include <vector>
+#include <sstream>
 
 
 namespace slankdev {
@@ -25,6 +27,21 @@ static inline std::string fs(const char* fmt, ARGS... args)
     sprintf(str, fmt, args...);
     return str;
 }
+
+
+std::vector<std::string> split(const std::string &str, char sep)
+{
+    std::vector<std::string> v;
+    std::stringstream ss(str);
+    std::string buffer;
+    while( std::getline(ss, buffer, sep) ) {
+        if (buffer.empty()) continue;
+        v.push_back(buffer);
+    }
+    return v;
+}
+
+
 
 
 } /* namespace slankdev */
