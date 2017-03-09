@@ -1,7 +1,7 @@
 
 
 
-
+#pragma once
 #include <ncurses.h>
 
 namespace slankdev {
