@@ -35,7 +35,7 @@ class vty {
 public:
     class shell {
         std::string inputstr;
-        const char* prompt;
+        std::string prompt;
     public:
         bool closed;
         vty* root_vty;
@@ -59,7 +59,7 @@ public:
         void cursor_left() { cursor_index -- ; }
         void cursor_backspace();
         void press_keys(const void* d, size_t l);
-        const char* name();
+        std::string name();
         int process();
         void dispatch();
     };
@@ -328,13 +328,11 @@ inline vty::shell::shell(vty* v) :
     closed(false),
     hist_index(0)
 {}
-inline const char* vty::shell::name()
+inline std::string vty::shell::name()
 {
-    // TODO: erase this function
     static int c = 0;
-    std::string* n = new std::string;
-    *n = "Susanow" + std::to_string(c++) + "> ";
-    return n->c_str();
+    std::string str = "Susanow" + std::to_string(c++) + "> ";
+    return str;
 }
 inline int vty::shell::process()
 {
@@ -359,7 +357,7 @@ inline void vty::shell::refresh_prompt()
 {
     char lineclear[] = {slankdev::AC_ESC, '[', 2, slankdev::AC_K, '\0'};
     Printf("\r%s", lineclear);
-    Printf("\r%s%s", prompt, inputstr.c_str());
+    Printf("\r%s%s", prompt.c_str(), inputstr.c_str());
 
     size_t backlen = inputstr.length() - cursor_index;
     char left [] = {slankdev::AC_ESC, '[', slankdev::AC_D};
@@ -433,7 +431,7 @@ inline void vty::shell::clean_prompt()
     inputstr.clear();
     hist_index = 0;
     cursor_index = 0;
-    Printf("\r%s%s", prompt);
+    Printf("\r%s%s", prompt.c_str(), inputstr.c_str());
 }
 
 
