@@ -29,7 +29,7 @@ static inline std::string fs(const char* fmt, ARGS... args)
 }
 
 
-std::vector<std::string> split(const std::string &str, char sep)
+static inline std::vector<std::string> split(const std::string &str, char sep)
 {
     std::vector<std::string> v;
     std::stringstream ss(str);
