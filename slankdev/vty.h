@@ -102,7 +102,11 @@ public:
     void* user_ptr;
 
     vty(uint16_t p);
-    virtual ~vty() {}
+    virtual ~vty()
+    {
+        for (cmd_node* c : commands) delete c;
+        for (key_func* f : keyfuncs) delete f;
+    }
     void add_keyfunction(key_func* kf);
     void add_command(cmd_node* cmd);
     void init_default_keyfunc();
