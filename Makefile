@@ -16,7 +16,7 @@ MAKEFLAGS += --no-print-directory
 
 all:
 	@echo syntax check
-	@g++ -std=c++11 main.cc -Iinclude
+	@g++ -std=c++11 main.cc -I.
 
 clean:
 	rm -f a.out
