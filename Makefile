@@ -1,7 +1,7 @@
 
 export INSTALL_LIB_DIR := /usr/local/lib
 export INSTALL_HDR_DIR := /usr/local/include
-INCLUDE_DIR = include
+INCLUDE_DIR = .
 
 export CPP             := g++
 export CPPFLAGS        := -Wextra -g3  -O0 -std=c++11
@@ -25,7 +25,7 @@ build-test:
 	$(MAKE) -C test
 
 install: all
-	$(CP) include/slankdev   $(INSTALL_HDR_DIR)
+	$(CP) slankdev $(INSTALL_HDR_DIR)
 
 uninstall:
 	$(RM) $(INSTALL_HDR_DIR)/slankdev
