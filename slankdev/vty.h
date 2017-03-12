@@ -48,7 +48,7 @@ public:
         size_t hist_index;
 
         shell(vty* v, int d, const char* bootmsg);
-        void close() { Printf("close shell\r\n"); closed = true; }
+        void close() { closed = true; }
         void exec_command();
         void clean_prompt();
         void refresh_prompt();
