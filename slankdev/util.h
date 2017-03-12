@@ -27,6 +27,13 @@ static inline void vec_delete_all_ptr_elements(std::vector<T*>& vec)
     }
 }
 
+template <class... ARGS>
+inline void fdprintf(int fd, const char* fmt, ARGS... args)
+{
+    FILE* fp = fdopen(fd, "w");
+    ::fprintf(fp, fmt, args...);
+    fflush(fp);
+}
 
 
 /* Thanks @herumi */

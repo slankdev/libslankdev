@@ -46,9 +46,15 @@ struct Cmd_quit : public slankdev::vty::cmd_node {
 
 
 
+
+
 int main()
 {
-    slankdev::vty vty0(9999);
+    char str[] = "\r\n"
+        "Hello, this is Susanow (version 0.00.00.0).\r\n"
+        "Copyright 2017-2020 Hiroki SHIROKURA.\r\n"
+        "\r\n";
+    slankdev::vty vty0(9999, str);
 
     vty0.add_command(new Cmd_show);
     vty0.add_command(new Cmd_quit);

@@ -34,34 +34,44 @@ namespace slankdev {
 class vty {
 public:
     class shell {
-        std::string inputstr;
+        friend class vty;
+        std::string ibuf;
         std::string prompt;
-    public:
         bool closed;
-        vty* root_vty;
         int fd;
-        size_t cursor_index;
+        size_t cur_idx;
+        void press_keys(const void* d, size_t l);
+        std::string name();
+    public:
+        vty* root_vty;
         std::vector<std::string> history;
         size_t hist_index;
 
-        shell(vty* v);
+        shell(vty* v, int d, const char* bootmsg);
         void close() { Printf("close shell\r\n"); closed = true; }
         void exec_command();
         void clean_prompt();
         void refresh_prompt();
-        template <class... ARGS> void Printf(const char* fmt, ARGS... args);
-        void buffer_clear() { inputstr.clear(); cursor_index = 0; }
-        const char* buffer_c_str() const { return inputstr.c_str(); }
-        size_t buffer_length() const { return inputstr.length(); }
-        void input_char_to_buffer(char c);
-        void input_str_to_buffer(std::string& str);
-        void cursor_right() { cursor_index ++ ; }
-        void cursor_left() { cursor_index -- ; }
+        template <class... ARGS> void Printf(const char* fmt, ARGS... args)
+        { slankdev::fdprintf(fd, fmt, args...); }
+
+        /*
+         * Input-Buffer Control Functions
+         */
+        void input_char(char c) { ibuf.insert(ibuf.begin()+cur_idx, c); cur_idx++; }
+        void input_str(std::string& str) { for (char c : str) input_char(c); }
+        void buffer_clear()  { ibuf.clear(); cur_idx = 0; }
+        size_t buffer_length()   const { return ibuf.length(); }
+        const char* get_buffer() const { return ibuf.c_str();  }
+
+        /*
+         * Cursor Control Functions
+         */
+        void cursor_right() { cur_idx ++ ; }
+        void cursor_left() { cur_idx -- ; }
         void cursor_backspace();
-        void press_keys(const void* d, size_t l);
-        std::string name();
+
         int process();
-        void dispatch();
     };
     class cmd_node {
     public:
@@ -96,12 +106,13 @@ private:
     std::vector<shell> shells;
     bool running;
     uint16_t port;
+    const std::string bootmsg;
     std::vector<cmd_node*> commands;
     std::vector<key_func*> keyfuncs;
 public:
     void* user_ptr;
 
-    vty(uint16_t p);
+    vty(uint16_t p, const char* bootmsg);
     virtual ~vty()
     {
         for (cmd_node* c : commands) delete c;
@@ -124,12 +135,7 @@ public:
  */
 struct KF_return : public vty::key_func {
     KF_return(const void* c, size_t l) : vty::key_func(c, l) {}
-    void function(vty::shell* sh)
-    {
-        sh->Printf("\r\n");
-        sh->exec_command();
-        sh->refresh_prompt();
-    }
+    void function(vty::shell* sh) { sh->exec_command(); }
 };
 struct KF_backspace : public vty::key_func {
     KF_backspace(const void* c, size_t l) : key_func(c, l) {}
@@ -150,7 +156,7 @@ struct KF_hist_search_deep : public vty::key_func {
         if (sh->hist_index+1 > sh->history.size()) return;
 
         sh->buffer_clear();
-        sh->input_str_to_buffer(sh->history.at(sh->history.size() - 1 - sh->hist_index));
+        sh->input_str(sh->history.at(sh->history.size() - 1 - sh->hist_index));
         sh->hist_index++;
         sh->refresh_prompt();
     }
@@ -162,12 +168,12 @@ struct KF_hist_search_shallow : public vty::key_func {
         if (sh->hist_index == 0) return;
 
         sh->buffer_clear();
-        sh->input_str_to_buffer(sh->history.at(sh->history.size() - sh->hist_index));
+        sh->input_str(sh->history.at(sh->history.size() - sh->hist_index));
         sh->hist_index--;
         sh->refresh_prompt();
     }
 };
-class KF_question : public vty::key_func {
+class KF_completion : public vty::key_func {
     bool debugmode;
     void append_space(std::string& str)
     {
@@ -183,7 +189,7 @@ class KF_question : public vty::key_func {
             dprintf("[+] update \n");
             sh->buffer_clear();
             for (size_t i=0; i<list.size(); i++) {
-                sh->input_str_to_buffer(list[i]);
+                sh->input_str(list[i]);
             }
     }
     template <class... ARGS>
@@ -191,10 +197,10 @@ class KF_question : public vty::key_func {
     { if (debugmode) printf(fmt, args...); }
     void function_impl(vty::shell* sh, std::vector<std::string>& list);
 public:
-    KF_question(const void* c, size_t l) : key_func(c, l), debugmode(false) {}
+    KF_completion(const void* c, size_t l) : key_func(c, l), debugmode(false) {}
     void function(vty::shell* sh)
     {
-        std::vector<std::string> list = slankdev::split(sh->buffer_c_str(), ' ');
+        std::vector<std::string> list = slankdev::split(sh->get_buffer(), ' ');
         list.push_back("");
         function_impl(sh, list);
         update(sh, list);
@@ -209,7 +215,7 @@ public:
 /*
  * Function Definition
  */
-inline void KF_question::function_impl(vty::shell* sh, std::vector<std::string>& list)
+inline void KF_completion::function_impl(vty::shell* sh, std::vector<std::string>& list)
 {
     dprintf("===============================================\n");
 
@@ -324,14 +330,17 @@ inline vty::cmd_node* vty::cmd_node::match(const std::string& str)
 /*
  * vty::shell's Member Functinon Definition
  */
-inline vty::shell::shell(vty* v) :
+inline vty::shell::shell(vty* v, int d, const char* bootmsg) :
     root_vty(v),
     prompt(name()),
-    fd(-1),
-    cursor_index(0),
+    fd(d),
+    cur_idx(0),
     closed(false),
     hist_index(0)
-{}
+{
+    Printf(bootmsg);
+    refresh_prompt();
+}
 inline std::string vty::shell::name()
 {
     static int c = 0;
@@ -348,22 +357,13 @@ inline int vty::shell::process()
     refresh_prompt();
     return 1;
 }
-inline void vty::shell::dispatch()
-{
-    char str[] = "\r\n"
-        "Hello, this is Susanow (version 0.00.00.0).\r\n"
-        "Copyright 2017-2020 Hiroki SHIROKURA.\r\n"
-        "\r\n";
-    Printf(str);
-    refresh_prompt();
-}
 inline void vty::shell::refresh_prompt()
 {
     char lineclear[] = {slankdev::AC_ESC, '[', 2, slankdev::AC_K, '\0'};
     Printf("\r%s", lineclear);
-    Printf("\r%s%s", prompt.c_str(), inputstr.c_str());
+    Printf("\r%s%s", prompt.c_str(), ibuf.c_str());
 
-    size_t backlen = inputstr.length() - cursor_index;
+    size_t backlen = ibuf.length() - cur_idx;
     char left [] = {slankdev::AC_ESC, '[', slankdev::AC_D};
     for (size_t i=0; i<backlen; i++) {
         Printf("%s", left);
@@ -371,22 +371,24 @@ inline void vty::shell::refresh_prompt()
 }
 inline void vty::shell::exec_command()
 {
-    if (inputstr.empty()) {
-        clean_prompt();
-        return;
-    }
-
-    for (cmd_node* c : root_vty->commands) {
-        cmd_node* nd = c->match(inputstr);
-        if (nd) {
-            nd->function(this);
-            history.push_back(inputstr);
-            clean_prompt();
-            return ;
+    Printf("\r\n");
+    if (!ibuf.empty()) {
+        for (cmd_node* c : root_vty->commands) {
+            cmd_node* nd = c->match(ibuf);
+            if (nd) {
+                nd->function(this);
+                history.push_back(ibuf);
+                goto fin;
+            }
         }
+        Printf("command not found: \"%s\"\r\n", ibuf.c_str());
     }
-    Printf("command not found: \"%s\"\r\n", inputstr.c_str());
-    clean_prompt();
+fin:
+    ibuf.clear();
+    hist_index = 0;
+    cur_idx = 0;
+    Printf("\r%s%s", prompt.c_str(), ibuf.c_str());
+    refresh_prompt();
 }
 inline void vty::shell::press_keys(const void* d, size_t l)
 {
@@ -403,39 +405,14 @@ inline void vty::shell::press_keys(const void* d, size_t l)
     if (l > 1) {
         return ;
     }
-    input_char_to_buffer(p[0]);
-}
-template <class... ARGS>
-inline void vty::shell::Printf(const char* fmt, ARGS... args)
-{
-    FILE* fp = fdopen(fd, "w");
-    ::fprintf(fp, fmt, args...);
-    fflush(fp);
-}
-inline void vty::shell::input_char_to_buffer(char c)
-{
-    inputstr.insert(inputstr.begin() + cursor_index, c);
-    cursor_index++;
-}
-inline void vty::shell::input_str_to_buffer(std::string& str)
-{
-    for (char c : str) {
-        input_char_to_buffer(c);
-    }
+    input_char(p[0]);
 }
 inline void vty::shell::cursor_backspace()
 {
-    if (cursor_index > 0) {
-        cursor_index --;
-        inputstr.erase(inputstr.begin() + cursor_index);
+    if (cur_idx > 0) {
+        cur_idx --;
+        ibuf.erase(ibuf.begin() + cur_idx);
     }
-}
-inline void vty::shell::clean_prompt()
-{
-    inputstr.clear();
-    hist_index = 0;
-    cursor_index = 0;
-    Printf("\r%s%s", prompt.c_str(), inputstr.c_str());
 }
 
 
@@ -447,7 +424,7 @@ inline void vty::shell::clean_prompt()
 /*
  * vty's Member Functinon Definition
  */
-inline vty::vty(uint16_t p) : running(false), port(p)
+inline vty::vty(uint16_t p, const char* msg) : running(false), port(p), bootmsg(msg)
 {
     slankdev::socketfd server_sock;
     server_sock.noclose_in_destruct = true;
@@ -499,9 +476,7 @@ inline void vty::dispatch()
                 slankdev::vty_dont_linemode (fd);
                 slankdev::vty_do_window_size (fd);
 
-                shells.push_back(shell(this));
-                shells[shells.size()-1].fd = fd;
-                shells[shells.size()-1].dispatch();
+                shells.push_back(shell(this, fd, bootmsg.c_str()));
 #ifdef DEBUG
                 printf("Connected new client. now, nb_shells=%zd\n", shells.size());
 #endif
@@ -568,8 +543,8 @@ inline void vty::add_default_keyfunctions()
 
     uint8_t d1[] = {'?'};
     uint8_t d5[] = {'\t'};
-    add_keyfunction(new KF_question(d1, sizeof(d1)));
-    add_keyfunction(new KF_question(d5, sizeof(d5)));
+    add_keyfunction(new KF_completion(d1, sizeof(d1)));
+    add_keyfunction(new KF_completion(d5, sizeof(d5)));
 
     uint8_t d2[] = {'\r', '\0'};
     add_keyfunction(new KF_return  (d2, sizeof(d2)));
