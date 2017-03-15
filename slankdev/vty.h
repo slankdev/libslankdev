@@ -75,9 +75,15 @@ public:
     };
     class cmd_node {
     public:
+        enum nodetype {
+            NONE,
+            STRING,
+        };
+        nodetype type;
         const std::string name;
         std::vector<cmd_node*> commands;
-        cmd_node(const char* s) : name(s) {}
+        cmd_node(const char* s) : type(NONE), name(s) {}
+        cmd_node(nodetype t) : type(t), name("") {}
         virtual ~cmd_node() { for (cmd_node* n : commands) delete n; }
         virtual void function(shell*) = 0;
         cmd_node* next(const char* str);
@@ -303,8 +309,10 @@ inline void KF_completion::function_impl(vty::shell* sh, std::vector<std::string
  */
 inline vty::cmd_node* vty::cmd_node::next(const char* str)
 {
-    for (cmd_node* nd : commands)
-    { if (nd->name == str) return nd; }
+    for (cmd_node* nd : commands) {
+        if (nd->type != slankdev::vty::cmd_node::NONE) return nd;
+        if (nd->name == str) return nd;
+    }
     return nullptr;
 }
 inline vty::cmd_node* vty::cmd_node::match(const std::string& str)
