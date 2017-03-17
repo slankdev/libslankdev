@@ -3,6 +3,10 @@
 
 using slankdev::vty;
 
+struct string_node : public slankdev::vty::cmd_node {
+    string_node() : cmd_node(slankdev::vty::cmd_node::STRING) {}
+};
+
 
 struct Cmd_show : public slankdev::vty::cmd_node {
     struct author : public cmd_node {
@@ -39,8 +43,22 @@ struct Cmd_show : public slankdev::vty::cmd_node {
     }
     void function(vty::shell* sh) { sh->Printf("show\r\n"); }
 };
-struct Cmd_quit : public slankdev::vty::cmd_node {
-    Cmd_quit() : cmd_node("quit") {}
+class Cmd_quit : public slankdev::vty::cmd_node {
+    class string_node0 : public string_node {
+    public:
+        string_node0()
+        {
+        }
+        void function(vty::shell* sh)
+        {
+            sh->Printf("SLSDNDKFDFDF\r\n");
+        }
+    };
+public:
+    Cmd_quit() : cmd_node("quit")
+    {
+        commands.push_back(new string_node0);
+    }
     void function(vty::shell* sh) { sh->close(); }
 };
 
