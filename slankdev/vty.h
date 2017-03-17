@@ -19,9 +19,9 @@
 #include <slankdev/util.h>
 #include <slankdev/string.h>
 #include <slankdev/socketfd.h>
-#include <slankdev/exception.h>
 #include <slankdev/asciicode.h>
 #include <slankdev/telnet.h>
+#include <slankdev/exception.h>
 
 
 
@@ -31,21 +31,24 @@ namespace slankdev {
 
 
 
+
+
 class vty {
 public:
     class shell {
         friend class vty;
-        std::string ibuf;
         std::string prompt;
-        bool closed;
         int fd;
         size_t cur_idx;
+        bool closed;
+
+        std::string ibuf;
         void press_keys(const void* d, size_t l);
         std::string name();
     public:
         vty* root_vty;
-        std::vector<std::string> history;
         size_t hist_index;
+        std::vector<std::string> history;
 
         shell(vty* v, int d, const char* bootmsg);
         void close() { closed = true; }
@@ -102,11 +105,11 @@ public:
         }
     };
 private:
-    int server_fd;
-    std::vector<shell> shells;
     bool running;
     uint16_t port;
     const std::string bootmsg;
+    int server_fd;
+    std::vector<shell> shells;
     std::vector<cmd_node*> commands;
     std::vector<key_func*> keyfuncs;
 public:
@@ -331,11 +334,11 @@ inline vty::cmd_node* vty::cmd_node::match(const std::string& str)
  * vty::shell's Member Functinon Definition
  */
 inline vty::shell::shell(vty* v, int d, const char* bootmsg) :
-    root_vty(v),
     prompt(name()),
     fd(d),
     cur_idx(0),
     closed(false),
+    root_vty(v),
     hist_index(0)
 {
     Printf(bootmsg);
