@@ -11,6 +11,8 @@
 
 #include <slankdev/exception.h>
 #include <slankdev/string.h>
+#include <slankdev/util.h>
+#include <slankdev/asciicode.h>
 
 #include "vty_keyfunc.h"
 #include "vty_command.h"
