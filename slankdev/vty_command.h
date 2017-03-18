@@ -21,6 +21,7 @@ namespace slankdev {
 class node {
 public:
     virtual bool match(const std::string& str) = 0;
+    virtual bool match_prefix(const std::string& str) = 0;
     virtual std::string& get() { throw slankdev::exception("FAAA"); }
     virtual std::string to_string() = 0;
 };
@@ -31,6 +32,14 @@ class node_fixedstring : public node {
 public:
     node_fixedstring(const std::string& s) : str(s) {}
     bool match(const std::string& s) { return str == s; }
+    bool match_prefix(const std::string& s)
+    {
+        auto ret = str.find(s);
+        if (ret != std::string::npos) {
+            if (ret == 0) return true;
+        }
+        return false;
+    }
     std::string to_string() { return str; }
 };
 
@@ -47,6 +56,10 @@ public:
         }
         return false;
     }
+    bool match_prefix(const std::string&)
+    {
+        return true;
+    }
     std::string& get() { return str; }
     std::string to_string() { return "<string>"; }
 };
@@ -55,17 +68,18 @@ public:
 class shell;
 class command {
 public:
-    std::vector<node*> nodestack;
+    std::vector<node*> nodes;
+    virtual ~command() {}
     virtual void func(shell* sh) = 0;
     virtual bool match(const std::string& str)
     {
         std::vector<std::string> list = slankdev::split(str, ' ');
-        if (list.size() != nodestack.size()) {
+        if (list.size() != nodes.size()) {
             return false;
         }
 
         for (size_t i=0; i<list.size(); i++) {
-            if (nodestack[i]->match(list[i]) == false) {
+            if (nodes[i]->match(list[i]) == false) {
                 return false;
             }
         }

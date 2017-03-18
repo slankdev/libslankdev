@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include <slankdev/exception.h>
 #include <slankdev/string.h>
@@ -52,7 +53,7 @@ public:
 
 
 class commandhistory {
-    ssize_t hist_index;
+    size_t hist_index;
     std::vector<std::string> history;
 public:
     commandhistory() : hist_index(0) {}
@@ -65,7 +66,7 @@ public:
     }
     std::string shallow_get()
     {
-        if (hist_index-1 < 0) return *(history.end() - hist_index - 1);
+        if (ssize_t(hist_index)-1 < 0) return *(history.end() - hist_index - 1);
         return *(history.end() - --hist_index - 1);
     }
 };
@@ -96,11 +97,11 @@ class shell {
         ibuf.input_char(p[0]);
     }
 public:
-    void* user_ptr;
     commandhistory history;
     inputbuffer    ibuf;
     const std::vector<command*> * commands;
     const std::vector<key_func*>* keyfuncs;
+    void* user_ptr;
 
     void close() { closed = true; }
 
@@ -243,46 +244,82 @@ void pprint(help_node& top, size_t depth=0)
 #endif
 
 
+    // help_node N("top");
+    // N.childs.push_back(help_node("ss"));
+    // help_node C("aa");
+    // C.childs.push_back("dsfdf");
+    // C.childs.push_back("dfdf");
+    // C.childs.push_back("awfgg");
+    // N.childs.push_back(C);
+    // N.childs.push_back(help_node("slankdev"));
+    // pprint(N);
+
+
 struct KF_help : public key_func {
     KF_help(const void* c, size_t l) : key_func(c, l) {}
     void function(shell* sh);
 };
+static inline bool endisspace(std::string str)
+{
+    const char* istr = str.c_str();
+    return (istr[strlen(istr)-1] == ' ');
+}
+bool is_prefix(std::string str, std::string pref)
+{
+    auto ret = str.find(pref);
+    if (ret != std::string::npos) {
+        if (ret == 0) return true;
+    }
+    return false;
+}
+
 inline void KF_help::function(shell* sh)
 {
-    sh->Printf("\r\nHELP\r\n");
-#if 0
     const std::vector<command*>& commands = *sh->commands;
     std::vector<std::string> list = slankdev::split(sh->ibuf.c_str(), ' ');
-    const char* istr = sh->ibuf.c_str();
-    if (istr[strlen(istr)-1] == ' ' || list.empty()) {
-        list.push_back("");
-    }
-
-    help_node N("top");
-    N.childs.push_back(help_node("ss"));
-    help_node C("aa");
-    C.childs.push_back("dsfdf");
-    C.childs.push_back("dfdf");
-    C.childs.push_back("awfgg");
-    N.childs.push_back(C);
-    N.childs.push_back(help_node("slankdev"));
-    pprint(N);
+    if (endisspace(sh->ibuf.c_str()) || list.empty()) list.push_back("");
 
     sh->Printf("\r\n");
-    for (size_t i=0; i<list.size(); i++) {
-        for (command* cmd : commands) {
-            if (cmd->nodestack.size() <= i) continue;
+    std::vector<std::string> match;
+    for (command* cmd : commands) {
 
-            if (strncmp(list[i].c_str(),
-                        cmd->nodestack[i]->to_string().c_str(),
-                        list[i].length())==0) {
-                sh->Printf("  \"%s\", \"%s\"\r\n",
-                        list[i].c_str(),
-                        cmd->nodestack[i]->to_string().c_str());
+        for (size_t i=0; i<list.size(); i++) {
+
+            if (i == cmd->nodes.size()) {
+
+                if (list[i] == "") {
+                    sh->Printf("  <CR>\r\n");
+                } else {
+                    sh->Printf("  %% There is no matched command.\r\n");
+                }
+                return ;
+
+            } else {
+
+                if (!cmd->nodes[i]->match_prefix(list[i])) {
+                    break;
+                } else {
+                    if (i+1==list.size()) {
+                        std::string s = cmd->nodes[i]->to_string();
+                        // s += cmd->nodes[i]->msg;
+                        match.push_back(s);
+                    } else {
+                        ;
+                    }
+                }
+
             }
+
         }
+
     }
-#endif
+
+    std::sort(match.begin(), match.end());
+    match.erase(std::unique(match.begin(), match.end()), match.end());
+    for (std::string& s : match) {
+        sh->Printf("  %s \r\n", s.c_str());
+    }
+
 }
 
 
