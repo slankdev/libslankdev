@@ -39,8 +39,14 @@ public:
     bool empty() const { return ibuf.empty(); }
     std::string to_string() const { return ibuf; }
 
-    void cursor_right() { cur_idx ++ ; }
-    void cursor_left() { cur_idx -- ; }
+    void cursor_right()
+    {
+        cur_idx ++ ;
+    }
+    void cursor_left()
+    {
+        cur_idx -- ;
+    }
     void cursor_backspace()
     {
         if (cur_idx > 0) {
@@ -300,8 +306,10 @@ inline void KF_help::function(shell* sh)
                     break;
                 } else {
                     if (i+1==list.size()) {
-                        std::string s = cmd->nodes[i]->to_string();
-                        // s += cmd->nodes[i]->msg;
+                        std::string s = slankdev::fs("%-10s:   %-20s",
+                                cmd->nodes[i]->to_string().c_str(),
+                                cmd->nodes[i]->msg().c_str()
+                        );
                         match.push_back(s);
                     } else {
                         ;

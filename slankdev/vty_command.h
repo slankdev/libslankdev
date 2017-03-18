@@ -24,13 +24,15 @@ public:
     virtual bool match_prefix(const std::string& str) = 0;
     virtual std::string& get() { throw slankdev::exception("FAAA"); }
     virtual std::string to_string() = 0;
+    virtual const std::string& msg() = 0;
 };
 
 
 class node_fixedstring : public node {
     std::string str;
+    const std::string msg_;
 public:
-    node_fixedstring(const std::string& s) : str(s) {}
+    node_fixedstring(const std::string& s, const std::string m) : str(s), msg_(m) {}
     bool match(const std::string& s) { return str == s; }
     bool match_prefix(const std::string& s)
     {
@@ -41,13 +43,15 @@ public:
         return false;
     }
     std::string to_string() { return str; }
+    const std::string& msg() { return msg_; }
 };
 
 
 class node_string : public node {
     std::string str;
+    const std::string msg_;
 public:
-    node_string() {}
+    node_string() : msg_("string") {}
     bool match(const std::string& s)
     {
         if (s.length() > 0) {
@@ -62,6 +66,7 @@ public:
     }
     std::string& get() { return str; }
     std::string to_string() { return "<string>"; }
+    const std::string& msg() { return msg_; }
 };
 
 
