@@ -155,19 +155,19 @@ inline void shell::exec_command()
     Printf("\r\n");
     if (!ibuf.empty()) {
         history.add(ibuf.to_string());
-        bool cmd_not_found = true;
         for (size_t i=0; i<commands->size(); i++) {
             if (commands->at(i)->match(ibuf.c_str())) {
                 commands->at(i)->func(this);
                 ibuf.clear();
+                history.clean();
                 Printf("\r%s%s", prompt.c_str(), ibuf.c_str());
                 refresh_prompt();
                 return ;
             }
         }
-        if (cmd_not_found)
-            Printf("command not found: \"%s\"\r\n", ibuf.c_str());
+        Printf("command not found: \"%s\"\r\n", ibuf.c_str());
     }
+    history.clean();
     ibuf.clear();
     Printf("\r%s%s", prompt.c_str(), ibuf.c_str());
     refresh_prompt();
