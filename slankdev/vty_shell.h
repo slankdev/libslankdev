@@ -39,14 +39,8 @@ public:
     bool empty() const { return ibuf.empty(); }
     std::string to_string() const { return ibuf; }
 
-    void cursor_right()
-    {
-        cur_idx ++ ;
-    }
-    void cursor_left()
-    {
-        cur_idx -- ;
-    }
+    void cursor_right() { if (cur_idx < ibuf.length()) cur_idx ++ ; }
+    void cursor_left() { if (cur_idx > 0) cur_idx -- ; }
     void cursor_backspace()
     {
         if (cur_idx > 0) {
@@ -151,7 +145,7 @@ inline void shell::refresh_prompt()
     Printf("\r%s%s", prompt.c_str(), ibuf.c_str());
 
     size_t backlen = ibuf.length() - ibuf.index();
-    char left [] = {slankdev::AC_ESC, '[', slankdev::AC_D};
+    char left [] = {slankdev::AC_ESC, '[', slankdev::AC_D, '\0'};
     for (size_t i=0; i<backlen; i++) {
         Printf("%s", left);
     }
