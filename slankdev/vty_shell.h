@@ -39,6 +39,8 @@ public:
     bool empty() const { return ibuf.empty(); }
     std::string to_string() const { return ibuf; }
 
+    void cursor_top() { cur_idx = 0; }
+    void cursor_end() { cur_idx = ibuf.size(); }
     void cursor_right() { if (cur_idx < ibuf.length()) cur_idx ++ ; }
     void cursor_left() { if (cur_idx > 0) cur_idx -- ; }
     void cursor_backspace()
@@ -61,11 +63,13 @@ public:
     void clean() { hist_index=0; }
     std::string deep_get()
     {
+        if (history.empty()) return "";
         if (hist_index+2 > history.size()) return *(history.end() - hist_index - 1);
         return *(history.end() - ++hist_index);
     }
     std::string shallow_get()
     {
+        if (history.empty()) return "";
         if (ssize_t(hist_index)-1 < 0) return *(history.end() - hist_index - 1);
         return *(history.end() - --hist_index - 1);
     }
@@ -210,6 +214,14 @@ struct KF_hist_search_shallow : public key_func {
         sh->ibuf.input_str(sh->history.shallow_get());
         sh->refresh_prompt();
     }
+};
+struct KF_cursor_top : public key_func {
+    KF_cursor_top(const void* c, size_t l) : key_func(c, l) {}
+    void function(shell* sh) { sh->ibuf.cursor_top(); }
+};
+struct KF_cursor_end : public key_func {
+    KF_cursor_end(const void* c, size_t l) : key_func(c, l) {}
+    void function(shell* sh) { sh->ibuf.cursor_end(); }
 };
 struct KF_completion : public key_func {
     KF_completion(const void* c, size_t l) : key_func(c, l) {}

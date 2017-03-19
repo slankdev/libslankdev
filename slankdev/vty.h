@@ -156,6 +156,11 @@ inline void vty::add_default_keyfunctions()
     install_keyfunction(new KF_right(ctrlF, sizeof(ctrlF)));
     install_keyfunction(new KF_left (ctrlB, sizeof(ctrlB)));
 
+    uint8_t ctrlA[] = {AC_Ctrl_A};
+    uint8_t ctrlE[] = {AC_Ctrl_E};
+    install_keyfunction(new KF_cursor_top(ctrlA, sizeof(ctrlA)));
+    install_keyfunction(new KF_cursor_end(ctrlE, sizeof(ctrlE)));
+
     uint8_t question[] = {'?'};
     install_keyfunction(new KF_help(question, sizeof(question)));
 
