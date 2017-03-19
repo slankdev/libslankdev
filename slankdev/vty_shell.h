@@ -225,10 +225,7 @@ struct KF_cursor_end : public key_func {
 };
 struct KF_completion : public key_func {
     KF_completion(const void* c, size_t l) : key_func(c, l) {}
-    void function(shell* sh)
-    {
-        sh->Printf("\r\nCOMPLETION\r\n");
-    }
+    void function(shell* sh);
 };
 
 
@@ -336,6 +333,68 @@ inline void KF_help::function(shell* sh)
 
 }
 
+inline void KF_completion::function(shell* sh)
+{
+    const std::vector<command*>& commands = *sh->commands;
+    std::vector<std::string> list = slankdev::split(sh->ibuf.c_str(), ' ');
+    if (endisspace(sh->ibuf.c_str()) || list.empty()) list.push_back("");
+
+    sh->Printf("\r\n");
+    std::vector<std::string> match;
+    for (command* cmd : commands) {
+
+        for (size_t i=0; i<list.size(); i++) {
+
+            if (i == cmd->nodes.size()) {
+
+                if (list[i] == "") {
+                    sh->Printf("  <CR>\r\n");
+                } else {
+                    sh->Printf("  %% There is no matched command.\r\n");
+                }
+                return ;
+
+            } else {
+
+                if (!cmd->nodes[i]->match_prefix(list[i])) {
+                    break;
+                } else {
+                    if (i+1==list.size()) {
+                        std::string s = cmd->nodes[i]->to_string();
+                        match.push_back(s);
+                    } else {
+                        ;
+                    }
+                }
+
+            }
+
+        }
+
+    }
+
+    std::sort(match.begin(), match.end());
+    match.erase(std::unique(match.begin(), match.end()), match.end());
+
+    if (match.size() == 1) {
+        std::string s;
+        for (size_t i=0; i<list.size(); i++) {
+            if (i == list.size()-1) {
+                s += match[0];
+            } else {
+                s += list[i];
+            }
+            s += " ";
+        }
+        sh->ibuf.clear();
+        sh->ibuf.input_str(s);
+    } else {
+        for (std::string& s : match) {
+            sh->Printf("  %s ", s.c_str());
+        }
+        sh->Printf("\r\n");
+    }
+}
 
 
 } /* namespace slankdev */
