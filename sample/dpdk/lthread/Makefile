@@ -2,8 +2,8 @@
 LTHREAD = lthread
 SSN := /home/slank/git/susanow
 include $(SSN)/mk/vars.mk
-CXXFLAGS += -Wno-format-security -g
-CFLAGS += -I./$(LTHREAD) -I./$(LTHREAD)/arch/x86
+CXXFLAGS += -Wno-format-security -g -O0
+CFLAGS += -I./$(LTHREAD) -I./$(LTHREAD)/arch/x86 -g -O0
 
 CSRCS = \
 	$(LTHREAD)/lthread.c       \

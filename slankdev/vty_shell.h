@@ -273,7 +273,7 @@ static inline bool endisspace(std::string str)
     const char* istr = str.c_str();
     return (istr[strlen(istr)-1] == ' ');
 }
-bool is_prefix(std::string str, std::string pref)
+inline bool is_prefix(std::string str, std::string pref)
 {
     auto ret = str.find(pref);
     if (ret != std::string::npos) {
