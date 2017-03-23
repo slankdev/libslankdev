@@ -37,7 +37,10 @@ class Buf {
   }
   void refresh()
   {
-    mvwprintw(win, 0, 0, "%s", str.c_str());
+    static size_t cnt = 0;
+    mvwprintw(win, 0, 0, "%zd: %s", cnt, str.c_str());
+    cnt ++;
+    wrefresh(win);
   }
 
 };
@@ -124,10 +127,10 @@ int	main(int argc, char** argv)
   Pane pane1(stdscr, 0, sublines*0+1, COLS, sublines-1);
   Pane pane2(stdscr, 0, sublines*1, COLS, sublines);
   Pane pane3(stdscr, 0, sublines*2, COLS, sublines);
-  WINDOW *sub4 = slankdev::subwin(stdscr, 1       ,   COLS,   sublines*3,  0);
+  Buf  buf  (stdscr, 0, sublines*3+1, COLS);
 
-  waddstr(sub4, "Status LINE");
-  waddstr(sub4, "Status LINE");
+  // waddstr(sub4, "Status LINE");
+  // waddstr(sub4, "Status LINE");
 
   pane1.print("SLNKDEV");
   pane1.print("ssssssssssdfdfdfdd");
@@ -150,22 +153,18 @@ int	main(int argc, char** argv)
     pane3.print(str);
   }
 
-
   // box(pane1.ww(), '|', '-');
   // box(pane2.ww(), '|', '-');
 
   pane1.refresh();
   pane2.refresh();
   pane3.refresh();
-  wrefresh(sub4);
+  buf.refresh();
 
+  std::string sss;
 	while (1) {
 
-    pane1.refresh();
-    pane2.refresh();
-    pane3.refresh();
-    wrefresh(sub4);
-
+    char inc = ' ';
     char c = wgetch(stdscr);
     if (c == 0x1b) break;
 
@@ -190,10 +189,15 @@ int	main(int argc, char** argv)
       pane2.cursor_up();
       pane3.cursor_up();
     } else {
-      char buff[36];
-      sprintf(buff,"%02X",c);
-
+      inc = c;
     }
+
+    buf.print("1[%zd] 2[%zd] 3[%zd] [%c] ", pane1.cur(), pane2.cur(), pane3.cur(), inc);
+
+    pane1.refresh();
+    pane2.refresh();
+    pane3.refresh();
+    buf.refresh();
 	}
 
 	endwin();
