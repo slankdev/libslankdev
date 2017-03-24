@@ -63,11 +63,11 @@ class pcap {
     if (packet == nullptr) {
       throw slankdev::exception("pcap_next: recvmiss?");
     }
-    recv(packet, header.len);
+    recv(packet, &header);
   }
-  virtual void recv(const void* ptr, size_t len)
+  virtual void recv(const void* ptr, struct pcap_pkthdr* header)
   {
-    slankdev::hexdump("Userfunction", ptr, len);
+    slankdev::hexdump("Userfunction", ptr, header->len);
   }
 };
 
