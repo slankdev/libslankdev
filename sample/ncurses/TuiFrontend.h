@@ -11,6 +11,8 @@
 
 #include "PacketListPane.h"
 
+extern size_t packet_recv_count;
+
 enum FocusState {
   PANE1,
   PANE2,
@@ -33,8 +35,16 @@ class TuiFrontend {
   void refresh();
 
   void key_input(char c);
+  void packet_input(const void* p, size_t l);
+
   void focuse_sw();
+  FocusState get_state() const;
 };
+FocusState TuiFrontend::get_state() const { return fstate; }
+void TuiFrontend::packet_input(const void* p, size_t l)
+{
+  pane1.packets.push_back(new Packet(p, l));
+}
 
 
 /*
@@ -57,7 +67,7 @@ TuiFrontend::TuiFrontend()
   , pane1(0, sublines*0+1, COLS, sublines-1)
   , pane2(0, sublines*1  , COLS, sublines  )
   , pane3(0, sublines*2  , COLS, sublines  )
-  , sline(0, sublines*3+1, COLS)
+  , sline(0, sublines*3+1, COLS, this)
 {
   pane1.init(stdscr);
   pane2.init(stdscr);
@@ -86,8 +96,6 @@ void TuiFrontend::refresh()
 }
 void TuiFrontend::key_input(char c)
 {
-  char inc = ' ';
-
   if (c == '\t') {
     focuse_sw();
   } else {
@@ -109,20 +117,32 @@ void TuiFrontend::key_input(char c)
       }
     }
   }
+}
+
+
+
+void Statusline::refresh()
+{
   std::string ss;
-  switch (fstate) {
+  switch (front->get_state()) {
     case PANE1: ss = "PANE1"; break;
     case PANE2: ss = "PANE2"; break;
     case PANE3: ss = "PANE3"; break;
     default: assert(false);
   }
-  std::string str = slankdev::fs("1[%zd] 2[%zd] 3[%zd] focus[%s]",
-      pane1.cur(),
-      pane2.cur(),
-      pane3.cur(),
-      ss.c_str()
+  std::string sss = slankdev::fs("1[%2zd] 2[%2zd] 3[%2zd] focus[%s] packetrecv[%5zd] msg[%s]",
+      front->pane1.cur(),
+      front->pane2.cur(),
+      front->pane3.cur(),
+      ss.c_str(),
+      packet_recv_count,
+      str.c_str()
       );
-  sline.print(str.c_str());
+
+  static size_t cnt = 0;
+  mvwprintw(win, 0, 0, "%-5zd: %s", cnt, sss.c_str());
+  cnt ++;
+  wrefresh(win);
 }
 
 

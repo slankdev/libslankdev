@@ -10,21 +10,21 @@
 #include "pane.h"
 
 
-class ToggleList {
+class ToggleList_Element {
   std::string str;
  public:
   Lines lines;
   static bool is_close;
   static void toggle();
-  ToggleList(std::string s);
+  ToggleList_Element(std::string s);
   std::string to_str() const;
 };
-bool ToggleList::is_close = true;
+bool ToggleList_Element::is_close = true;
 
 
 
 class ToggleListPane : public PaneInterface {
-  std::vector<ToggleList>* lines;
+  std::vector<ToggleList_Element>* lines;
   size_t cursor;
   size_t start_idx;
 
@@ -33,7 +33,7 @@ class ToggleListPane : public PaneInterface {
  public:
   ToggleListPane(size_t _x, size_t _y, size_t _w, size_t _h);
   virtual ~ToggleListPane() {}
-  void set_content(std::vector<ToggleList>* l) { lines = l; }
+  void set_content(std::vector<ToggleList_Element>* l);
 
   size_t cur() { return cursor; }
   void cursor_down();
@@ -48,6 +48,14 @@ class ToggleListPane : public PaneInterface {
  * Function Implementations
  */
 
+void ToggleListPane::set_content(std::vector<ToggleList_Element>* l)
+{
+  if (l != lines) {
+    cursor = 0;
+    start_idx = 0;
+    lines = l;
+  }
+}
 void ToggleListPane::key_input(char c)
 {
   if (c == 'j') {
@@ -55,22 +63,22 @@ void ToggleListPane::key_input(char c)
   } else if (c == 'k') {
     cursor_up();
   } else if (c == ' ') {
-    ToggleList::toggle();
+    ToggleList_Element::toggle();
   }
 }
 
-void ToggleList::toggle()
+void ToggleList_Element::toggle()
 {
   if (is_close) is_close = false;
   else          is_close = true;
 }
 
-ToggleList::ToggleList(std::string s) : str(s)
+ToggleList_Element::ToggleList_Element(std::string s) : str(s)
 {
   lines.addline("child1");
   lines.addline("child2");
 }
-std::string ToggleList::to_str() const
+std::string ToggleList_Element::to_str() const
 {
   std::string s = str;
   s += is_close?" close":" opne";

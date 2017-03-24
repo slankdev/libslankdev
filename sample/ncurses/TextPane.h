@@ -22,7 +22,7 @@ class TextPane : public PaneInterface {
   virtual void key_input(char c) override;
   void cursor_down();
   void cursor_up();
-  void set_content(std::vector<std::string>* l) { lines = l; }
+  void set_content(std::vector<std::string>* l);
 
  private:
   void scroll_down() { start_idx++; }
@@ -41,6 +41,14 @@ class TextPane : public PaneInterface {
  * Class Member Function Implementation
  */
 
+void TextPane::set_content(std::vector<std::string>* l)
+{
+  if (l != lines) {
+    cursor = 0;
+    start_idx = 0;
+    lines = l;
+  }
+}
 void TextPane::key_input(char c)
 {
   if (c == 'j') {
@@ -55,7 +63,8 @@ void TextPane::refresh()
 {
   if (!lines) return ; // TODO: erase
 
-  for (size_t i=start_idx, count=0; i<lines->size() && count<h; i++, count++) {
+  size_t count = 0;
+  for (size_t i=start_idx ; i<lines->size() && count<h; i++, count++) {
     if (i == cursor) wattron(win, A_REVERSE);
 
     std::string s = lines->at(i);
@@ -66,6 +75,12 @@ void TextPane::refresh()
 
     clrtoeol();
   }
+
+  /* fill space */
+  std::string ls;
+  while (ls.size() < this->w) ls += ' ';
+  for (; count<h; count++) mvwprintw(win, count, 0, "%s", ls.c_str());
+
   wrefresh(win);
 }
 void TextPane::cursor_down()

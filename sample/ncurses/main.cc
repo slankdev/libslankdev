@@ -4,16 +4,21 @@
 #include <string>
 #include <slankdev/string.h>
 #include <slankdev/poll.h>
+#include <slankdev/pcap.h>
 #include "TuiFrontend.h"
 
 
-void func(TuiFrontend& fe)
-{
-  for(size_t pad_y = 0; pad_y < 40; pad_y++){
-    std::string s = slankdev::fs("packet (%zd)", pad_y);
-    fe.pane1.add_packet(s);
-  }
-}
+
+size_t packet_recv_count = 0;
+
+
+class Pcap : public slankdev::pcap {
+  TuiFrontend* front;
+ public:
+  Pcap(TuiFrontend* f) : front(f) {}
+  virtual void recv(const void* ptr, size_t len) override
+  { front->packet_input(ptr, len); }
+};
 
 
 int	main(int argc, char** argv)
@@ -21,15 +26,15 @@ int	main(int argc, char** argv)
   TuiFrontend::init();
   TuiFrontend fe;
 
-  func(fe);
+  Pcap pcapfd(&fe);
+  pcapfd.open_live("enp0s31f6");
 
   fe.refresh();
-
   struct pollfd fds[2];
   memset(fds, 0, sizeof(fds));
   fds[0].fd = fileno(stdin);
   fds[0].events = POLLIN;
-  fds[1].fd = -1;
+  fds[1].fd = pcapfd.get_selectable_fd();
   fds[1].events = POLLIN;
 
 	while (1) {
@@ -37,6 +42,10 @@ int	main(int argc, char** argv)
     if (fds[0].revents & POLLIN) {
       fe.key_input(wgetch(stdscr));
       fe.refresh();
+    } else if (fds[1].revents & POLLIN) {
+      packet_recv_count ++;
+      pcapfd.next();
+      fe.sline.refresh();
     }
 	}
 	endwin();
