@@ -6,57 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "statusline.h"
-#include "pane.h"
-
-
-class TuiFrontend {
- public:
-  TextPane       *pane1;
-  ToggleListPane *pane2;
-  TextPane       *pane3;
-  Statusline     *sline;
-
- public:
-  TuiFrontend()
-    : pane1(nullptr)
-    , pane2(nullptr)
-    , pane3(nullptr)
-    , sline(nullptr) {}
-  virtual ~TuiFrontend()
-  {
-    if (pane1) delete pane1;
-    if (pane2) delete pane2;
-    if (pane3) delete pane3;
-    if (sline) delete sline;
-  }
-
-  void init()
-  {
-    initscr();
-    noecho();
-    scrollok(stdscr, false);
-
-    size_t sublines = LINES/3-1;
-    pane1 = new TextPane      (0, sublines*0+1, COLS, sublines-1);
-    pane2 = new ToggleListPane(0, sublines*1  , COLS, sublines  );
-    pane3 = new TextPane      (0, sublines*2  , COLS, sublines  );
-    sline = new Statusline    (0, sublines*3+1, COLS);
-
-    pane1->init(stdscr);
-    pane2->init(stdscr);
-    pane3->init(stdscr);
-    sline->init(stdscr);
-  }
-
-  void refresh()
-  {
-    pane1->refresh();
-    pane2->refresh();
-    pane3->refresh();
-    sline->refresh();
-  }
-};
+#include "TuiFrontend.h"
 
 
 void func(TuiFrontend* fe)
