@@ -11,18 +11,16 @@
 
 class Statusline {
   WINDOW* win;
-  const size_t x_pos;
-  const size_t y_pos;
+  const size_t x;
+  const size_t y;
   const size_t w;
   std::string str;
  public:
-  Statusline(WINDOW* rootwin, size_t ix_pos, size_t iy_pos, size_t iw)
-    : x_pos(ix_pos),
-    y_pos(iy_pos),
-    w    (iw    )
-  {
-    win = slankdev::subwin(rootwin, 1, w, y_pos, x_pos);
-  }
+  Statusline(size_t _x, size_t _y, size_t _w)
+    : x(_x)
+    , y(_y)
+    , w(_w) {}
+  void init(WINDOW* rw) { win = slankdev::subwin(rw, 1, w, y, x); }
   template<class... ARGS>
   void print(const char* fmt, ARGS... args)
   {

@@ -12,7 +12,10 @@ inline WINDOW* newwin(size_t nlines, size_t ncols, size_t begin_y, size_t begin_
 {
   WINDOW* win = ::newwin(nlines, ncols, begin_y, begin_x);
   if (win == NULL) {
-    throw slankdev::exception("newwin");
+    std::string errstr = slankdev::fs(
+                      "newwin(nlines=%zd,ncols=%zd,y=%zd,x=%zd)",
+                                nlines, ncols, begin_y, begin_x);
+    throw slankdev::exception(errstr.c_str());
   }
   return win;
 }
@@ -21,7 +24,10 @@ inline WINDOW* subwin(WINDOW* win, size_t nlines, size_t ncols, size_t begin_y, 
 {
   WINDOW* sub = ::subwin(win, nlines, ncols, begin_y, begin_x);
   if (sub == NULL) {
-    throw slankdev::exception("subwin");
+    std::string errstr = slankdev::fs(
+                      "subwin(nlines=%zd,ncols=%zd,y=%zd,x=%zd)",
+                                nlines, ncols, begin_y, begin_x);
+    throw slankdev::exception(errstr.c_str());
   }
   return sub;
 }
