@@ -12,10 +12,10 @@
 
 class TuiFrontend {
  public:
-  Pane *pane1;
-  Pane *pane2;
-  Pane *pane3;
-  Statusline *sline;
+  TextPane       *pane1;
+  ToggleListPane *pane2;
+  TextPane       *pane3;
+  Statusline     *sline;
 
  public:
   TuiFrontend()
@@ -38,10 +38,10 @@ class TuiFrontend {
     scrollok(stdscr, false);
 
     size_t sublines = LINES/3-1;
-    pane1 = new Pane(0, sublines*0+1, COLS, sublines-1);
-    pane2 = new Pane(0, sublines*1  , COLS, sublines  );
-    pane3 = new Pane(0, sublines*2  , COLS, sublines  );
-    sline = new Statusline(0, sublines*3+1, COLS);
+    pane1 = new TextPane      (0, sublines*0+1, COLS, sublines-1);
+    pane2 = new ToggleListPane(0, sublines*1  , COLS, sublines  );
+    pane3 = new TextPane      (0, sublines*2  , COLS, sublines  );
+    sline = new Statusline    (0, sublines*3+1, COLS);
 
     pane1->init(stdscr);
     pane2->init(stdscr);
@@ -70,7 +70,7 @@ void func(TuiFrontend* fe)
   for(size_t pad_y = 0; pad_y < 40; pad_y++){
     char str[1000];
     sprintf(str, "slankdiafadfdpdk %zd tetste ", pad_y);
-    fe->pane2->print(str);
+    fe->pane2->add_element(str);
   }
 
   for(size_t pad_y = 0; pad_y < 40; pad_y++){
@@ -117,6 +117,8 @@ int	main(int argc, char** argv)
       fe.pane1->cursor_up();
       fe.pane2->cursor_up();
       fe.pane3->cursor_up();
+    } else if (c == ' ') {
+      ToggleList::toggle();
     } else {
       inc = c;
     }
