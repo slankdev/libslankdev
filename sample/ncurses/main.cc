@@ -16,8 +16,8 @@ class Pcap : public slankdev::pcap {
   TuiFrontend* front;
  public:
   Pcap(TuiFrontend* f) : front(f) {}
-  virtual void recv(const void* ptr, size_t len) override
-  { front->packet_input(ptr, len); }
+  virtual void recv(const void* ptr, struct pcap_pkthdr* hdr) override
+  { front->packet_input(ptr, hdr->len, hdr->ts.tv_sec); }
 };
 
 

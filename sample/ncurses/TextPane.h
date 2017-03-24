@@ -7,7 +7,7 @@
 #include <string>
 
 #include "ncurses.h"
-#include "pane.h"
+#include "PaneInterface.h"
 
 
 class TextPane : public PaneInterface {

@@ -9,15 +9,6 @@
 #include "ncurses.h"
 
 
-class Lines {
-  std::vector<std::string> lines_;
- public:
-  void addline(std::string s) { lines_.push_back(s); }
-  std::string& operator[](size_t n) { return lines_.at(n); }
-  size_t size() const { return lines_.size(); }
-};
-
-
 
 /*
  * Abstraction Pane Class

@@ -4,30 +4,134 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <string>
+#include <vector>
 
 #include "TextPane.h"
+#include "protocol.h"
 
 class Packet {
-  uint8_t buf[5000];
+  std::vector<uint8_t> buf;
   size_t  len;
+  uint64_t time;
+  size_t number;
+  std::string src;
+  std::string dst;
+  std::string protocol;
+  std::string msg;
+  std::string summary;
 
-  std::string str;
  public:
-  std::vector<ToggleList_Element>  details;
+  std::vector<ToggleList_Element*>  details;
   std::vector<std::string> binarys;
 
-  Packet(const std::string s);
-  Packet(const void* p, size_t l);
+  Packet(const void* p, size_t l, uint64_t t, size_t n);
+  virtual ~Packet()
+  {
+    for (size_t i=0; i<details.size(); i++) {
+      delete details[i];
+    }
+  }
+
   std::string to_str() const;
+
+ private:
+  void analyze(const uint8_t* ptr, size_t len);
 };
-size_t cnt=0;
-Packet::Packet(const void* p, size_t l) : Packet("get by binary" + std::to_string(cnt++))
+
+void Packet::analyze(const uint8_t* ptr, size_t len)
+{
+  using namespace slankdev;
+  details.clear();
+
+  Ethernet* eth = new Ethernet(ptr, len);
+  details.push_back(eth);
+  len -= eth->headerlen();
+  ptr += eth->headerlen();
+  uint16_t type = eth->type();
+  src = eth->src();
+  dst = eth->dst();
+  protocol = "Ether";
+  summary  = fs("Ethernet packet.type=0x%04x", eth->type());
+
+  switch (type) {
+    case 0x800:
+      {
+        IP* ip = new IP(ptr, len);
+        details.push_back(ip);
+        len -= ip->headerlen();
+        ptr += ip->headerlen();
+        uint8_t proto = ip->protocol();
+        src = ip->src();
+        dst = ip->dst();
+        protocol = "IPv4";
+        summary = fs("protocol=%u\n", ip->protocol());
+
+        switch (proto) {
+          case 1:
+            {
+              ICMP* icmp = new ICMP(ptr, len);
+              details.push_back(icmp);
+              len -= icmp->headerlen();
+              ptr += icmp->headerlen();
+              protocol = "ICMP";
+              summary = fs("type=%u code=%u", icmp->type(), icmp->code());
+              break;
+            }
+          case 17:
+            {
+              UDP* udp = new UDP(ptr, len);
+              details.push_back(udp);
+              len -= udp->headerlen();
+              ptr += udp->headerlen();
+              protocol = "UDP";
+              summary = fs("%u -> %u", udp->src(), udp->dst());
+              break;
+            }
+          case 6:
+            {
+              TCP* tcp = new TCP(ptr, len);
+              details.push_back(tcp);
+              len -= tcp->headerlen();
+              ptr += tcp->headerlen();
+              protocol = "TCP";
+              summary = fs("%u -> %u", tcp->src(), tcp->dst());
+              break;
+            }
+        }
+        break;
+      }
+    case 0x86dd:
+      {
+        /*
+         * Analyze IPv6
+         */
+        protocol = "IPv6";
+        break;
+      }
+    case 0x0806:
+      {
+        /*
+         * Analyze ARP
+         */
+        ARP* arp = new ARP(ptr, len);
+        details.push_back(arp);
+        len -= arp->headerlen();
+        ptr += arp->headerlen();
+        protocol = "ARP";
+        break;
+      }
+  }
+  if (len > 0) details.push_back(new Binary(ptr, len));
+}
+
+
+Packet::Packet(const void* p, size_t l, uint64_t t, size_t n)
+  : len(l), time(t),  number(n)
 {
   /*
    * Init Detail Pane Information
    */
-
-
+  analyze(reinterpret_cast<const uint8_t*>(p), l);
 
   /*
    * Init Binary Pane Information
@@ -67,17 +171,6 @@ Packet::Packet(const void* p, size_t l) : Packet("get by binary" + std::to_strin
     row  += n;
   }
 }
-Packet::Packet(const std::string s) : str(s)
-{
-  /*
-   * Test Init Details
-   */
-  for(size_t pad_y = 0; pad_y < 40; pad_y++){
-    char str[1000];
-    sprintf(str, "%s: slankdiafadfdpdk %zd tetste ", this->str.c_str(), pad_y);
-    details.push_back(ToggleList_Element(str));
-  }
-}
 
 
 class PacketListPane : public PaneInterface {
@@ -113,7 +206,14 @@ class PacketListPane : public PaneInterface {
  */
 std::string Packet::to_str() const
 {
-  return str;
+  using namespace slankdev;
+  char sstr[1000];
+  sprintf(sstr, "%5zd %-13ld %-20s %-20s %6s %5zd %-10s" , number, time,
+          src.c_str(),
+          dst.c_str(),
+          protocol.c_str(), len,
+          summary.c_str());
+  return sstr;
 }
 
 

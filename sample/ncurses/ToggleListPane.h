@@ -7,24 +7,26 @@
 #include <string>
 
 #include "ncurses.h"
-#include "pane.h"
+#include "PaneInterface.h"
 
 
 class ToggleList_Element {
   std::string str;
  public:
-  Lines lines;
+  std::vector<std::string> lines;
   static bool is_close;
   static void toggle();
   ToggleList_Element(std::string s);
-  std::string to_str() const;
+  virtual std::string to_str() const; // TODO: erase
 };
+
 bool ToggleList_Element::is_close = true;
+ToggleList_Element::ToggleList_Element(std::string s) : str(s) {}
 
 
 
 class ToggleListPane : public PaneInterface {
-  std::vector<ToggleList_Element>* lines;
+  std::vector<ToggleList_Element*>* lines;
   size_t cursor;
   size_t start_idx;
 
@@ -33,7 +35,7 @@ class ToggleListPane : public PaneInterface {
  public:
   ToggleListPane(size_t _x, size_t _y, size_t _w, size_t _h);
   virtual ~ToggleListPane() {}
-  void set_content(std::vector<ToggleList_Element>* l);
+  void set_content(std::vector<ToggleList_Element*>* l);
 
   size_t cur() { return cursor; }
   void cursor_down();
@@ -48,7 +50,7 @@ class ToggleListPane : public PaneInterface {
  * Function Implementations
  */
 
-void ToggleListPane::set_content(std::vector<ToggleList_Element>* l)
+void ToggleListPane::set_content(std::vector<ToggleList_Element*>* l)
 {
   if (l != lines) {
     cursor = 0;
@@ -73,11 +75,6 @@ void ToggleList_Element::toggle()
   else          is_close = true;
 }
 
-ToggleList_Element::ToggleList_Element(std::string s) : str(s)
-{
-  lines.addline("child1");
-  lines.addline("child2");
-}
 std::string ToggleList_Element::to_str() const
 {
   std::string s = str;
@@ -88,29 +85,41 @@ std::string ToggleList_Element::to_str() const
 ToggleListPane::ToggleListPane(size_t _x, size_t _y, size_t _w, size_t _h)
   : PaneInterface(_x, _y, _w, _h), lines(nullptr), cursor(0), start_idx(0) {}
 
+
+/*
+ * XXX TODO: visualization has Fatal BUG
+ */
 void ToggleListPane::refresh()
 {
   if (lines == nullptr) return ;
 
-  for (size_t i=start_idx, count=0; i<lines->size() && count<h; i++, count++) {
+  size_t count = 0;
+  for (size_t i=start_idx; i<lines->size() && count<h; i++, count++) {
     if (i == cursor) wattron(win, A_REVERSE);
 
-    std::string s = lines->at(i).to_str();
+    std::string s = lines->at(i)->to_str();
     while (s.size() < this->w) s += ' ';
     mvwprintw(win, count, 0, "%s", s.c_str());
     clrtoeol();
 
     if (i == cursor) wattroff(win, A_REVERSE);
 
-    if (lines->at(i).is_close == false) {
-      for (size_t j=0; j<lines->at(i).lines.size(); j++) {
+    if (lines->at(i)->is_close == false) {
+      for (size_t j=0; j<lines->at(i)->lines.size(); j++) {
         count++;
-        std::string s = lines->at(i).lines[j];
+        std::string s = lines->at(i)->lines[j];
         while (s.size() < this->w) s += ' ';
         mvwprintw(win, count, 0, "  %s", s.c_str());
       }
     }
   }
+
+  /* fill space */
+  std::string ls;
+  count ++;
+  while (ls.size() < this->w) ls += ' ';
+  for (; count<h; count++) mvwprintw(win, count, 0, "%s", ls.c_str());
+
   wrefresh(win);
 }
 void ToggleListPane::cursor_down()

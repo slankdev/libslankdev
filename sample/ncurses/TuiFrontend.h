@@ -35,21 +35,24 @@ class TuiFrontend {
   void refresh();
 
   void key_input(char c);
-  void packet_input(const void* p, size_t l);
+  void packet_input(const void* p, size_t l, uint64_t t);
 
   void focuse_sw();
-  FocusState get_state() const;
+  FocusState get_state() const { return fstate; }
 };
-FocusState TuiFrontend::get_state() const { return fstate; }
-void TuiFrontend::packet_input(const void* p, size_t l)
-{
-  pane1.packets.push_back(new Packet(p, l));
-}
+
 
 
 /*
  * Function Implementation
  */
+
+void TuiFrontend::packet_input(const void* p, size_t l, uint64_t t)
+{
+  static size_t cnt = 1;
+  pane1.packets.push_back(new Packet(p, l, t, cnt++));
+}
+
 
 void TuiFrontend::focuse_sw()
 {
