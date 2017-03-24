@@ -35,6 +35,7 @@ class ToggleListPane : public PaneInterface {
   void add_element(const std::string s) { lines.push_back(ToggleList(s)); }
   size_t cur() { return 0; }
   virtual void refresh() override;
+  virtual void key_input(char c) override;
   void cursor_down();
   void cursor_up();
 
@@ -46,6 +47,16 @@ class ToggleListPane : public PaneInterface {
 
 
 
+void ToggleListPane::key_input(char c)
+{
+  if (c == 'j') {
+    cursor_down();
+  } else if (c == 'k') {
+    cursor_up();
+  } else if (c == ' ') {
+    ToggleList::toggle();
+  }
+}
 
 /*
  * ToggleList class Function

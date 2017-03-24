@@ -20,6 +20,7 @@ class TextPane : public PaneInterface {
 
   template<class... ARGS> void print(const char* fmt, ARGS... args);
   virtual void refresh() override;
+  virtual void key_input(char c) override;
   void cursor_down();
   void cursor_up();
 
@@ -39,6 +40,15 @@ class TextPane : public PaneInterface {
 /*
  * Class Member Function Implementation
  */
+
+void TextPane::key_input(char c)
+{
+  if (c == 'j') {
+    cursor_down();
+  } else if (c == 'k') {
+    cursor_up();
+  }
+}
 TextPane::TextPane(size_t _x, size_t _y, size_t _w, size_t _h)
   : PaneInterface(_x, _y, _w, _h), cursor(0), start_idx(0) {}
 template<class... ARGS>

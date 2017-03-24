@@ -43,41 +43,12 @@ int	main(int argc, char** argv)
 
 	while (1) {
 
-    char inc = ' ';
     char c = wgetch(stdscr);
     if (c == 0x1b) break;
 
-    if (c == 'J') {
-      fe.pane1->cursor_down();
-    } else if (c == 'K') {
-      fe.pane1->cursor_up();
-    } else if (c == 'j') {
-      fe.pane2->cursor_down();
-    } else if (c == 'k') {
-      fe.pane2->cursor_up();
-    } else if (c == 'h') {
-      fe.pane3->cursor_down();
-    } else if (c == 'l') {
-      fe.pane3->cursor_up();
-    } else if (c == 'N') {
-      fe.pane1->cursor_down();
-      fe.pane2->cursor_down();
-      fe.pane3->cursor_down();
-    } else if (c == 'P') {
-      fe.pane1->cursor_up();
-      fe.pane2->cursor_up();
-      fe.pane3->cursor_up();
-    } else if (c == ' ') {
-      ToggleList::toggle();
-    } else {
-      inc = c;
-    }
-
-    fe.sline->print("1[%zd] 2[%zd] 3[%zd] [%c] ",
-        fe.pane1->cur(),
-        fe.pane2->cur(),
-        fe.pane3->cur(), inc);
+    fe.key_input(c);
     fe.refresh();
+
 	}
 	endwin();
 }
