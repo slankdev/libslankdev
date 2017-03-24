@@ -6,117 +6,26 @@
 #include <string>
 #include <vector>
 
-
-class Lines {
-  std::vector<std::string> lines_;
- public:
-  void addline(std::string s) { lines_.push_back(s); }
-  std::string& operator[](size_t n) { return lines_.at(n); }
-  size_t size() const { return lines_.size(); }
-};
+#include "statusline.h"
+#include "pane.h"
 
 
-class Buf {
-  WINDOW* win;
-  const size_t x_pos;
-  const size_t y_pos;
-  const size_t w;
-  std::string str;
- public:
-  Buf(WINDOW* rootwin, size_t ix_pos, size_t iy_pos, size_t iw)
-    : x_pos(ix_pos),
-    y_pos(iy_pos),
-    w    (iw    )
-  {
-    win = slankdev::subwin(rootwin, 1, w, y_pos, x_pos);
-  }
-  template<class... ARGS>
-  void print(const char* fmt, ARGS... args)
-  {
-    str = slankdev::fs(fmt, args...);
-  }
-  void refresh()
-  {
-    static size_t cnt = 0;
-    mvwprintw(win, 0, 0, "%zd: %s", cnt, str.c_str());
-    cnt ++;
-    wrefresh(win);
-  }
-
-};
-
-class Pane {
-  Lines lines;
-  size_t cursor;
-  size_t start_idx;
-  WINDOW* win;
-  const size_t x_pos;
-  const size_t y_pos;
-  const size_t w;
-  const size_t h;
- public:
-  Pane(WINDOW* rootwin, size_t ix_pos, size_t iy_pos, size_t iw, size_t ih)
-    : cursor(0),
-    start_idx(0),
-    x_pos(ix_pos),
-    y_pos(iy_pos),
-    w    (iw    ),
-    h    (ih    )
-  {
-    win = slankdev::subwin(rootwin, h, w, y_pos, x_pos);
-  }
-  template<class... ARGS>
-  void print(const char* fmt, ARGS... args)
-  {
-    std::string s = slankdev::fs(fmt, args...);
-    lines.addline(s);
-  }
-  void refresh()
-  {
-    for (size_t i=start_idx, count=0; i<lines.size() && count<h; i++, count++) {
-      if (i == cursor) {
-        wattron(win, A_REVERSE);
-        std::string s = lines[i];
-        while (s.size() < this->w) s += ' ';
-        mvwprintw(win, count, 0, "%s", s.c_str());
-        wattroff(win, A_REVERSE);
-      } else {
-        std::string s = lines[i];
-        while (s.size() < this->w) s += ' ';
-        mvwprintw(win, count, 0, "%s", s.c_str());
-      }
-      clrtoeol();
-    }
-    wrefresh(win);
-  }
-  void cursor_down()
-  {
-    if (cursor + 1 < lines.size()) {
-      if (cursor - start_idx + 2 > h) scroll_down();
-      cursor++;
-    }
-  }
-  void cursor_up()
-  {
-    if (cursor > 0) {
-      if (cursor - 1 < start_idx) scroll_up();
-      cursor--;
-    }
-  }
- private:
-  void scroll_down() { start_idx++; }
-  void scroll_up()   { start_idx--; }
-
- /* Debug Functions */
- public:
-  size_t cur() const { return cursor; }
-  WINDOW* ww() { return win; }
-};
+// class TuiFrontend {
+//  private:
+//
+//  public:
+//   TuiFrontend()
+//   {
+//   }
+//   virtual ~TuiFrontend() {}
+// };
 
 
 
 int	main(int argc, char** argv)
 {
+  // TuiFrontend frontend;
+
 	initscr();
 	noecho();
   scrollok(stdscr, false);
@@ -124,16 +33,13 @@ int	main(int argc, char** argv)
   Lines lines;
 
   size_t sublines = LINES/3-1;
-  Pane pane1(stdscr, 0, sublines*0+1, COLS, sublines-1);
-  Pane pane2(stdscr, 0, sublines*1, COLS, sublines);
-  Pane pane3(stdscr, 0, sublines*2, COLS, sublines);
-  Buf  buf  (stdscr, 0, sublines*3+1, COLS);
-
-  // waddstr(sub4, "Status LINE");
-  // waddstr(sub4, "Status LINE");
-
-  pane1.print("SLNKDEV");
-  pane1.print("ssssssssssdfdfdfdd");
+  Pane pane1(0, sublines*0+1, COLS, sublines-1);
+  Pane pane2(0, sublines*1  , COLS, sublines);
+  Pane pane3(0, sublines*2  , COLS, sublines);
+  pane1.init(stdscr);
+  pane2.init(stdscr);
+  pane3.init(stdscr);
+  Statusline  buf(stdscr, 0, sublines*3+1, COLS);
 
   for(size_t pad_y = 0; pad_y < 40; pad_y++){
     char str[1000];
@@ -152,9 +58,6 @@ int	main(int argc, char** argv)
     sprintf(str, "sudo apt install dfadf %zd tetste ", pad_y);
     pane3.print(str);
   }
-
-  // box(pane1.ww(), '|', '-');
-  // box(pane2.ww(), '|', '-');
 
   pane1.refresh();
   pane2.refresh();
