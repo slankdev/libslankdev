@@ -2,6 +2,7 @@
 #pragma once
 
 #include <slankdev/intfd.h>
+#include <slankdev/endian.h>
 
 #include <string.h>
 #include <sys/socket.h>
