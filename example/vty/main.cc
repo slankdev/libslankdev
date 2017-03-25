@@ -21,12 +21,12 @@
 struct echo : public slankdev::command {
     echo()
     {
-        nodestack.push_back(new slankdev::node_fixedstring("echo"));
-        nodestack.push_back(new slankdev::node_string              );
+        nodes.push_back(new slankdev::node_fixedstring("echo", ""));
+        nodes.push_back(new slankdev::node_string              );
     }
     void func(slankdev::shell* sh)
     {
-        std::string s = nodestack[1]->get();
+        std::string s = nodes[1]->get();
         sh->Printf("%s\n", s.c_str());
     }
 };
@@ -34,8 +34,8 @@ struct echo : public slankdev::command {
 struct show_author : public slankdev::command {
     show_author()
     {
-        nodestack.push_back(new slankdev::node_fixedstring("show"));
-        nodestack.push_back(new slankdev::node_fixedstring("author"));
+        nodes.push_back(new slankdev::node_fixedstring("show", ""));
+        nodes.push_back(new slankdev::node_fixedstring("author", ""));
     }
     void func(slankdev::shell* sh)
     {
@@ -50,8 +50,8 @@ struct show_author : public slankdev::command {
 struct show_version : public slankdev::command {
     show_version()
     {
-        nodestack.push_back(new slankdev::node_fixedstring("show"));
-        nodestack.push_back(new slankdev::node_fixedstring("version"));
+        nodes.push_back(new slankdev::node_fixedstring("show", ""));
+        nodes.push_back(new slankdev::node_fixedstring("version", ""));
     }
     void func(slankdev::shell* sh)
     {
@@ -63,29 +63,29 @@ struct show_version : public slankdev::command {
 struct show : public slankdev::command {
     show()
     {
-        nodestack.push_back(new slankdev::node_fixedstring("show"));
+        nodes.push_back(new slankdev::node_fixedstring("show", ""));
     }
     void func(slankdev::shell* sh) { sh->Printf("show\r\n"); }
 };
 
 struct quit : public slankdev::command {
-    quit() { nodestack.push_back(new slankdev::node_fixedstring("quit")); }
+    quit() { nodes.push_back(new slankdev::node_fixedstring("quit", "")); }
     void func(slankdev::shell* sh) { sh->close(); }
 };
 
 struct clear : public slankdev::command {
-    clear() { nodestack.push_back(new slankdev::node_fixedstring("clear")); }
+    clear() { nodes.push_back(new slankdev::node_fixedstring("clear", "")); }
     void func(slankdev::shell* sh) { sh->Printf("\033[2J\r\n"); }
 };
 
 struct list : public slankdev::command {
-    list() { nodestack.push_back(new slankdev::node_fixedstring("list")); }
+    list() { nodes.push_back(new slankdev::node_fixedstring("list", "")); }
     void func(slankdev::shell* sh)
     {
         const std::vector<slankdev::command*>& commands = *sh->commands;
         for (slankdev::command* cmd : commands) {
             std::string s = "";
-            for (slankdev::node* nd : cmd->nodestack) {
+            for (slankdev::node* nd : cmd->nodes) {
                 s += nd->to_string();
                 s += " ";
             }

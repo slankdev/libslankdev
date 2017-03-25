@@ -1,108 +1,53 @@
 
-#include <stdarg.h>
-#include <slankdev/string.h>
-#include <slankdev/ncurses.h>
-#include "ncurses.h"
+
+
 #include <string>
-#include <vector>
+#include <slankdev/string.h>
+#include <slankdev/poll.h>
+#include <slankdev/pcap.h>
+#include "TuiFrontend.h"
 
-#include "statusline.h"
-#include "pane.h"
 
 
-// class TuiFrontend {
-//  private:
-//
-//  public:
-//   TuiFrontend()
-//   {
-//   }
-//   virtual ~TuiFrontend() {}
-// };
+size_t packet_recv_count = 0;
 
+
+class Pcap : public slankdev::pcap {
+  TuiFrontend* front;
+ public:
+  Pcap(TuiFrontend* f) : front(f) {}
+  virtual void recv(const void* ptr, struct pcap_pkthdr* hdr) override
+  { front->packet_input(ptr, hdr->len, hdr->ts.tv_sec); }
+};
 
 
 int	main(int argc, char** argv)
 {
-  // TuiFrontend frontend;
+  TuiFrontend::init();
+  TuiFrontend fe;
 
-	initscr();
-	noecho();
-  scrollok(stdscr, false);
+  Pcap pcapfd(&fe);
+  pcapfd.open_live("lo");
 
-  Lines lines;
+  fe.refresh();
+  struct pollfd fds[2];
+  memset(fds, 0, sizeof(fds));
+  fds[0].fd = fileno(stdin);
+  fds[0].events = POLLIN;
+  fds[1].fd = pcapfd.get_selectable_fd();
+  fds[1].events = POLLIN;
 
-  size_t sublines = LINES/3-1;
-  Pane pane1(0, sublines*0+1, COLS, sublines-1);
-  Pane pane2(0, sublines*1  , COLS, sublines);
-  Pane pane3(0, sublines*2  , COLS, sublines);
-  pane1.init(stdscr);
-  pane2.init(stdscr);
-  pane3.init(stdscr);
-  Statusline  buf(stdscr, 0, sublines*3+1, COLS);
-
-  for(size_t pad_y = 0; pad_y < 40; pad_y++){
-    char str[1000];
-    sprintf(str, "adfdffdfdfaaaaaaaaaaaaaaaaaa %zd tetste ", pad_y);
-    pane1.print(str);
-  }
-
-  for(size_t pad_y = 0; pad_y < 40; pad_y++){
-    char str[1000];
-    sprintf(str, "slankdiafadfdpdk %zd tetste ", pad_y);
-    pane2.print(str);
-  }
-
-  for(size_t pad_y = 0; pad_y < 40; pad_y++){
-    char str[1000];
-    sprintf(str, "sudo apt install dfadf %zd tetste ", pad_y);
-    pane3.print(str);
-  }
-
-  pane1.refresh();
-  pane2.refresh();
-  pane3.refresh();
-  buf.refresh();
-
-  std::string sss;
 	while (1) {
-
-    char inc = ' ';
-    char c = wgetch(stdscr);
-    if (c == 0x1b) break;
-
-    if (c == 'J') {
-      pane1.cursor_down();
-    } else if (c == 'K') {
-      pane1.cursor_up();
-    } else if (c == 'j') {
-      pane2.cursor_down();
-    } else if (c == 'k') {
-      pane2.cursor_up();
-    } else if (c == 'h') {
-      pane3.cursor_down();
-    } else if (c == 'l') {
-      pane3.cursor_up();
-    } else if (c == 'N') {
-      pane1.cursor_down();
-      pane2.cursor_down();
-      pane3.cursor_down();
-    } else if (c == 'P') {
-      pane1.cursor_up();
-      pane2.cursor_up();
-      pane3.cursor_up();
-    } else {
-      inc = c;
+    slankdev::poll(fds, sizeof(fds)/sizeof(fds[0]), 100);
+    if (fds[0].revents & POLLIN) {
+      fe.key_input(wgetch(stdscr));
+      fe.refresh();
+    } else if (fds[1].revents & POLLIN) {
+      packet_recv_count ++;
+      pcapfd.next();
+      fe.sline.refresh();
     }
-
-    buf.print("1[%zd] 2[%zd] 3[%zd] [%c] ", pane1.cur(), pane2.cur(), pane3.cur(), inc);
-
-    pane1.refresh();
-    pane2.refresh();
-    pane3.refresh();
-    buf.refresh();
 	}
-
 	endwin();
 }
 
