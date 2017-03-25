@@ -1,26 +1,25 @@
-
 sudo: false
 language: cpp
 compiler:
-  - clang++
-  - g++
-
+- clang++
+- g++
 install:
-  - if [ "$CXX" = "g++" ]; then export CXXFLAGS="-std=c++11"; fi
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
-
+- if [ "$CXX" = "g++" ]; then export CXXFLAGS="-std=c++11"; fi
+- if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.7
-      - llvm-toolchain-precise
+    - ubuntu-toolchain-r-test
+    - llvm-toolchain-precise-3.7
+    - llvm-toolchain-precise
     packages:
-      - libpcap-dev
-      - libncurses5-dev
-      - clang-3.7
-      - g++-5
-      - gcc-5
-
+    - libpcap-dev
+    - libncurses5-dev
+    - clang-3.7
+    - g++-5
+    - gcc-5
 script:
-  - make CXX="${CXX}"
+- make CXX="${CXX}"
+notifications:
+  slack:
+    secure: SK9XnU9XDJt/i+oEhYUcR10wWKFRKLVa3pH11CBOH+a4KhZ975tg2BIZBPzGdNK5x50eFD+ibAa+k2O4PMlJbjMI+EljELL520ITjDf7Y8fYbihgGq2GUoVg+AkoAF/A0sbziZlSoLRIeJ0b3uMsH0gChoGplzB7d4HvESt3I0qy2mzGtfUe9mJDJGohfnh8rdNzG/VH6CHs4MnkCwHFltDt+OccczINmZaaMbDYO8Bb5yCOFPEx0Zm3kkj9C2QGaGXfnmN3PXXdvyr6SzrVp5mmeeRJDnNP8+JPd8G3sL+TXRQfCAz08iPnUJwVmm6WbAu7QBH7aUtScCo6+3N9gSbVN1FoZZaJOMFwkOi4kU5xwxNMNpux8thGgZzmOOsKIfyR9T2LiugDybys/PTd+ed4QLGZMs+17FVkzU4PnCc+beWA59c9U6WuH/DMFJ5f+B2Ru2b1jjiayRnUZ770dEMdX3rgliYnCrWuqzI03lK2r/uCkYJL1DhLNp1g6P4RpuLCvb9+X99ad62S5rf6qpRM5qj508Vl7+tas19o5eIslx0xZtRtu5Sz2zk/e2/nvxMNMRNPK7PhlFI0syVKcDCDYdWxnW4X2qLg28KWdJzv0m2ZQ1CJcJH5hEzGSz+N9HsicxpCsoaLraM9rTmZevWbXrevJkNAgR/2Gyngb8U=
