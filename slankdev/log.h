@@ -64,7 +64,7 @@ class log {
             fd.fflush();
             slankdev::filefd read_fd;
             slankdev::filefd write_fd;
-            read_fd.fopen(fd.name.c_str(), "r");
+            read_fd.fopen(fd.get_name().c_str(), "r");
             write_fd.fopen(output_path, "w");
 
             char c;

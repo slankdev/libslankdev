@@ -73,6 +73,7 @@ class filefd {
                 exit(-1);
             }
         }
+        const std::string& get_name() const { return name; }
         template<typename... ARG>
         int fprintf(const char* fmt, const ARG&... arg)
         {
