@@ -2,8 +2,8 @@
 #pragma once
 
 #include <ncurses.h>
+#include <slankdev/string.h>
 #include <slankdev/exception.h>
-#include "ncurses.h"
 
 
 namespace slankdev {
