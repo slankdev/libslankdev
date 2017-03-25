@@ -26,6 +26,15 @@ Extra Lib Wrapper
 - libpcap wrapper
 - ncurses wrapper
 
+## Requirement
+
+- libpcap-dev
+- libncurses5-dev
+
+```
+$ sudo apt install libpcap-dev libncurses5-dev
+```
+
 
 ## Usage
 
