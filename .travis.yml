@@ -1,0 +1,24 @@
+
+sudo: false
+language: cpp
+compiler:
+  - clang++
+  - g++
+
+install:
+  - if [ "$CXX" = "g++" ]; then export CXXFLAGS="-std=c++11"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.7
+      - llvm-toolchain-precise
+    packages:
+      - clang-3.7
+      - g++-5
+      - gcc-5
+
+script:
+  - make CXX="${CXX}"
