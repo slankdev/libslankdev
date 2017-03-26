@@ -23,7 +23,7 @@ class pcap {
     }
     return res;
   }
-  void open_live(const char* ifname)
+  virtual void open_live(const char* ifname)
   {
     if (handle)
       throw slankdev::exception("pcap: exist open discriptor");
@@ -36,7 +36,7 @@ class pcap {
       throw slankdev::exception(errstr.c_str());
     }
   }
-  void open_offline(const char* filepath)
+  virtual void open_offline(const char* filepath)
   {
     if (handle)
       throw slankdev::exception("pcap: exist open discriptor");
@@ -49,7 +49,7 @@ class pcap {
       throw slankdev::exception(errstr.c_str());
     }
   }
-  void close()
+  virtual void close()
   {
     if (handle) {
       pcap_close(handle);
