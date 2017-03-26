@@ -69,6 +69,24 @@ class pcap {
   {
     slankdev::hexdump("Userfunction", ptr, header->len);
   }
+  void setfilter(struct bpf_program *fp)
+  {
+    int ret = pcap_setfilter(handle, fp);
+    if (ret < 0) {
+      std::string errstr = pcap_geterr(handle);
+      throw slankdev::exception(errstr.c_str());
+    }
+  }
+  void compile(struct bpf_program *fp,
+      const char *str, int optimize, bpf_u_int32 netmask)
+  {
+    int ret = pcap_compile(handle, fp, str, optimize, netmask);
+    if (ret < 0) {
+      std::string errstr = pcap_geterr(handle);
+      throw slankdev::exception(errstr.c_str());
+    }
+  }
+
 };
 
 
