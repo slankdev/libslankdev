@@ -6,6 +6,7 @@ compiler:
 install:
 - if [ "$CXX" = "g++" ]; then export CXXFLAGS="-std=c++11"; fi
 - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
+- make CXX="${CXX}"
 addons:
   apt:
     sources:
@@ -19,7 +20,7 @@ addons:
     - g++-5
     - gcc-5
 script:
-- make CXX="${CXX}"
+- echo Success
 notifications:
   slack:
     secure: gP/brYT8lSRiCoqPJVUp9W1wUVeiqQOEUOwES607kQgdtRzoLMiywaZwWwKdImjrXl/RQ/PLjI/n5Ni7RtFIMV6vAgIaUug4gf7deFknNeK92D2Lwz1wCVOmVaUYWK8H1LljhklttLW0E/Ziys5x2eFu83BZunF2XtLDezdJ+reMO8pBihts43kCf5UNF2Xp+UZ/huxcP0zmqrWuEmSPhZrdCCW3X4PRa3KYsom2OAq5ZWA8noOQuq0Qgp5MCSvc1iM8oUIXhuLR2lumD1cLJRGqskYeld95kYpn/WdG+BRz0EZhIeCHfjIoJydZoedvYNxlFtkVncJi92WpooawXG7X+TC7AyhT0wf0sAsnVluklG11EA2OwF9j/Yu80/bi4HClJ1J6FZT/TCoAUIlxRjv0O1LwpDLniHaCCXpuh68YSIKasYIJHJAQjLWItElJYq49tRn7gJ2Amg7NrwT6gwXx7HdB0/M023lONa58EMwjDlhl92j5hNNgPzjIy9BSXeEqcNg9LYg7vm62cJZXB3dJhirYazoM2EwGpojz7hmfFqBBB9GbBmuEX4nm4xjfj1ph2tsUg4XbFCILjwIYlAn/mpfto1pQAWH8r0nNqkDB/pRmaEb66qUfg0y7oVZ0e0nb7r4Y9eOQIS2wjMglJEzOpKPYo7zTjJXN1unRXzY=
