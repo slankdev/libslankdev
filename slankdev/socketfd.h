@@ -185,7 +185,7 @@ class socketfd : public safe_intfd {
         }
 
 #ifdef __linux__
-        void open_if(const char* name)
+        void open_afpacket(const char* name)
         {
             socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 
