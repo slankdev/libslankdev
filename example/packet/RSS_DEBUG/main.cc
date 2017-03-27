@@ -71,11 +71,11 @@ int main()
   for (size_t i=0; i<=32; i++) {
     uh->src = htons(i);
 
-		ih->dst.s_addr = htonl(0xc0a80002);
-    sock.write(buf.data(), buf.size());
-
-		ih->dst.s_addr = htonl(0xc0a80001);
-    sock.write(buf.data(), buf.size());
+		uint32_t addr = 0xc0a80001;
+		for (size_t c=0; c<255; c++) {
+			ih->dst.s_addr = htonl(addr + c);
+			sock.write(buf.data(), buf.size());
+		}
   }
 }
 
