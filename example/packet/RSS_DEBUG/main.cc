@@ -7,12 +7,7 @@
 #include <slankdev/util.h>
 #include <slankdev/net_header.h>
 #include <slankdev/endian.h>
-const char* ifname = "lo";
-
-
-void craft_packet(std::vector<uint8_t>& buf)
-{
-}
+const char* ifname = "enp1s0f0";
 
 
 int main()
@@ -53,7 +48,7 @@ int main()
   ih->proto = 0x11;
   ih->sum   = htons(0x0000);
   ih->src.s_addr = htonl(0xc0a8000a);
-  ih->dst.s_addr = htonl(0xc0a80001);
+  ih->dst.s_addr = htonl(0xc0a80002);
   ptr += ih->hdr_len();
 
   udp* uh = reinterpret_cast<udp*>(ptr);
@@ -73,8 +68,15 @@ int main()
   d[6] = 'e';
   d[7] = 'v';
 
-  for (size_t i=0; i<=0xffff; i++) {
+  for (size_t i=0; i<=32; i++) {
     uh->src = htons(i);
+
+		ih->dst.s_addr = htonl(0xc0a80002);
+    sock.write(buf.data(), buf.size());
+
+		ih->dst.s_addr = htonl(0xc0a80001);
     sock.write(buf.data(), buf.size());
   }
 }
+
+
