@@ -1,0 +1,84 @@
+
+
+
+#pragma once
+#include <stdint.h>
+#include <stddef.h>
+#include <slankdev/exception.h>
+#include <slankdev/hexdump.h>
+
+
+namespace slankdev {
+
+class mbuf final {
+  enum {
+    def_data_size = 2000,
+    def_head_size = 500 ,
+    def_pack_size = 0   ,
+  };
+  uint8_t  data_[def_data_size];
+  size_t   head_; // offset to head_ptr
+  size_t   tail_; // offset to tail_ptr
+
+ public:
+  mbuf();
+  const uint8_t* mtod() const;
+  uint8_t* mtod();
+  size_t dlen() const;
+  void prepend(size_t len);
+  void append(size_t len);
+  void adj(size_t len);
+  void trim(size_t len);
+  void dump(FILE* s) const;
+  void clear();
+};
+
+
+
+/*
+ * Function Implementation
+ */
+inline mbuf::mbuf()
+  : head_(def_head_size)
+  , tail_(def_head_size + def_pack_size) { clear(); }
+inline const uint8_t* mbuf::mtod() const { return data_ + head_; }
+inline uint8_t* mbuf::mtod() { return data_ + head_; }
+inline size_t mbuf::dlen() const { return tail_ - head_; }
+inline void mbuf::prepend(size_t len)
+{
+  if (head_ < len)
+    throw slankdev::exception("miss");
+  head_ -= len;
+}
+inline void mbuf::append (size_t len)
+{
+  if (tail_ + len > sizeof(data_))
+    throw slankdev::exception("miss");
+  tail_ += len;
+}
+inline void mbuf::adj(size_t len)
+{
+  if (head_ + len > tail_)
+    throw slankdev::exception("miss");
+  head_ += len;
+}
+inline void mbuf::trim(size_t len)
+{
+  if (tail_ < head_ + len)
+    throw slankdev::exception("miss");
+  tail_ -= len;
+}
+inline void mbuf::dump(FILE* s) const
+{
+  fprintf(s, "Mbuf\n");
+  fprintf(s, "- data address: %p \n", data_);
+  fprintf(s, "- head address: %p (data+%zd)\n", data_ + head_, head_);
+  fprintf(s, "- tail address: %p (data+%zd)\n", data_ + tail_, tail_);
+  fprintf(s, "- total length: %zd \n", sizeof(data_));
+  fprintf(s, "- pack length : %zd \n", dlen());
+  slankdev::hexdump(s, mtod(), dlen());
+}
+inline void mbuf::clear() { memset(data_, 0, sizeof(data_)); }
+
+
+} /* namespace slankdev */
