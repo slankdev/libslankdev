@@ -11,7 +11,7 @@
 namespace slankdev {
 
 
-la// class mbuf_interface {
+// class mbuf_interface {
 //  public:
 //   virtual ~mbuf_interface() {}
 //   virtual const uint8_t* mtod() const = 0;
