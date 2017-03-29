@@ -11,20 +11,21 @@
 namespace slankdev {
 
 
-// class mbuf_interface {
-//  public:
-//   virtual ~mbuf_interface() {}
-//   virtual const uint8_t* mtod() const = 0;
-//   virtual uint8_t* mtod()             = 0;
-//   virtual size_t dlen() const         = 0;
-//   virtual void prepend(size_t len)    = 0;
-//   virtual void append(size_t len)     = 0;
-//   virtual void adj(size_t len)        = 0;
-//   virtual void trim(size_t len)       = 0;
-// };
+class mbuf_interface {
+ public:
+  virtual ~mbuf_interface() {}
+  virtual const uint8_t* mtod() const = 0;
+  virtual uint8_t* mtod()             = 0;
+  virtual size_t dlen() const         = 0;
+  virtual void prepend(size_t len)    = 0;
+  virtual void append(size_t len)     = 0;
+  virtual void adj(size_t len)        = 0;
+  virtual void trim(size_t len)       = 0;
+  virtual void dump(FILE* s) const    = 0;
+};
 
 
-class mbuf final {
+class mbuf : public mbuf_interface {
   enum {
     def_data_size = 2000,
     def_head_size = 500 ,
@@ -33,18 +34,18 @@ class mbuf final {
   uint8_t  data_[def_data_size];
   size_t   head_; // offset to head_ptr
   size_t   tail_; // offset to tail_ptr
+  void clear();
 
  public:
   mbuf();
-  const uint8_t* mtod() const;
-  uint8_t* mtod();
-  size_t dlen() const;
-  void prepend(size_t len);
-  void append(size_t len);
-  void adj(size_t len);
-  void trim(size_t len);
-  void dump(FILE* s) const;
-  void clear();
+  virtual const uint8_t* mtod() const override;
+  virtual uint8_t* mtod() override;
+  virtual size_t dlen() const override;
+  virtual void prepend(size_t len) override;
+  virtual void append(size_t len) override;
+  virtual void adj(size_t len) override;
+  virtual void trim(size_t len) override;
+  virtual void dump(FILE* s) const override;
 };
 
 
@@ -96,3 +97,5 @@ inline void mbuf::clear() { memset(data_, 0, sizeof(data_)); }
 
 
 } /* namespace slankdev */
+
+
