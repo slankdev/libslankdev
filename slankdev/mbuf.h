@@ -10,6 +10,20 @@
 
 namespace slankdev {
 
+
+la// class mbuf_interface {
+//  public:
+//   virtual ~mbuf_interface() {}
+//   virtual const uint8_t* mtod() const = 0;
+//   virtual uint8_t* mtod()             = 0;
+//   virtual size_t dlen() const         = 0;
+//   virtual void prepend(size_t len)    = 0;
+//   virtual void append(size_t len)     = 0;
+//   virtual void adj(size_t len)        = 0;
+//   virtual void trim(size_t len)       = 0;
+// };
+
+
 class mbuf final {
   enum {
     def_data_size = 2000,
