@@ -7,15 +7,23 @@
 #include <slankdev/util.h>
 #include <slankdev/net_header.h>
 #include <slankdev/endian.h>
-const char* ifname = "enp1s0f0";
+const char* ifname = "enp0s20u1";
 
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <slankdev/net_header.h>
+#include <slankdev/hexdump.h>
+#include <slankdev/endian.h>
+
+#include <rte_thash.h>
 
 int main()
 {
   using namespace slankdev;
 
-  slankdev::socketfd sock;
-  sock.open_afpacket(ifname);
   std::vector<uint8_t> buf;
   const size_t packetlen = 64;
   buf.resize(packetlen);
@@ -68,15 +76,28 @@ int main()
   d[6] = 'e';
   d[7] = 'v';
 
-  for (size_t i=0; i<=32; i++) {
-    uh->src = htons(i);
+  uint8_t default_rss_key[] = {
+    0x6d, 0x5a, 0x56, 0xda, 0x25, 0x5b, 0x0e, 0xc2,
+    0x41, 0x67, 0x25, 0x3d, 0x43, 0xa3, 0x8f, 0xb0,
+    0xd0, 0xca, 0x2b, 0xcb, 0xae, 0x7b, 0x30, 0xb4,
+    0x77, 0xcb, 0x2d, 0xa3, 0x80, 0x30, 0xf2, 0x0c,
+    0x6a, 0x42, 0xb7, 0x3b, 0xbe, 0xac, 0x01, 0xfa,
+  };
 
-		uint32_t addr = 0xc0a80001;
-		for (size_t c=0; c<255; c++) {
-			ih->dst.s_addr = htonl(addr + c);
-			sock.write(buf.data(), buf.size());
-		}
-  }
+  struct rte_ipv4_tuple tp;
+  tp.src_addr = slankdev::hton(uint32_t(0xc0a8000a));
+  tp.dst_addr = slankdev::hton(uint32_t(0xc0a80001));
+  tp.sport    = slankdev::hton(uint16_t(0x1111));
+  tp.dport    = slankdev::hton(uint16_t(0x2222));
+
+  uint8_t raw[1000];
+  uint32_t hash = rte_softrss(
+      reinterpret_cast<uint32_t*>(&tp), sizeof(tp), default_rss_key);
+  printf("hash: 0x%08x\n", hash);
+
+  slankdev::socketfd sock;
+  sock.open_afpacket(ifname);
+  sock.write(buf.data(), buf.size());
 }
 
 

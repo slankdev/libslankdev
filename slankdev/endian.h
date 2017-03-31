@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 
 
-namespace slankde {
+namespace slankdev {
 
 
 inline uint32_t hton(uint32_t n) { return ::htonl(n); }
