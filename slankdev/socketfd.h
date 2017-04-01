@@ -1,4 +1,13 @@
 
+
+/**
+ * @file   slankdev/file.h
+ * @brief  socket wrapper
+ * @author Hiroki SHIROKURA
+ * @date   2017.4.2
+ */
+
+
 #pragma once
 
 #include <slankdev/intfd.h>
@@ -78,7 +87,10 @@ namespace slankdev {
 // }
 
 
-
+/**
+ * @class  socketfd
+ * @breief wrapper class of socket
+ */
 class socketfd : public safe_intfd {
     public:
         socketfd() {}
