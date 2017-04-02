@@ -33,6 +33,11 @@
 
 #pragma once
 
+
+
+/**
+ * @namespace slankdev
+ */
 namespace slankdev {
 
 

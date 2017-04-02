@@ -45,7 +45,7 @@ namespace slankdev {
 
 
 template <class T>
-static inline void vec_delete_all_ptr_elements(std::vector<T*>& vec)
+inline void vec_delete_all_ptr_elements(std::vector<T*>& vec)
 {
   while (vec.size() > 0) {
     T* tmp = vec.back();

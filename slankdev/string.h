@@ -39,6 +39,9 @@
 #include <sstream>
 
 
+/**
+ * @namespace slankdev
+ */
 namespace slankdev {
 
 
@@ -49,7 +52,7 @@ namespace slankdev {
  * @retval          std::string crafted format string as a std::string
  */
 template <class... ARGS>
-static inline std::string format(const char* fmt, ARGS... args)
+inline std::string format(const char* fmt, ARGS... args)
 {
   char str[1000];
   sprintf(str, fmt, args...);
@@ -69,7 +72,7 @@ static inline std::string fs(const char* fmt, ARGS... args)
 { return format(fmt, args...); }
 
 
-static inline std::vector<std::string> split(const std::string &str, char sep)
+inline std::vector<std::string> split(const std::string &str, char sep)
 {
   std::vector<std::string> v;
   std::stringstream ss(str);
@@ -85,3 +88,5 @@ static inline std::vector<std::string> split(const std::string &str, char sep)
 
 
 } /* namespace slankdev */
+
+
