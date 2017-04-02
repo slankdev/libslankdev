@@ -32,19 +32,13 @@
 
 #pragma once
 
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <poll.h>
-#include <netinet/tcp.h>
-
-#include <slankdev/socketfd.h>
-#include <slankdev/telnet.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <vector>
 
 #include <slankdev/vty_command.h>
 #include <slankdev/vty_keyfunc.h>
 #include <slankdev/vty_shell.h>
-#include <slankdev/poll.h>
 
 
 namespace slankdev {
@@ -63,30 +57,50 @@ class vty {
  public:
   void* user_ptr;
 
-  vty(uint16_t p, const char* msg, const char* prmpt)
-    : port(p),
-    bootmsg(msg),
-    prompt(prmpt),
-    server_fd(get_server_sock()) { add_default_keyfunctions(); }
+  vty(uint16_t p, const char* msg, const char* prmpt);
+  virtual ~vty();
 
-  virtual ~vty()
-  {
-    for (command* c : commands) delete c;
-    for (key_func* f : keyfuncs) delete f;
-  }
-
-  void install_keyfunction(key_func* kf)
-  { keyfuncs.push_back(kf); }
-
-  void install_command(command* cmd)
-  { commands.push_back(cmd); }
-
+  void install_keyfunction(key_func* kf);
+  void install_command(command* cmd);
   void add_default_keyfunctions();
   void init_default_keyfunc();
   void dispatch();
 };
 
 
+} /* namespace slankdev */
+
+
+
+
+
+
+
+/*
+ * vty class: Function Implementation
+ */
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <netinet/tcp.h>
+#include <slankdev/socketfd.h>
+#include <slankdev/telnet.h>
+#include <slankdev/poll.h>
+
+namespace slankdev {
+
+inline vty::vty(uint16_t p, const char* msg, const char* prmpt)
+  : port(p),
+  bootmsg(msg),
+  prompt(prmpt),
+  server_fd(get_server_sock()) { add_default_keyfunctions(); }
+inline vty::~vty()
+{
+  for (command* c : commands) delete c;
+  for (key_func* f : keyfuncs) delete f;
+}
+inline void vty::install_keyfunction(key_func* kf) { keyfuncs.push_back(kf); }
+inline void vty::install_command(command* cmd) { commands.push_back(cmd); }
 inline int vty::get_server_sock()
 {
   slankdev::socketfd server_sock;
@@ -102,8 +116,6 @@ inline int vty::get_server_sock()
   server_sock.listen(5);
   return server_sock.get_fd();
 }
-
-
 inline void vty::dispatch()
 {
   while (true) {
@@ -166,8 +178,6 @@ inline void vty::dispatch()
     }
   }
 }
-
-
 inline void vty::add_default_keyfunctions()
 {
   using namespace slankdev;
@@ -207,7 +217,6 @@ inline void vty::add_default_keyfunctions()
   uint8_t backspace[] = {0x7f};
   install_keyfunction(new KF_backspace  (backspace, sizeof(backspace)));
 }
-
 
 
 
