@@ -1,15 +1,8 @@
 
 
-CPP = g++
-RM  = rm -rf
 SRC = main.cc
-TARGET = app.out
+CXXFLAGS += -std=c++11 -I/home/slank/git/libslankdev
 
-all: $(TARGET)
+all:
+	$(CXX) $(CXXFLAGS) $(SRC)
 
-
-$(TARGET): $(SRC)
-	$(CPP) $(SRC) -o $@ -lslankdev
-
-clean:
-	$(RM) $(TARGET) *.o

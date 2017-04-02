@@ -1,9 +1,10 @@
 
 #include <stdio.h>
-#include <slankdev.h>
+#include <slankdev/socketfd.h>
+#include <slankdev/hexdump.h>
 using namespace slankdev;
 
-int main(int argc, char** argv) 
+int main(int argc, char** argv)
 {
     if (argc < 2) {
         fprintf(stderr, "Usage: %s device \n", argv[0]);
@@ -11,11 +12,11 @@ int main(int argc, char** argv)
     }
 
     socketfd fd;
-    fd.open_if(argv[1]);
+    fd.open_afpacket(argv[1]);
 
     while (1) {
         uint8_t buf[10000];
         size_t recvlen = fd.read(buf, sizeof buf);
-        hexdump("Recieve Packet", buf, recvlen);
+        slankdev::hexdump("Recieve Packet", buf, recvlen);
     }
 }
