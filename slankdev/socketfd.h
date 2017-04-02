@@ -35,7 +35,10 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
+#include <slankdev/intfd.h>
 
 
 
@@ -94,7 +97,6 @@ class socketfd : public safe_intfd {
  * Function Implementations
  */
 
-
 #include <slankdev/intfd.h>
 #include <slankdev/endian.h>
 
@@ -110,6 +112,8 @@ class socketfd : public safe_intfd {
 #ifdef __linux__
 #include <netpacket/packet.h>
 #endif
+
+
 
 namespace slankdev {
 

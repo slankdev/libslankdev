@@ -35,6 +35,10 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 
 namespace slankdev {
 
@@ -73,11 +77,8 @@ class safe_intfd {
 
 #include <stdio.h>
 #include <stdint.h>
-
 #include <unistd.h>
-#include <fcntl.h>
 #include <sys/ioctl.h>
-
 #include <slankdev/exception.h>
 
 
@@ -86,7 +87,7 @@ namespace slankdev {
 
 inline safe_intfd::safe_intfd() : fd(-1), noclose_in_destruct(false) {}
 inline safe_intfd::~safe_intfd() { if (!noclose_in_destruct) close(); }
-int safe_intfd::get_fd() { return fd; }
+inline int safe_intfd::get_fd() { return fd; }
 inline void safe_intfd::open(const char* path, int flags)
 {
   fd = ::open(path, flags);
