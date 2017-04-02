@@ -56,5 +56,5 @@ $ sudo make uninstall
 
 ## Licence
 
-free
+MIT
 
