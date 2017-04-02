@@ -35,9 +35,6 @@
 
 
 
-/**
- * @namespace slankdev
- */
 namespace slankdev {
 
 
