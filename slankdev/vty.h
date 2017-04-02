@@ -13,6 +13,7 @@
 #include <slankdev/vty_command.h>
 #include <slankdev/vty_keyfunc.h>
 #include <slankdev/vty_shell.h>
+#include <slankdev/poll.h>
 
 
 
@@ -84,7 +85,7 @@ inline void vty::dispatch()
         fds.push_back(Pollfd(server_fd, POLLIN));
         for (const shell& sh : shells) fds.emplace_back(Pollfd(sh.fd, POLLIN));
 
-        if (poll(fds.data(), fds.size(), 1000)) {
+        if (slankdev::poll(fds.data(), fds.size(), 1000)) {
             if (fds[0].revents & POLLIN) {
                 /*
                  * Server Accept Process

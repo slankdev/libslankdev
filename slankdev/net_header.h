@@ -41,8 +41,9 @@ struct ether {
         printf("Ether header\n");
         printf("+ dst  : %s    \n", dst.to_string().c_str());
         printf("+ src  : %s    \n", src.to_string().c_str());
-        printf("+ type : 0x%04x\n", type);
+        printf("+ type : 0x%04x\n", ntohs(type));
     }
+    size_t hdr_len() const { return 14; }
 };
 
 
@@ -102,6 +103,7 @@ struct ip {
         printf("+ src  : %s  \n", src.to_string().c_str());
         printf("+ dst  : %s  \n", dst.to_string().c_str());
     }
+    size_t hdr_len() const { return ihl<<2; }
 };
 
 
@@ -130,6 +132,7 @@ struct arp {
         printf("+ hwdst    : %s\n", hwdst.to_string().c_str());
         printf("+ pdst     : %s\n", pdst.to_string().c_str());
     }
+    size_t hdr_len() const { return sizeof(arp); }
 };
 
 
@@ -149,8 +152,18 @@ struct udp {
         printf("+ len  : %u\n", ntohs(len  ));
         printf("+ cksum: %u\n", ntohs(cksum));
     }
+    size_t hdr_len() const { return sizeof(udp); }
 };
 
+
+enum {
+ TH_FIN	 = 0x01,
+ TH_SYN	 = 0x02,
+ TH_RST	 = 0x04,
+ TH_PUSH = 0x08,
+ TH_ACK	 = 0x10,
+ TH_URG	 = 0x20,
+};
 
 
 struct tcp {
