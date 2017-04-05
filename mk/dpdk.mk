@@ -1,6 +1,12 @@
 
+ifeq ($(RTE_SDK),)
+$(error "Please define RTE_SDK environment variable")
+endif
+ifeq ($(RTE_TARGET),)
+$(error "Please define RTE_TARGET environment variable")
+endif
 
-# DPDK_PATH := ???
+DPDK_PATH := $(RTE_SDK)/$(RTE_TARGET)
 
 DPDK_CFLAGS = \
 	 -I$(DPDK_PATH)/include \
