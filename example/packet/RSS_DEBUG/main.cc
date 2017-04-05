@@ -2,35 +2,31 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <vector>
-#include <slankdev/socketfd.h>
-#include <slankdev/util.h>
-#include <slankdev/net_header.h>
-#include <slankdev/endian.h>
-const char* ifname = "enp0s20u1";
-
-
-
-#include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <slankdev/net_header.h>
-#include <slankdev/hexdump.h>
+#include <vector>
 #include <slankdev/endian.h>
+#include <slankdev/socketfd.h>
+#include <slankdev/net_header.h>
+#include <slankdev/util.h>
+#include <slankdev/endian.h>
+#include <slankdev/hexdump.h>
+const char* ifname = "eth1";
 
+#include <slankdev/extra/dpdk_header.h>
 #include <rte_thash.h>
+
 
 int main()
 {
   using namespace slankdev;
 
   std::vector<uint8_t> buf;
-  const size_t packetlen = 64;
+  const size_t packetlen = 65;
   buf.resize(packetlen);
   uint8_t* ptr = buf.data();
 
   ether* eh = reinterpret_cast<ether*>(ptr);
-  eh->dst.addr_bytes[0] = 0x00;
+  eh->dst.addr_bytes[0] = 0x01;
   eh->dst.addr_bytes[1] = 0x11;
   eh->dst.addr_bytes[2] = 0x22;
   eh->dst.addr_bytes[3] = 0x33;
@@ -55,7 +51,7 @@ int main()
   ih->ttl   = 0x40;
   ih->proto = 0x11;
   ih->sum   = htons(0x0000);
-  ih->src.s_addr = htonl(0xc0a8000a);
+  ih->src.s_addr = htonl(0xc0a8010a);
   ih->dst.s_addr = htonl(0xc0a80002);
   ptr += ih->hdr_len();
 
@@ -76,13 +72,21 @@ int main()
   d[6] = 'e';
   d[7] = 'v';
 
-  uint8_t default_rss_key[] = {
+  uint8_t zero_key[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  };
+  uint8_t rss_key[] = {
     0x6d, 0x5a, 0x56, 0xda, 0x25, 0x5b, 0x0e, 0xc2,
     0x41, 0x67, 0x25, 0x3d, 0x43, 0xa3, 0x8f, 0xb0,
     0xd0, 0xca, 0x2b, 0xcb, 0xae, 0x7b, 0x30, 0xb4,
     0x77, 0xcb, 0x2d, 0xa3, 0x80, 0x30, 0xf2, 0x0c,
     0x6a, 0x42, 0xb7, 0x3b, 0xbe, 0xac, 0x01, 0xfa,
   };
+  uint8_t* default_rss_key = zero_key;
 
   struct rte_ipv4_tuple tp;
   tp.src_addr = slankdev::hton(uint32_t(0xc0a8000a));
