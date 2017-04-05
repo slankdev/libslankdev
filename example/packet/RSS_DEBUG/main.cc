@@ -4,17 +4,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <vector>
+
 #include <slankdev/endian.h>
 #include <slankdev/socketfd.h>
 #include <slankdev/net_header.h>
-#include <slankdev/util.h>
-#include <slankdev/endian.h>
 #include <slankdev/hexdump.h>
-const char* ifname = "eth1";
 
-#include <slankdev/extra/dpdk_header.h>
 #include <rte_thash.h>
 
+const char* ifname = "eth1";
 
 int main()
 {
