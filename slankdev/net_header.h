@@ -81,6 +81,8 @@ struct ether {
 struct in_addr {
   uint32_t s_addr;
 
+  void set(uint32_t u) { s_addr = htonl(u); }
+  uint32_t get() const { return ntohl(s_addr); }
   std::string to_string() const
   {
     union {
