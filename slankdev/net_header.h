@@ -189,12 +189,12 @@ struct udp {
 
 
 enum {
-  TH_FIN	 = 0x01,
-  TH_SYN	 = 0x02,
-  TH_RST	 = 0x04,
-  TH_PUSH = 0x08,
-  TH_ACK	 = 0x10,
-  TH_URG	 = 0x20,
+  th_fin	 = 0x01,
+  th_syn	 = 0x02,
+  th_rst	 = 0x04,
+  th_push = 0x08,
+  th_ack	 = 0x10,
+  th_urg	 = 0x20,
 };
 
 

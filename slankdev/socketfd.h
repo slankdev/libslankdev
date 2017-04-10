@@ -85,6 +85,7 @@ class socketfd : public safe_intfd {
 #ifdef __linux__
   void open_afpacket(const char* name);
 #endif
+  void open_connect(uint32_t addr, uint16_t port);
 };
 
 } /* namespace slankdev */
@@ -234,6 +235,17 @@ inline void socketfd::open_afpacket(const char* name)
   ioctl(SIOCSIFFLAGS, &ifreq);
 }
 #endif
+inline void socketfd::open_connect(uint32_t addr, uint16_t port)
+{
+  socket(AF_INET, SOCK_STREAM, 0);
+
+  struct sockaddr_in server;
+  server.sin_addr.s_addr = htonl(addr);
+  server.sin_family = AF_INET;
+  server.sin_port = htons(port);
+
+  connect(reinterpret_cast<struct sockaddr*>(&server), sizeof(server));
+}
 
 
 
