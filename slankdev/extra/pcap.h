@@ -38,6 +38,7 @@ namespace slankdev {
 
 
 class pcap {
+ protected:
   pcap_t* handle;
  public:
   pcap() : handle(nullptr) {}
@@ -52,7 +53,29 @@ class pcap {
   void setfilter(struct bpf_program *fp);
   void compile(struct bpf_program *fp,
       const char *str, int optimize, bpf_u_int32 netmask);
+  void open_dead();
 
+  // void sendpacket(const void* d, size_t l)
+  // {
+  //   int ret = pcap_sendpacket(handle, reinterpret_cast<const u_char*>(d), l);
+  //   if (ret < 0) {
+  //     std::string err;
+  //     err = "pcap_sendpacket: ";
+  //     err += pcap_geterr(handle);
+  //     throw slankdev::exception(err.c_str());
+  //   }
+  // }
+  // pcap_dumper_t* dump_open(const char* filename)
+  // {
+  //   pcap_dumper_t* ret = pcap_dump_open(handle, filename);
+  //   if (ret < 0) {
+  //     std::string err;
+  //     err = "pcap_dump_open: ";
+  //     err += pcap_geterr(handle);
+  //     throw slankdev::exception(err.c_str());
+  //   }
+  //   return ret;
+  // }
 
 };
 
@@ -70,9 +93,24 @@ class pcap {
 #include <slankdev/exception.h>
 #include <slankdev/util.h>
 #include <slankdev/string.h>
+#include <string>
 
 
 namespace slankdev {
+
+
+inline void pcap::open_dead()
+{
+  handle = pcap_open_dead(DLT_EN10MB, 65535);
+  if (!handle) {
+    std::string err;
+    err = "pcap_open_dead: ";
+    err += pcap_geterr(handle);
+    throw slankdev::exception(err.c_str());
+  }
+}
+
+
 
 inline int pcap::get_selectable_fd()
 {
