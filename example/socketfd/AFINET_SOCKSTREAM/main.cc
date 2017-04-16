@@ -1,6 +1,6 @@
 
 
-#include <slankdev.h>
+#include <slankdev/socketfd.h>
 
 int main(int argc, char** argv)
 {
@@ -33,4 +33,16 @@ int main(int argc, char** argv)
         client_sock.write(buf, recvlen);
     }
     return 0;
+}
+
+
+int client()
+{
+  slankdev::socketfd sock;
+  uint32_t addr = 0x7f000001;
+  uint16_t port = 22;
+  sock.open_connect(addr, port);
+
+  char data[] = "port configure";
+  sock.write(data, sizeof(data));
 }

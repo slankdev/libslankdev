@@ -86,6 +86,7 @@ class mbuf : public mbuf_interface {
  * Function Implementation
  */
 
+#include <string.h>
 #include <slankdev/exception.h>
 #include <slankdev/hexdump.h>
 

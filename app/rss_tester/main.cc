@@ -15,22 +15,31 @@
 #include <slankdev/hexdump.h>
 #include <slankdev/socketfd.h>
 #include <slankdev/packet.h>
+#include <pgen/io.h>
 
-const char* ifname = "eth2";
+const char* ifname1 = "eth1";
+const char* ifname2 = "eth2";
 
 int main()
 {
-  slankdev::socketfd sock;
-  sock.open_afpacket(ifname);
+  // slankdev::socketfd sock1;
+  // slankdev::socketfd sock2;
+  // sock1.open_afpacket(ifname1);
+  // sock2.open_afpacket(ifname2);
+  pgen::pcap_stream s("in.pcap", pgen::open_mode::pcap_write);
 
   slankdev::udp_packet pack;
-  for (uint32_t src=0; /*src<10*/; src++) {
-  for (uint32_t dst=0; /*dst<10*/; dst++) {
+  pack.m.append(64-pack.m.dlen());
+
+  for (uint32_t src=0; src<10; src++) {
+  for (uint32_t dst=0; dst<10; dst++) {
       pack.ih->src.set(src);
       pack.ih->dst.set(dst);
 
       pack.summary();
-      sock.write(pack.m.mtod(), pack.m.dlen());
+      s.send(pack.m.mtod(), pack.m.dlen());
+      // sock1.write(pack.m.mtod(), pack.m.dlen());
+      // sock2.write(pack.m.mtod(), pack.m.dlen());
   }
   }
 }
