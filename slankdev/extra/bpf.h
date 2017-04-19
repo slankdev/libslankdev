@@ -339,7 +339,7 @@ dict_element raw_dict_bpf[] = {
 
 
 
-inline std::string dissasemble_instruction(bpf_insn* inst)
+inline std::string dissasemble_instruction(const bpf_insn* inst)
 {
   dict dict;
   read_dict(dict, raw_dict_bpf, sizeof(raw_dict_bpf)/sizeof(raw_dict_bpf[0]));
@@ -405,7 +405,7 @@ inline std::string dissasemble_instruction(bpf_insn* inst)
 
 
 
-void dissas(struct bpf_insn* inst, size_t len)
+void dissas(const struct bpf_insn* inst, size_t len)
 {
   for (size_t i=0; i<len; i++) {
     printf("(%03zd) %04x %02x %02x %08x      %s \n",

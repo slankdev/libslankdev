@@ -33,6 +33,7 @@
 #pragma once
 
 #include <pcap.h>
+#include <slankdev/hexdump.h>
 
 namespace slankdev {
 
