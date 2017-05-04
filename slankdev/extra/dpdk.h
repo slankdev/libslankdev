@@ -21,6 +21,12 @@ static inline void errhandle(const char* str)
 
 
 
+inline void rte_pktmbuf_free_bulk(struct rte_mbuf* m_list[], size_t npkts)
+{
+  while (npkts--)
+    rte_pktmbuf_free(*m_list++);
+}
+
 
 inline void dpdk_boot(int argc, char** argv)
 {
