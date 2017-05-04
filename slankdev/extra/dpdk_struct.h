@@ -51,6 +51,28 @@ inline void printf_depth(size_t depth, const char* const fmt, Args... args)
   printf(fmt, args...);
 }
 
+
+
+inline const char* rte_flow_error_type2str(enum rte_flow_error_type e)
+{
+  switch (e) {
+    case RTE_FLOW_ERROR_TYPE_NONE         : return "NONE         ";
+    case RTE_FLOW_ERROR_TYPE_UNSPECIFIED  : return "UNSPECIFIED  ";
+    case RTE_FLOW_ERROR_TYPE_HANDLE       : return "HANDLE       ";
+    case RTE_FLOW_ERROR_TYPE_ATTR_GROUP   : return "ATTR_GROUP   ";
+    case RTE_FLOW_ERROR_TYPE_ATTR_PRIORITY: return "ATTR_PRIORITY";
+    case RTE_FLOW_ERROR_TYPE_ATTR_INGRESS : return "ATTR_INGRESS ";
+    case RTE_FLOW_ERROR_TYPE_ATTR_EGRESS  : return "ATTR_EGRESS  ";
+    case RTE_FLOW_ERROR_TYPE_ATTR         : return "ATTR         ";
+    case RTE_FLOW_ERROR_TYPE_ITEM_NUM     : return "ITEM_NUM     ";
+    case RTE_FLOW_ERROR_TYPE_ITEM         : return "ITEM         ";
+    case RTE_FLOW_ERROR_TYPE_ACTION_NUM   : return "ACTION_NUM   ";
+    case RTE_FLOW_ERROR_TYPE_ACTION       : return "ACTION       ";
+    default: return "UNKNOWN_ERROR";
+  }
+}
+
+
 inline const char* rte_lcore_state_t2str(rte_lcore_state_t e)
 {
   switch (e) {
@@ -140,8 +162,8 @@ inline const char* nb_queue_pools2str(rte_eth_nb_pools e)
 inline const char* rte_eth_payload_type2str(enum rte_eth_payload_type e)
 {
   switch (e) {
-    case RTE_FDIR_MODE_NONE 	       : return "NONE 	         ";
-    case RTE_FDIR_MODE_SIGNATURE 	   : return "SIGNATURE 	     ";
+    case RTE_FDIR_MODE_NONE 	         : return "NONE 	         ";
+    case RTE_FDIR_MODE_SIGNATURE 	     : return "SIGNATURE 	     ";
     case RTE_FDIR_MODE_PERFECT 	       : return "PERFECT 	     ";
     case RTE_FDIR_MODE_PERFECT_MAC_VLAN: return "PERFECT_MAC_VLAN";
     case RTE_FDIR_MODE_PERFECT_TUNNEL  : return "PERFECT_TUNNEL  ";
@@ -626,18 +648,18 @@ inline void print(const struct rte_pci_id* raw, const char* name="", size_t dept
 }
 
 
-inline void print(const struct rte_pci_resource* raw, const char* name="", size_t depth=0)
-{
-  printf_depth(depth, "rte_pci_resource %s {\n", name);
-
-  depth++;
-  printf_depth(depth, "phys_addr : %lu \n", raw->phys_addr);
-  printf_depth(depth, "len       : %lu \n", raw->len      );
-  printf_depth(depth, "addr      : %p  \n", raw->addr     );
-  depth--;
-
-  printf_depth(depth, "}\n");
-}
+// inline void print(const struct rte_pci_resource* raw, const char* name="", size_t depth=0)
+// {
+//   printf_depth(depth, "rte_pci_resource %s {\n", name);
+//
+//   depth++;
+//   printf_depth(depth, "phys_addr : %lu \n", raw->phys_addr);
+//   printf_depth(depth, "len       : %lu \n", raw->len      );
+//   printf_depth(depth, "addr      : %p  \n", raw->addr     );
+//   depth--;
+//
+//   printf_depth(depth, "}\n");
+// }
 
 
 inline void print(const struct rte_epoll_data* raw, const char* name="", size_t depth=0)
@@ -705,21 +727,21 @@ inline void print(const struct rte_intr_handle* raw, const char* name="", size_t
 
 
 
-inline void print(const struct rte_pci_driver* raw, const char* name="", size_t depth=0)
-{
-  printf_depth(depth, "rte_pci_driver %s {\n", name);
-
-  depth++;
-  printf_depth(depth, "next      : %p \n", raw->next);
-  printf_depth(depth, "name      : %s \n", raw->name);
-  printf_depth(depth, "devinit   : %p \n", raw->devinit  );
-  printf_depth(depth, "devuninit : %p \n", raw->devuninit);
-  printf_depth(depth, "id_table  : %p \n", raw->id_table);
-  printf_depth(depth, "drv_flags : %u \n", raw->drv_flags);
-  depth--;
-
-  printf_depth(depth, "}\n");
-}
+// inline void print(const struct rte_pci_driver* raw, const char* name="", size_t depth=0)
+// {
+//   printf_depth(depth, "rte_pci_driver %s {\n", name);
+//
+//   depth++;
+//   printf_depth(depth, "next      : %p \n", raw->next);
+//   printf_depth(depth, "name      : %s \n", raw->name);
+//   printf_depth(depth, "devinit   : %p \n", raw->devinit  );
+//   printf_depth(depth, "devuninit : %p \n", raw->devuninit);
+//   printf_depth(depth, "id_table  : %p \n", raw->id_table);
+//   printf_depth(depth, "drv_flags : %u \n", raw->drv_flags);
+//   depth--;
+//
+//   printf_depth(depth, "}\n");
+// }
 
 
 
@@ -755,62 +777,62 @@ inline void print(const struct rte_devargs* raw, const char* name="", size_t dep
 
 
 
-inline void print(const struct rte_pci_device* raw, const char* name="", size_t depth=0)
-{
-  printf_depth(depth, "rte_pci_device %s {\n", name);
+// inline void print(const struct rte_pci_device* raw, const char* name="", size_t depth=0)
+// {
+//   printf_depth(depth, "rte_pci_device %s {\n", name);
+//
+//   depth++;
+//   printf_depth(depth, "next : %p \n", raw->next);
+//   print(&raw->addr           , "addr"           , depth);
+//   print(&raw->id             , "id"             , depth);
+//   print(&raw->mem_resource[0], "mem_resource[0]", depth);
+//   printf_depth(depth, "rte_pci_resource mem_resource[1-%zd]\n", PCI_MAX_RESOURCE);
+//   print(&raw->intr_handle    , "intr_handle"    , depth);
+//   print(raw->driver         , "driver"         , depth);
+//   printf_depth(depth, "max_vfs     : %u \n", raw->max_vfs);
+//   printf_depth(depth, "numa_node   : %d \n", raw->numa_node);
+//   print(raw->devargs, "devargs", depth);
+//   printf_depth(depth, "kdrv        : %s \n", rte_kernel_driver2str(raw->kdrv));
+//   depth--;
+//
+//   printf_depth(depth, "}\n");
+// }
 
-  depth++;
-  printf_depth(depth, "next : %p \n", raw->next);
-  print(&raw->addr           , "addr"           , depth);
-  print(&raw->id             , "id"             , depth);
-  print(&raw->mem_resource[0], "mem_resource[0]", depth);
-  printf_depth(depth, "rte_pci_resource mem_resource[1-%zd]\n", PCI_MAX_RESOURCE);
-  print(&raw->intr_handle    , "intr_handle"    , depth);
-  print(raw->driver         , "driver"         , depth);
-  printf_depth(depth, "max_vfs     : %u \n", raw->max_vfs);
-  printf_depth(depth, "numa_node   : %d \n", raw->numa_node);
-  print(raw->devargs, "devargs", depth);
-  printf_depth(depth, "kdrv        : %s \n", rte_kernel_driver2str(raw->kdrv));
-  depth--;
 
-  printf_depth(depth, "}\n");
-}
-
-
-inline void print(const struct rte_eth_dev_info* raw, const char* name="", size_t depth=0)
-{
-  printf_depth(depth, "rte_eth_dev_info %s {\n", name);
-
-  depth++;
-  print(raw->pci_dev, "pci_dev", depth);
-  printf_depth(depth, "driver_name            : %s  \n", raw->driver_name);
-  printf_depth(depth, "if_index               : %u  \n", raw->if_index);
-  printf_depth(depth, "min_rx_bufsize         : %u  \n", raw->min_rx_bufsize        );
-  printf_depth(depth, "max_rx_pktlen          : %u  \n", raw->max_rx_pktlen         );
-  printf_depth(depth, "max_rx_queues          : %u  \n", raw->max_rx_queues         );
-  printf_depth(depth, "max_tx_queues          : %u  \n", raw->max_tx_queues         );
-  printf_depth(depth, "max_mac_addrs          : %u  \n", raw->max_mac_addrs         );
-  printf_depth(depth, "max_vfs                : %u  \n", raw->max_vfs               );
-  printf_depth(depth, "max_vmdq_pools         : %u  \n", raw->max_vmdq_pools        );
-  printf_depth(depth, "rx_offload_capa        : %u  \n", raw->rx_offload_capa       );
-  printf_depth(depth, "tx_offload_capa        : %u  \n", raw->tx_offload_capa       );
-  printf_depth(depth, "reta_size              : %u  \n", raw->reta_size             );
-  printf_depth(depth, "hash_key_size          : %u  \n", raw->hash_key_size         );
-  printf_depth(depth, "flow_type_rss_offloads : %lu \n", raw->flow_type_rss_offloads);
-  print(&raw->default_rxconf, "default_rxconf", depth);
-  print(&raw->default_txconf, "default_txconf", depth);
-  printf_depth(depth, "vmdq_queue_base        : %u  \n", raw->vmdq_queue_base);
-  printf_depth(depth, "vmdq_queue_num         : %u  \n", raw->vmdq_queue_num );
-  printf_depth(depth, "vmdq_pool_base         : %u  \n", raw->vmdq_pool_base );
-  printf_depth(depth, "rx_desc_lim            : struct rte_eth_desc_lim \n" );
-  printf_depth(depth, "tx_desc_lim            : struct rte_eth_desc_lim \n" );
-  printf_depth(depth, "speed_capa             : %u  \n", raw->speed_capa  );
-  printf_depth(depth, "nb_rx_queues           : %u  \n", raw->nb_rx_queues);
-  printf_depth(depth, "nb_tx_queues           : %u  \n", raw->nb_tx_queues);
-  depth--;
-
-  printf_depth(depth, "}\n");
-}
+// inline void print(const struct rte_eth_dev_info* raw, const char* name="", size_t depth=0)
+// {
+//   printf_depth(depth, "rte_eth_dev_info %s {\n", name);
+//
+//   depth++;
+//   print(raw->pci_dev, "pci_dev", depth);
+//   printf_depth(depth, "driver_name            : %s  \n", raw->driver_name);
+//   printf_depth(depth, "if_index               : %u  \n", raw->if_index);
+//   printf_depth(depth, "min_rx_bufsize         : %u  \n", raw->min_rx_bufsize        );
+//   printf_depth(depth, "max_rx_pktlen          : %u  \n", raw->max_rx_pktlen         );
+//   printf_depth(depth, "max_rx_queues          : %u  \n", raw->max_rx_queues         );
+//   printf_depth(depth, "max_tx_queues          : %u  \n", raw->max_tx_queues         );
+//   printf_depth(depth, "max_mac_addrs          : %u  \n", raw->max_mac_addrs         );
+//   printf_depth(depth, "max_vfs                : %u  \n", raw->max_vfs               );
+//   printf_depth(depth, "max_vmdq_pools         : %u  \n", raw->max_vmdq_pools        );
+//   printf_depth(depth, "rx_offload_capa        : %u  \n", raw->rx_offload_capa       );
+//   printf_depth(depth, "tx_offload_capa        : %u  \n", raw->tx_offload_capa       );
+//   printf_depth(depth, "reta_size              : %u  \n", raw->reta_size             );
+//   printf_depth(depth, "hash_key_size          : %u  \n", raw->hash_key_size         );
+//   printf_depth(depth, "flow_type_rss_offloads : %lu \n", raw->flow_type_rss_offloads);
+//   print(&raw->default_rxconf, "default_rxconf", depth);
+//   print(&raw->default_txconf, "default_txconf", depth);
+//   printf_depth(depth, "vmdq_queue_base        : %u  \n", raw->vmdq_queue_base);
+//   printf_depth(depth, "vmdq_queue_num         : %u  \n", raw->vmdq_queue_num );
+//   printf_depth(depth, "vmdq_pool_base         : %u  \n", raw->vmdq_pool_base );
+//   printf_depth(depth, "rx_desc_lim            : struct rte_eth_desc_lim \n" );
+//   printf_depth(depth, "tx_desc_lim            : struct rte_eth_desc_lim \n" );
+//   printf_depth(depth, "speed_capa             : %u  \n", raw->speed_capa  );
+//   printf_depth(depth, "nb_rx_queues           : %u  \n", raw->nb_rx_queues);
+//   printf_depth(depth, "nb_tx_queues           : %u  \n", raw->nb_tx_queues);
+//   depth--;
+//
+//   printf_depth(depth, "}\n");
+// }
 
 
 
