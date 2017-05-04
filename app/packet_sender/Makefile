@@ -1,5 +1,6 @@
 
-CXXFLAGS = -std=c++11
+LIB = /home/slank/git/slankdev/libslankdev
+CXXFLAGS = -std=c++11 -I$(LIB)
 
 all:
 	$(CXX) $(CXXFLAGS) main.cc
