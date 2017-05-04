@@ -8,9 +8,11 @@ endif
 
 DPDK_PATH := $(RTE_SDK)/$(RTE_TARGET)
 
+# no -mssse3 version always compile error....
 DPDK_CFLAGS = \
 	 -I$(DPDK_PATH)/include \
-	 -include $(DPDK_PATH)/include/rte_config.h
+	 -include $(DPDK_PATH)/include/rte_config.h \
+	 -mssse3
 
 DPDK_LDFLAGS += \
 	-Wl,--no-as-needed \
