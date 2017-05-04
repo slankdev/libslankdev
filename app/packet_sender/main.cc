@@ -2,7 +2,7 @@
 
 #include <slankdev/socketfd.h>
 #include <slankdev/hexdump.h>
-const char* ifname = "tap0";
+const char* ifname = "lo";
 
 uint8_t packet[] = {
   /* arp packet */
