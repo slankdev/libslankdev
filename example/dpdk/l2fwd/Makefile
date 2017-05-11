@@ -2,7 +2,7 @@
 LIB = /home/slank/git/slankdev/libslankdev
 include $(LIB)/mk/dpdk.mk
 
-CXXFLAGS = -I$(LIB) $(DPDK_CFLAGS) -std=c++11
+CXXFLAGS = -I$(LIB) $(DPDK_CFLAGS) -std=c++11 -Wno-format-security
 LDFLAGS  = $(DPDK_LDFLAGS)
 
 all:

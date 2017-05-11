@@ -5,6 +5,9 @@
 #include <slankdev/string.h>
 #include <slankdev/exception.h>
 #include <slankdev/extra/dpdk_header.h>
+#include <slankdev/extra/dpdk_struct.h>
+
+
 
 
 namespace slankdev {
@@ -164,7 +167,9 @@ inline void port_configure(uint8_t port, size_t nb_rxq, size_t nb_txq,
   }
 
   ret = rte_eth_dev_start(port);
-  if (ret < 0) errhandle("rte_eth_dev_start");
+  if (ret < 0) {
+    throw slankdev::exception("rte_eth_dev_start");
+  }
 
   /* this function always success because of HARDWARECALL */
   rte_eth_promiscuous_enable(port);

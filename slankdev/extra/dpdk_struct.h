@@ -56,18 +56,18 @@ inline void printf_depth(size_t depth, const char* const fmt, Args... args)
 inline const char* rte_flow_error_type2str(enum rte_flow_error_type e)
 {
   switch (e) {
-    case RTE_FLOW_ERROR_TYPE_NONE         : return "NONE         ";
-    case RTE_FLOW_ERROR_TYPE_UNSPECIFIED  : return "UNSPECIFIED  ";
-    case RTE_FLOW_ERROR_TYPE_HANDLE       : return "HANDLE       ";
-    case RTE_FLOW_ERROR_TYPE_ATTR_GROUP   : return "ATTR_GROUP   ";
+    case RTE_FLOW_ERROR_TYPE_NONE         : return "NONE"         ;
+    case RTE_FLOW_ERROR_TYPE_UNSPECIFIED  : return "UNSPECIFIED"  ;
+    case RTE_FLOW_ERROR_TYPE_HANDLE       : return "HANDLE"       ;
+    case RTE_FLOW_ERROR_TYPE_ATTR_GROUP   : return "ATTR_GROUP"   ;
     case RTE_FLOW_ERROR_TYPE_ATTR_PRIORITY: return "ATTR_PRIORITY";
-    case RTE_FLOW_ERROR_TYPE_ATTR_INGRESS : return "ATTR_INGRESS ";
-    case RTE_FLOW_ERROR_TYPE_ATTR_EGRESS  : return "ATTR_EGRESS  ";
-    case RTE_FLOW_ERROR_TYPE_ATTR         : return "ATTR         ";
-    case RTE_FLOW_ERROR_TYPE_ITEM_NUM     : return "ITEM_NUM     ";
-    case RTE_FLOW_ERROR_TYPE_ITEM         : return "ITEM         ";
-    case RTE_FLOW_ERROR_TYPE_ACTION_NUM   : return "ACTION_NUM   ";
-    case RTE_FLOW_ERROR_TYPE_ACTION       : return "ACTION       ";
+    case RTE_FLOW_ERROR_TYPE_ATTR_INGRESS : return "ATTR_INGRESS" ;
+    case RTE_FLOW_ERROR_TYPE_ATTR_EGRESS  : return "ATTR_EGRESS"  ;
+    case RTE_FLOW_ERROR_TYPE_ATTR         : return "ATTR"         ;
+    case RTE_FLOW_ERROR_TYPE_ITEM_NUM     : return "ITEM_NUM"     ;
+    case RTE_FLOW_ERROR_TYPE_ITEM         : return "ITEM"         ;
+    case RTE_FLOW_ERROR_TYPE_ACTION_NUM   : return "ACTION_NUM"   ;
+    case RTE_FLOW_ERROR_TYPE_ACTION       : return "ACTION"       ;
     default: return "UNKNOWN_ERROR";
   }
 }
