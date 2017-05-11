@@ -46,17 +46,6 @@ namespace slankdev {
 
 
 
-enum {
-  ETH_P_ALL    = 0x0003,
-  ETH_P_IP     = 0x0800,
-  ETH_P_ARP    = 0x0806,
-  ETH_P_RARP   = 0x0835,
-
-  IPPROTO_ICMP = 1     ,
-  IPPROTO_TCP  = 6     ,
-  IPPROTO_UDP  = 17    ,
-  IPPROTO_RAW  = 255   ,
-};
 
 
 
@@ -86,6 +75,9 @@ class socketfd : public safe_intfd {
   void open_afpacket(const char* name);
 #endif
   void open_connect(uint32_t addr, uint16_t port);
+
+  static void linkup(const char* name);
+  static void linkdown(const char* name);
 };
 
 } /* namespace slankdev */
@@ -108,10 +100,11 @@ class socketfd : public safe_intfd {
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <net/if.h>
 
 #ifdef __linux__
 #include <netpacket/packet.h>
+#include <linux/if.h>
+#include <linux/if_ether.h>
 #endif
 
 
@@ -248,6 +241,31 @@ inline void socketfd::open_connect(uint32_t addr, uint16_t port)
 }
 
 
+inline void socketfd::linkup(const char* name)
+{
+  slankdev::socketfd sock;
+  sock.socket(AF_INET, SOCK_DGRAM, 0);
+
+  struct ifreq ifr;
+  memset(&ifr, 0, sizeof(ifr));
+  strncpy(ifr.ifr_name, name, IFNAMSIZ-1);
+  sock.ioctl(SIOCGIFFLAGS, &ifr);
+  ifr.ifr_flags |= IFF_UP | IFF_RUNNING;
+  sock.ioctl(SIOCSIFFLAGS, &ifr);
+}
+
+inline void socketfd::linkdown(const char* name)
+{
+  slankdev::socketfd sock;
+  sock.socket(AF_INET, SOCK_DGRAM, 0);
+
+  struct ifreq ifr;
+  memset(&ifr, 0, sizeof(ifr));
+  strncpy(ifr.ifr_name, name, IFNAMSIZ-1);
+  sock.ioctl(SIOCGIFFLAGS, &ifr);
+  ifr.ifr_flags &= ~IFF_UP;
+  sock.ioctl(SIOCSIFFLAGS, &ifr);
+}
 
 
 

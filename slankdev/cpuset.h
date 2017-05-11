@@ -13,6 +13,7 @@ class cpuset {
 
  public:
   cpuset() { CPU_ZERO(&cpuset_); }
+  cpuset(uint64_t pref) : cpuset() { set(pref); }
   uint64_t get() const
   {
     uint64_t pref = 0;
