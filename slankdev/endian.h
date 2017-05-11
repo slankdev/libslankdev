@@ -46,15 +46,34 @@ inline uint16_t hton(uint16_t n) { return ::htons(n); }
 inline uint16_t ntoh(uint16_t n) { return ::ntohs(n); }
 
 
-inline uint16_t bswap16(uint16_t n)
+inline uint16_t bswap16(uint16_t num)
 {
-  return ((n << 8)&0xff00) | ((n>>8)&0x00ff);
+  uint16_t ret
+    = (0xff00&num)>>8
+    | (0x00ff&num)<<8;
+  return ret;
 }
-
-inline uint32_t bswap32(uint32_t n)
+inline uint32_t bswap32(uint32_t num)
 {
-  return ((n << 24)&0xff000000) | ((n<<8)&0x00ff0000)
-    | ((n>>8)&0x0000ff00) | ((n>>24)&0x000000ff);
+  uint32_t ret
+    = (0xff000000&num)>>24
+    | (0x00ff0000&num)>>8
+    | (0x0000ff00&num)<<8
+    | (0x000000ff&num)<<24;
+  return ret;
+}
+inline uint64_t bswap64(uint64_t num)
+{
+  uint64_t ret
+    = (0xff00000000000000&num) >> 56
+    | (0x00ff000000000000&num) >> 40
+    | (0x0000ff0000000000&num) >> 24
+    | (0x000000ff00000000&num) >> 8
+    | (0x00000000ff000000&num) << 8
+    | (0x0000000000ff0000&num) << 24
+    | (0x000000000000ff00&num) << 40
+    | (0x00000000000000ff&num) << 56;
+  return ret;
 }
 
 
