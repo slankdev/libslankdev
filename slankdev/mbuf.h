@@ -34,6 +34,7 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
+#include <stdio.h>
 
 namespace slankdev {
 
