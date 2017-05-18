@@ -45,12 +45,16 @@ inline void dpdk_boot(int argc, char** argv)
 inline rte_mempool* mp_alloc(const char* name)
 {
   constexpr size_t NUM_MBUFS       = 8191;
-  constexpr size_t MBUF_CACHE_SIZE = 250;
+  constexpr size_t MBUF_CACHE_SIZE = 0;
   size_t nb_ports = rte_eth_dev_count();
 
 	struct rte_mempool* mp = rte_pktmbuf_pool_create(
-      name, NUM_MBUFS * nb_ports, MBUF_CACHE_SIZE, 0,
-      RTE_MBUF_DEFAULT_BUF_SIZE, rte_socket_id());
+      name,
+      NUM_MBUFS * nb_ports,
+      MBUF_CACHE_SIZE,
+      0,
+      RTE_MBUF_DEFAULT_BUF_SIZE,
+      rte_socket_id());
   if (!mp) {
     std::string e = "rte_pktmbuf_pool_create: ";
     e += rte_strerror(rte_errno);
