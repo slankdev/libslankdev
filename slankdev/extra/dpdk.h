@@ -4,8 +4,10 @@
 #include <slankdev/unused.h>
 #include <slankdev/string.h>
 #include <slankdev/exception.h>
+
 #include <slankdev/extra/dpdk_header.h>
 #include <slankdev/extra/dpdk_struct.h>
+#include <slankdev/extra/dpdk_wrapkh>
 
 
 
@@ -22,13 +24,6 @@ static inline void errhandle(const char* str)
   throw slankdev::exception(e.c_str());
 }
 
-
-
-inline void rte_pktmbuf_free_bulk(struct rte_mbuf* m_list[], size_t npkts)
-{
-  while (npkts--)
-    rte_pktmbuf_free(*m_list++);
-}
 
 
 inline void dpdk_boot(int argc, char** argv)
