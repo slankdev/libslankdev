@@ -7,7 +7,7 @@
 
 #include <slankdev/extra/dpdk_header.h>
 #include <slankdev/extra/dpdk_struct.h>
-#include <slankdev/extra/dpdk_wrapkh>
+#include <slankdev/extra/dpdk_wrap.h>
 
 
 
