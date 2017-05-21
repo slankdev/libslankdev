@@ -7,7 +7,7 @@
 
 #include <slankdev/extra/dpdk_header.h>
 #include <slankdev/extra/dpdk_struct.h>
-#include <slankdev/extra/dpdk_wrapkh>
+#include <slankdev/extra/dpdk_wrap.h>
 
 
 
@@ -148,7 +148,7 @@ inline void port_configure(uint8_t port, size_t nb_rxq, size_t nb_txq,
     }
   }
 
-  for (size_t q=0; q<nb_rxq; q++) {
+  for (size_t q=0; q<nb_txq; q++) {
     ret = rte_eth_tx_queue_setup(port, q, TX_RING_SIZE,
         rte_eth_dev_socket_id(port), NULL);
     if (ret < 0) {
