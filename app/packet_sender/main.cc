@@ -2,7 +2,6 @@
 
 #include <slankdev/socketfd.h>
 #include <slankdev/hexdump.h>
-const char* ifname = "lo";
 
 uint8_t packet[] = {
   /* arp packet */
@@ -14,10 +13,15 @@ uint8_t packet[] = {
   0x00, 0x00,
 };
 
-int main()
+int main(int argc, char** argv)
 {
+  if (argc < 2) {
+    fprintf(stderr, "Usage: %s ifname \n", argv[0]);
+    return -1;
+  }
+
   slankdev::socketfd sock;
-  sock.open_afpacket(ifname);
+  sock.open_afpacket(argv[1]);
   sock.write(packet, sizeof(packet));
   slankdev::hexdump(stdout, packet, sizeof(packet));
 }
