@@ -58,6 +58,20 @@ inline rte_mempool* mp_alloc(const char* name)
   return mp;
 }
 
+inline rte_ring* ring_alloc(const char* name, size_t sizeofring)
+{
+  /*
+   * 2nd argument, sizeofringm must be power of 2
+   * Example
+   *   good: 64, 128, 1024
+   *   bad : 1000
+   */
+  int socket_id  = rte_socket_id();
+  uint32_t flags = 0;
+  rte_ring* r = slankdev::ring_create(name, sizeofring, socket_id, flags);
+  return r;
+}
+
 
 inline void init_portconf(struct rte_eth_conf* conf)
 {
