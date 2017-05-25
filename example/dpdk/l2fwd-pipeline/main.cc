@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <slankdev/extra/dpdk.h>
 
 
@@ -8,14 +9,36 @@ struct wk_arg {
   struct rte_ring* dst;
 };
 
+constexpr size_t BURSTSZ = 32;
+size_t cnt_call_wk[10];
+
 int wk(void* arg)
 {
-  printf("launched wk on lcore%u \n", rte_lcore_id());
+  uint8_t lcoreid = rte_lcore_id();
+  printf("launched wk on lcore%u \n", lcoreid);
   struct wk_arg* wk = reinterpret_cast<wk_arg*>(arg);
   while (true) {
-    constexpr size_t BURSTSZ = 32;
     struct rte_mbuf* mbufs[BURSTSZ];
     size_t nb_deq = rte_ring_dequeue_bulk(wk->src, (void**)mbufs, sizeof(mbufs), nullptr);
+    if (nb_deq == 0) continue;
+
+#if 1 // dummiy
+    size_t a = cnt_call_wk[lcoreid];
+    for (size_t i=0; i<nb_deq; i++) {
+      // cnt_call_wk[lcoreid] ++;
+      a ++;
+      struct rte_mbuf* m = mbufs[i];
+      rte_prefetch0(rte_pktmbuf_mtod(m, void*));
+      rte_pktmbuf_mtod(m, uint8_t*)[12] = 0x11;
+      uint8_t* p = rte_pktmbuf_mtod(m, uint8_t*);
+      p[12] = 0x00;
+      p[40] = 0x00;
+      auto s = p[43];
+      if (p[12]==0x08 && p[13]==0x06)  p[12]=0;
+    }
+    cnt_call_wk[lcoreid] = a;
+#endif
+
     size_t nb_enq = rte_ring_enqueue_bulk(wk->dst, (void**)mbufs, nb_deq, nullptr);
     if (nb_enq < nb_deq)
       slankdev::rte_pktmbuf_free_bulk(&mbufs[nb_enq], nb_deq-nb_enq);
@@ -30,7 +53,6 @@ int l2fwd(void* arg)
   size_t nb_ports = rte_eth_dev_count();
   while (true) {
     for (size_t pid=0; pid<nb_ports; pid++) {
-      constexpr size_t BURSTSZ = 32;
       rte_mbuf* mbufs[BURSTSZ];
 
       constexpr size_t nb_q = 1;
@@ -46,6 +68,13 @@ int l2fwd(void* arg)
       if (nb_send < nb_deq)
         slankdev::rte_pktmbuf_free_bulk(&mbufs[nb_send], nb_deq-nb_send);
     }
+#if 0
+    printf("-------------------\n");
+    for (size_t i=0; i<10; i++) {
+      printf("wk[%zd] call %zd times\n",i, cnt_call_wk[i]);
+    }
+    printf("-------------------\n");
+#endif
   }
   return 0;
 }
