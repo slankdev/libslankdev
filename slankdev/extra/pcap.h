@@ -37,6 +37,9 @@
 
 namespace slankdev {
 
+inline void cb(uint8_t* user, const struct pcap_pkthdr* h, const uint8_t* byte)
+{ slankdev::hexdump(stdout, byte, h->len); }
+
 
 class pcap {
  protected:
@@ -55,29 +58,7 @@ class pcap {
   void compile(struct bpf_program *fp,
       const char *str, int optimize, bpf_u_int32 netmask);
   void open_dead();
-
-  // void sendpacket(const void* d, size_t l)
-  // {
-  //   int ret = pcap_sendpacket(handle, reinterpret_cast<const u_char*>(d), l);
-  //   if (ret < 0) {
-  //     std::string err;
-  //     err = "pcap_sendpacket: ";
-  //     err += pcap_geterr(handle);
-  //     throw slankdev::exception(err.c_str());
-  //   }
-  // }
-  // pcap_dumper_t* dump_open(const char* filename)
-  // {
-  //   pcap_dumper_t* ret = pcap_dump_open(handle, filename);
-  //   if (ret < 0) {
-  //     std::string err;
-  //     err = "pcap_dump_open: ";
-  //     err += pcap_geterr(handle);
-  //     throw slankdev::exception(err.c_str());
-  //   }
-  //   return ret;
-  // }
-
+  void loop(int cnt, pcap_handler callback, uint8_t* user);
 };
 
 
@@ -183,6 +164,11 @@ inline void pcap::compile(struct bpf_program *fp,
     std::string errstr = pcap_geterr(handle);
     throw slankdev::exception(errstr.c_str());
   }
+}
+
+inline void pcap::loop(int cnt, pcap_handler callback, uint8_t* user)
+{
+  pcap_loop(handle, cnt, callback, user);
 }
 
 } /* namespace slankadev */
