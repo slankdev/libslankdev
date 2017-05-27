@@ -40,7 +40,6 @@ namespace slankdev {
 inline void cb(uint8_t* user, const struct pcap_pkthdr* h, const uint8_t* byte)
 { slankdev::hexdump(stdout, byte, h->len); }
 
-
 class pcap {
  protected:
   pcap_t* handle;
@@ -63,7 +62,6 @@ class pcap {
 
 
 } /* namespace slankadev */
-
 
 
 
