@@ -165,7 +165,7 @@ inline void pcap::next()
 }
 inline void pcap::recv(const void* ptr, struct pcap_pkthdr* header)
 {
-  slankdev::hexdump("Userfunction", ptr, header->len);
+  slankdev::hexdump(stdout, ptr, header->len);
 }
 inline void pcap::setfilter(struct bpf_program *fp)
 {
