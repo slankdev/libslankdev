@@ -58,6 +58,7 @@ class pcap {
       const char *str, int optimize, bpf_u_int32 netmask);
   void open_dead();
   void loop(int cnt, pcap_handler callback, uint8_t* user);
+  int datalink() const;
 };
 
 
@@ -78,6 +79,10 @@ class pcap {
 
 namespace slankdev {
 
+inline int pcap::datalink() const
+{
+  return pcap_datalink(handle);
+}
 
 inline void pcap::open_dead()
 {
