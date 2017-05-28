@@ -41,6 +41,20 @@
 
 namespace slankdev {
 
+
+inline uint64_t rdtscp(uint32_t* cpuid)
+{
+  unsigned int eax, edx;
+  __asm__ volatile("rdtscp"
+      : "=a"(eax), "=d"(edx)
+      :: "%rcx");
+  __asm__ volatile(
+      "movl %%ecx, %0;"
+      :"=r"(*cpuid));
+  return ((uint64_t)edx << 32) | eax;
+}
+
+
 inline uint64_t rdtsc()
 {
   unsigned int eax, edx;
