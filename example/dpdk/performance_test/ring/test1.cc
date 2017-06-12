@@ -34,7 +34,9 @@ int main(int argc, char** argv)
     slankdev::safe_ring_enqueue(ring, mbuf);
     enq_sum += slankdev::rdtscp(&lcore_id) - tmp;
   }
-  printf("enq/deq latency: %lu/%lu [clk]\n", enq_sum/loops, deq_sum/loops);
+  printf("\n\n");
+  printf("%10s, %10s, %10s\n", "", "enq[clk]", "deq[clk]");
+  printf("%10s, %10lu, %10lu\n", "1shot", enq_sum/loops, deq_sum/loops);
 }
 
 
