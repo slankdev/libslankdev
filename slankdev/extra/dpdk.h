@@ -45,7 +45,7 @@ inline rte_mempool* mp_alloc(const char* name)
 
 	struct rte_mempool* mp = rte_pktmbuf_pool_create(
       name,
-      NUM_MBUFS * nb_ports,
+      NUM_MBUFS * (nb_ports!=0?nb_ports:1),
       MBUF_CACHE_SIZE,
       0,
       RTE_MBUF_DEFAULT_BUF_SIZE,
