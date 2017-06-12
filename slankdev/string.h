@@ -85,6 +85,20 @@ inline std::vector<std::string> split(const std::string &str, char sep)
 }
 
 
+inline std::string get_progress_str(double percent, size_t maxlen=50)
+{
+  std::string s;
+  size_t barlen = maxlen * percent;
+
+  s += "[";
+  for (size_t i=0; i<barlen; i++) s+="=";
+  if (barlen != maxlen) s+=">";
+  for (size_t i=0; i<maxlen-barlen; i++) s+=" ";
+  s += "]";
+  s += slankdev::format("%lf%", percent*100);
+  return s;
+}
+
 
 
 } /* namespace slankdev */
