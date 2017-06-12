@@ -37,6 +37,14 @@ inline void dpdk_boot(int argc, char** argv)
 }
 
 
+inline void set_mbuf_raw(rte_mbuf* mbuf, const void* data, size_t len)
+{
+  mbuf->data_len = len;
+  mbuf->pkt_len  = len;
+  uint8_t* p = reinterpret_cast<uint8_t*>(rte_pktmbuf_mtod(mbuf, uint8_t*));
+  memcpy(p, data, len);
+}
+
 inline rte_mempool* mp_alloc(const char* name)
 {
   constexpr size_t NUM_MBUFS       = 8191;
@@ -189,6 +197,32 @@ inline void port_configure(uint8_t port, size_t nb_rxq, size_t nb_txq,
 }
 
 
+inline void safe_ring_enqueue(rte_ring* ring, void* data)
+{
+  int ret = rte_ring_enqueue(ring, data);
+  if (ret < 0) throw slankdev::exception("rte_ring_enqueue: no space in ring");
+}
+
+
+inline void safe_ring_dequeue(rte_ring* ring, void** data)
+{
+  int ret = rte_ring_dequeue(ring, data);
+  if (ret < 0) throw slankdev::exception("rte_ring_dequeue: no entry in ring");
+}
+
+
+inline void safe_ring_enqueue_bulk(rte_ring* ring, void* const* objs, size_t n)
+{
+  int ret = rte_ring_enqueue_bulk(ring, objs, n, nullptr);
+  if (ret != n) throw slankdev::exception("rte_ring_enqueue_bulk: miss");
+}
+
+
+inline void safe_ring_dequeue_bulk(rte_ring* ring, void** objs, size_t n)
+{
+  int ret = rte_ring_dequeue_bulk(ring, objs, n, nullptr);
+  if (ret < 0) throw slankdev::exception("rte_ring_dequeue_bulk: miss");
+}
 
 
 } /* namespace slankdev */
