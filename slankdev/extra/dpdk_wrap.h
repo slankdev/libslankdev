@@ -11,7 +11,7 @@ inline void rte_pktmbuf_free_bulk(struct rte_mbuf* m_list[], size_t npkts)
 }
 
 
-struct rte_mbuf* pktmbuf_clone(struct rte_mbuf* md, struct rte_mempool* mp)
+inline struct rte_mbuf* pktmbuf_clone(struct rte_mbuf* md, struct rte_mempool* mp)
 {
   struct rte_mbuf* ret = ::rte_pktmbuf_clone(md, mp);
   if (!ret) {
@@ -20,7 +20,7 @@ struct rte_mbuf* pktmbuf_clone(struct rte_mbuf* md, struct rte_mempool* mp)
   return ret;
 }
 
-struct rte_ring* ring_create(const char* name, size_t count, int socket_id, unsigned flags)
+inline struct rte_ring* ring_create(const char* name, size_t count, int socket_id, unsigned flags)
 {
   struct rte_ring* ring = ::rte_ring_create(name, count, socket_id, flags);
   if (!ring) {
