@@ -41,32 +41,42 @@
 
 namespace slankdev {
 
+namespace {
+  void safe_write(int fd, const void* buf, size_t nbuf)
+  {
+    int ret = write(fd, buf, nbuf);
+    if (ret < 0) {
+      throw slankdev::exception("write");
+    }
+  }
+} /* namespace */
+
 /* Send WILL TELOPT_ECHO to remote server. */
 inline void vty_will_echo (int fd)
 {
   unsigned char cmd[] = { IAC, WILL, TELOPT_ECHO, '\0' };
-  write(fd, cmd, sizeof(cmd));
+  safe_write(fd, cmd, sizeof(cmd));
 }
 
 /* Make suppress Go-Ahead telnet option. */
 inline void vty_will_suppress_go_ahead (int fd)
 {
   unsigned char cmd[] = { IAC, WILL, TELOPT_SGA, '\0' };
-  write(fd, cmd, sizeof(cmd));
+  safe_write(fd, cmd, sizeof(cmd));
 }
 
 /* Make don't use linemode over telnet. */
 inline void vty_dont_linemode (int fd)
 {
   unsigned char cmd[] = { IAC, DONT, TELOPT_LINEMODE, '\0' };
-  write(fd, cmd, sizeof(cmd));
+  safe_write(fd, cmd, sizeof(cmd));
 }
 
 /* Use window size. */
 inline void vty_do_window_size (int fd)
 {
   unsigned char cmd[] = { IAC, DO, TELOPT_NAWS, '\0' };
-  write(fd, cmd, sizeof(cmd));
+  safe_write(fd, cmd, sizeof(cmd));
 }
 
 

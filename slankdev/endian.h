@@ -34,16 +34,16 @@
 #pragma once
 
 #include <stdint.h>
-#include <arpa/inet.h>
+// #include <arpa/inet.h>
 
 
 namespace slankdev {
 
 
-inline uint32_t hton(uint32_t n) { return ::htonl(n); }
-inline uint32_t ntoh(uint32_t n) { return ::ntohl(n); }
-inline uint16_t hton(uint16_t n) { return ::htons(n); }
-inline uint16_t ntoh(uint16_t n) { return ::ntohs(n); }
+// inline uint32_t hton(uint32_t n) { return ::htonl(n); }
+// inline uint32_t ntoh(uint32_t n) { return ::ntohl(n); }
+// inline uint16_t hton(uint16_t n) { return ::htons(n); }
+// inline uint16_t ntoh(uint16_t n) { return ::ntohs(n); }
 
 
 inline uint16_t bswap16(uint16_t num)
