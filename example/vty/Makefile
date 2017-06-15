@@ -1,5 +1,5 @@
 
-LIB = /home/slank/git/libslankdev
+LIB = /home/slank/git/slankdev/libslankdev
 
 
 CXXFLAGS += -Wno-format-security
