@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <string>
 #include <slankdev/endian.h>
+#include <arpa/inet.h>
 
 
 
