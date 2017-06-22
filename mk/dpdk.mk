@@ -3,7 +3,6 @@ DPDK_CFLAGS = -I$(RTE_SDK)/$(RTE_TARGET)/include
 DPDK_LDFLAGS = -L$(RTE_SDK)/$(RTE_TARGET)/lib -ldpdk -lpthread -ldl -lrt -lm
 
 
-Write
 
 # ifeq ($(RTE_SDK),)
 # $(error "Please define RTE_SDK environment variable")
