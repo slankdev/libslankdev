@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <stdarg.h>
 #include <vector>
 
 #define UNUSED(x) (void)(x)
@@ -54,6 +55,7 @@ inline void vec_delete_all_ptr_elements(std::vector<T*>& vec)
   }
 }
 
+#if 0
 template <class... ARGS>
 inline void fdprintf(int fd, const char* fmt, ARGS... args)
 {
@@ -61,6 +63,17 @@ inline void fdprintf(int fd, const char* fmt, ARGS... args)
   ::fprintf(fp, fmt, args...);
   fflush(fp);
 }
+#else
+inline void fdprintf(int fd, const char* fmt, ...)
+{
+  FILE* fp = fdopen(fd, "w");
+  va_list args;
+  va_start(args, fmt);
+  vfprintf(fp, fmt, args);
+  va_end(args);
+  fflush(fp);
+}
+#endif
 
 
 inline void clear_screen()

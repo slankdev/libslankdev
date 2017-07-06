@@ -61,6 +61,7 @@ class socketfd : public safe_intfd {
   void socket(int domain, int type, int protocol);
   void connect(const struct sockaddr* addr, socklen_t addrlen);
   void bind(const struct sockaddr* sa, size_t len);
+  void bind(uint32_t addr, uint16_t port);
   void listen(int backlog);
   int  accept(struct sockaddr* sa, socklen_t* len);
   void sendto(const void* buffer, size_t bufferlen,int flags,
@@ -75,7 +76,7 @@ class socketfd : public safe_intfd {
   void open_afpacket(const char* name);
 #endif
   void open_connect(uint32_t addr, uint16_t port);
-  void open_listen(uint32_t addr, uint16_t port, int backlog);
+  void open_bind(uint32_t addr, uint16_t port);
 
   static void linkup(const char* name);
   static void linkdown(const char* name);
@@ -138,6 +139,14 @@ inline void socketfd::bind(const struct sockaddr* sa, size_t len)
     perror("bind");
     exit(-1);
   }
+}
+inline void socketfd::bind(uint32_t addr, uint16_t port)
+{
+  struct sockaddr_in server;
+  server.sin_family = AF_INET;
+  server.sin_port = htons(port);
+  server.sin_addr.s_addr = htonl(addr);
+  bind((sockaddr*)&server, sizeof(server));
 }
 inline void socketfd::listen(int backlog)
 {
@@ -241,7 +250,7 @@ inline void socketfd::open_connect(uint32_t addr, uint16_t port)
   connect(reinterpret_cast<struct sockaddr*>(&server), sizeof(server));
 }
 
-inline void socketfd::open_listen(uint32_t addr, uint16_t port, int backlog)
+inline void socketfd::open_bind(uint32_t addr, uint16_t port)
 {
   socket(AF_INET, SOCK_STREAM, 0);
 
@@ -250,8 +259,6 @@ inline void socketfd::open_listen(uint32_t addr, uint16_t port, int backlog)
   server.sin_port = htons(port);
   server.sin_addr.s_addr = htonl(addr);
   bind((sockaddr*)&server, sizeof(server));
-
-  listen(backlog);
 }
 
 inline void socketfd::linkup(const char* name)
