@@ -75,6 +75,7 @@ class socketfd : public safe_intfd {
   void open_afpacket(const char* name);
 #endif
   void open_connect(uint32_t addr, uint16_t port);
+  void open_listen(uint32_t addr, uint16_t port, int backlog);
 
   static void linkup(const char* name);
   static void linkdown(const char* name);
@@ -240,6 +241,18 @@ inline void socketfd::open_connect(uint32_t addr, uint16_t port)
   connect(reinterpret_cast<struct sockaddr*>(&server), sizeof(server));
 }
 
+inline void socketfd::open_listen(uint32_t addr, uint16_t port, int backlog)
+{
+  socket(AF_INET, SOCK_STREAM, 0);
+
+  struct sockaddr_in server;
+  server.sin_family = AF_INET;
+  server.sin_port = htons(port);
+  server.sin_addr.s_addr = htonl(addr);
+  bind((sockaddr*)&server, sizeof(server));
+
+  listen(backlog);
+}
 
 inline void socketfd::linkup(const char* name)
 {

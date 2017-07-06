@@ -8,7 +8,8 @@
 #include <slankdev/extra/dpdk.h>
 
 
-struct lthread *lt = NULL;
+struct lthread *lta = NULL;
+struct lthread *ltb = NULL;
 constexpr size_t interval = 1000;
 
 void b(void *x)
@@ -29,14 +30,14 @@ void a(void *arg)
     printf(" ==%ua%zd== \n", lid, i);
     fflush(stdout);
     lthread_sleep(interval);
-    if (i==1) lthread_create(&lt, b, NULL);
+    if (i==1) lthread_create(&ltb, b, NULL);
   }
   printf("quit a\n");
 }
 
 int eal_thread_1(void*)
 {
-  lthread_create(&lt, a, NULL);
+  lthread_create(&lta, a, NULL);
   lthread_run();
   printf("all done 1\n");
   return 0;
@@ -46,7 +47,6 @@ int main(int argc, char **argv)
 {
   slankdev::dpdk_boot(argc, argv);
   rte_eal_remote_launch(eal_thread_1, nullptr, 1);
-  printf("rerer\n");
   rte_eal_mp_wait_lcore();
   printf("all done master\n");
 }

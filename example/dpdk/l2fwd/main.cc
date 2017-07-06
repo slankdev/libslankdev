@@ -25,9 +25,10 @@ int main(int argc, char** argv)
   struct rte_mempool* mp = slankdev::mp_alloc("RXMBUFMP");
 
   size_t nb_ports = rte_eth_dev_count();
+  if (nb_ports == 0) throw slankdev::exception("no ethdev");
   printf("%zd ports found \n", nb_ports);
   for (size_t i=0; i<nb_ports; i++) {
-    slankdev::port_configure(i, 1, 1, &port_conf, mp);
+    slankdev::port_configure(i, 2, 1, &port_conf, mp);
   }
 
   rte_eal_remote_launch(l2fwd, nullptr, 1);
