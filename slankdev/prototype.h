@@ -9,6 +9,41 @@
 namespace slankdev {
 
 
+#if 0
+/*
+ * slankdev::json
+ */
+class json_ele {
+ public:
+  const std::string attr_;
+  json_ele(const char* a) : attr_(a) {}
+  virtual ~json_ele() {}
+  virtual void dump(size_t indent) const = 0;
+};
+class json_ele_str : public json_ele {
+  std::string val_;
+ public:
+  json_ele_str(const char* a, const char* v) : json_ele(a), val_(v) {}
+  virtual void dump(size_t indent=0) const override
+  {
+    for (size_t i=0; i<indent; i++) printf(" ");
+    printf("\"%s\" : \"%s\" \n", attr_.c_str(), val_.c_str());
+  }
+};
+class json_ele_int : public json_ele {
+  int val_;
+ public:
+  json_ele_int(const char* a, int v) : json_ele(a), val_(v) {}
+  virtual void dump(size_t indent=0) const override
+  {
+    for (size_t i=0; i<indent; i++) printf(" ");
+    printf("\"%s\" : \"%d\" \n", attr_.c_str(), val_);
+  }
+};
+#endif
+
+
+
 // uint8_t arp_raw[] = {
 //     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 //     0x00, 0x00, 0x00, 0x00, 0x08, 0x06, 0x00, 0x01,
