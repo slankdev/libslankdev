@@ -46,11 +46,11 @@ class rest_server : public slankdev::http {
             "Access-Control-Allow-Origin: *\r\n"
             "Content-Type: application/json; charaset=UTF-8\r\n"
             "\r\n"
-            "{\r\n"
-            "   \"error\": {\r\n"
-            "      \"message\": \"Unsupported get request.\",\r\n"
-            "   }\r\n"
-            "}\r\n"
+            "{"
+            "   \"error\": {"
+            "      \"message\": \"Unsupported get request.\""
+            "   }"
+            "}"
             );
       } else {
         slankdev::fdprintf(fd,
