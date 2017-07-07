@@ -59,7 +59,7 @@ class safe_intfd {
   void ioctl(unsigned long l, void* arg);
   void write(const void* buffer, size_t bufferlen);
   size_t read(void* buffer, size_t bufferlen);
-  int get_fd();
+  int get_fd() const;
   void set_fd(int f);
 
 };
@@ -87,7 +87,7 @@ namespace slankdev {
 
 inline safe_intfd::safe_intfd() : fd(-1), noclose_in_destruct(false) {}
 inline safe_intfd::~safe_intfd() { if (!noclose_in_destruct) close(); }
-inline int safe_intfd::get_fd() { return fd; }
+inline int safe_intfd::get_fd() const { return fd; }
 inline void safe_intfd::open(const char* path, int flags)
 {
   fd = ::open(path, flags);
