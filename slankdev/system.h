@@ -68,12 +68,14 @@ inline void delay_clk(size_t num_clks)
   while (rdtsc() - begin < num_clks) ;
 }
 
+#ifdef __linux__
 inline void daemon()
 {
   if (::daemon(0, 0) != 0) {
     throw slankdev::exception("daemon");
   }
 }
+#endif
 
 
 } /* namespace slankdev */
