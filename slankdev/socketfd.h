@@ -38,7 +38,10 @@
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
+
+#ifndef _LINUX_IF_H
 #include <net/if.h>
+#endif
 
 #include <slankdev/intfd.h>
 
