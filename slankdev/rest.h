@@ -19,7 +19,7 @@ class rest_server : public slankdev::http {
  public:
   rest_server(uint32_t addr, uint16_t port) : slankdev::http(addr, port) {}
   void add_route(const char* path, slankdev::http_callback_t callback, void* arg)
-  { cbs[std::string(path)] = ele(callback,arg); }
+  { cbs[std::string(path)] = {callback,arg}; }
   void dispatch()
   {
     sock.listen(1);
