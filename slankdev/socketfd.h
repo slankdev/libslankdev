@@ -110,7 +110,9 @@ class socketfd : public safe_intfd {
 
 #ifdef __linux__
 #include <netpacket/packet.h>
+#ifndef _NET_IF_H
 #include <linux/if.h>
+#endif
 #include <linux/if_ether.h>
 #endif
 
