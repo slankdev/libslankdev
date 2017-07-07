@@ -9,13 +9,18 @@ namespace slankdev {
 
 std::string getline(const void* buf, size_t len);
 
+struct ele {
+  slankdev::http_callback_t f;
+  void* arg;
+};
+
 class rest_server : public slankdev::http {
-  std::map<std::string,slankdev::http_callback_t> cbs;
+  std::map<std::string,ele> cbs;
  public:
   rest_server(uint32_t addr, uint16_t port) : slankdev::http(addr, port) {}
-  void add_route(const char* path, slankdev::http_callback_t callback)
-  { cbs[std::string(path)] = callback; }
-  void dispatch(void* arg)
+  void add_route(const char* path, slankdev::http_callback_t callback, void* arg)
+  { cbs[std::string(path)] = ele(callback,arg); }
+  void dispatch()
   {
     sock.listen(1);
     while (true) {
@@ -54,7 +59,7 @@ class rest_server : public slankdev::http {
             "Content-Type: application/json; charaset=UTF-8\r\n"
             "\r\n"
             );
-        cbs[uri](fd, buf, recvlen, arg);
+        cbs[uri].f(fd, buf, recvlen, cbs[uri].arg);
       }
     } // while
   }
