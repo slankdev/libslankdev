@@ -36,8 +36,24 @@ class rest_server : public slankdev::http {
       sscanf(line.c_str(), "%s %s", method, uri);
 
       if (cbs.count(uri) == 0) {
-        slankdev::fdprintf(fd, "HTTP/1.1 404 Not Found\n");
+        slankdev::fdprintf(fd,
+            "HTTP/1.1 400 Bad Request\r\n"
+            "Access-Control-Allow-Origin: *\r\n"
+            "Content-Type: application/json; charaset=UTF-8\r\n"
+            "\r\n"
+            "{\r\n"
+            "   \"error\": {\r\n"
+            "      \"message\": \"Unsupported get request.\",\r\n"
+            "   }\r\n"
+            "}\r\n"
+            );
       } else {
+        slankdev::fdprintf(fd,
+            "HTTP/1.1 200 OK\r\n"
+            "Access-Control-Allow-Origin: *\r\n"
+            "Content-Type: application/json; charaset=UTF-8\r\n"
+            "\r\n"
+            );
         cbs[uri](fd, buf, recvlen, arg);
       }
     } // while
