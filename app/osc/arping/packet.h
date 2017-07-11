@@ -1,23 +1,20 @@
 
 #pragma once
+#include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <unistd.h>
+
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
-#include <sys/ioctl.h>
-#include <sys/stat.h>
+
 #include <net/if.h>
 #include <netinet/in.h>
-#include <fcntl.h>
-#include <netpacket/packet.h>
-#include <linux/if_ether.h>
-#include <arpa/inet.h>
-#include <errno.h>
-#include <stdio.h>
+#include <net/ethernet.h>
+#include <linux/if_packet.h>
 
 
 int open_socket(const char* name);
@@ -35,10 +32,10 @@ inline int open_socket(const char* name)
     exit(-1);
   }
 
-  struct ifreq ifreq;
-  memset(&ifreq, 0, sizeof(ifreq));
-  strncpy(ifreq.ifr_name, name, sizeof(ifreq.ifr_name)-1);
-  ret = ioctl(fd, SIOCGIFINDEX, &ifreq);
+  struct ifreq ifr;
+  memset(&ifr, 0, sizeof(ifr));
+  strncpy(ifr.ifr_name, name, sizeof(ifr.ifr_name)-1);
+  ret = ioctl(fd, SIOCGIFINDEX, &ifr);
   if (ret < 0) {
     perror("ioctl_getifindex");
     exit(-1);
@@ -47,21 +44,21 @@ inline int open_socket(const char* name)
   struct sockaddr_ll sa;
   sa.sll_family = PF_PACKET;
   sa.sll_protocol = htons(ETH_P_ALL);
-  sa.sll_ifindex = ifreq.ifr_ifindex;
+  sa.sll_ifindex = ifr.ifr_ifindex;
   ret = bind(fd, (struct sockaddr*)&sa, sizeof(sa));
   if (ret < 0) {
     perror("bind");
     exit(-1);
   }
 
-  ret = ioctl(fd, SIOCGIFFLAGS, &ifreq);
+  ret = ioctl(fd, SIOCGIFFLAGS, &ifr);
   if (ret < 0) {
     perror("ioctl");
     exit(-1);
   }
 
-  ifreq.ifr_flags = ifreq.ifr_flags | IFF_PROMISC;
-  ret = ioctl(fd, SIOCSIFFLAGS, &ifreq);
+  ifr.ifr_flags = ifr.ifr_flags | IFF_PROMISC;
+  ret = ioctl(fd, SIOCSIFFLAGS, &ifr);
   if (ret < 0) {
     perror("ioctl");
     exit(-1);

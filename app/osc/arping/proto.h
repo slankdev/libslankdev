@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <arpa/inet.h>
 
 
 struct eth_hdr {
@@ -37,7 +38,7 @@ inline void print_eth_hdr(const struct eth_hdr* eth)
 
 inline void print_ip(const uint8_t* ip)
 {
-  for (size_t i=0; i<6; i++) printf("%02x:", ip[i]);
+  for (size_t i=0; i<4; i++) printf("%d.", ip[i]);
 }
 
 inline void print_mac(const uint8_t* mac)
