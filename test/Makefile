@@ -12,12 +12,14 @@ LDFLAGS += -lpcap
 	@echo "CXX $@"
 	@$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS)
 
-SRC = main.cc test_mac2vendor.cc
+SRC = main.cc \
+			test_mac2vendor.cc \
+			test_csv.cc
 OBJ = $(SRC:.cc=.out)
 
 all: $(OBJ)
-	@echo check C++ syntax...
-	@$(CXX) $(CXXFLAGS) main.cc $(LDFLAGS)
-	@echo check C++ syntax... OK
+	@echo "Check is done!!"
 
+clean:
+	rm -rf *.o *.out *.a
 
