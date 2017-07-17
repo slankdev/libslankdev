@@ -23660,20 +23660,21 @@ oui records[] = {
   { 0x609BC8, "Hipad Intelligent Technology Co." },
   { 0xFFFFFF, "end of list                   " }
 };
-inline std::string mac2vendor(uint8_t* m)                  
-{                                                          
-  union {                                                  
-    uint8_t u8[4];                                         
-    uint32_t u32;                                          
-  } U;                                                     
-  U.u8[0] = m[2];                                          
-  U.u8[1] = m[1];                                          
-  U.u8[2] = m[0];                                          
-  U.u8[3] = 0;                                             
-                                                           
-  for (size_t i=0; ;i++) {                                 
-    if (records[i].regist == 0xFFFFFF) break;              
-    if (records[i].regist == U.u32) return records[i].org; 
-  }                                                        
-  return "not found";                                    
-}                                                          
+inline std::string mac2vendor(uint8_t* m)
+{
+  union {
+    uint8_t u8[4];
+    uint32_t u32;
+  } U;
+  U.u8[0] = m[2];
+  U.u8[1] = m[1];
+  U.u8[2] = m[0];
+  U.u8[3] = 0;
+
+  for (size_t i=0; ;i++) {
+    if (records[i].regist == 0xFFFFFF) break;
+    if (records[i].regist == U.u32) return records[i].org;
+  }
+  return "not found";
+}
+
