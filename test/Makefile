@@ -12,7 +12,7 @@ LDFLAGS += -lpcap
 	@echo "CXX $@"
 	@$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS)
 
-SRC = main.cc
+SRC = main.cc test_mac2vendor.cc
 OBJ = $(SRC:.cc=.out)
 
 all: $(OBJ)
