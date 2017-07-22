@@ -14,7 +14,8 @@ LDFLAGS += -lpcap
 
 SRC = test_include.cc    \
 			test_mac2vendor.cc \
-			test_csv.cc
+			test_csv.cc        \
+			test_string.cc
 OBJ = $(SRC:.cc=.out)
 
 all: $(OBJ)
