@@ -37,6 +37,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <stdarg.h>
 
 
 /**
@@ -51,6 +52,7 @@ namespace slankdev {
  * @param[in]       args  arguments
  * @retval          std::string crafted format string as a std::string
  */
+#if 0
 template <class... ARGS>
 inline std::string format(const char* fmt, ARGS... args)
 {
@@ -58,6 +60,17 @@ inline std::string format(const char* fmt, ARGS... args)
   sprintf(str, fmt, args...);
   return str;
 }
+#else
+inline std::string format(const char* fmt, ...)
+{
+  char str[1000];
+  va_list args;
+  va_start(args, fmt);
+  vsprintf(str, fmt, args);
+  va_end(args);
+  return str;
+}
+#endif
 
 
 /* for compatibility */
