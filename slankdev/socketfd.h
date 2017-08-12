@@ -87,6 +87,8 @@ class socketfd : public safe_intfd {
   static void linkdown(const char* name);
 };
 
+std::string inaddr2str(uint32_t inaddr);
+
 } /* namespace slankdev */
 
 
@@ -115,6 +117,9 @@ class socketfd : public safe_intfd {
 #endif
 #include <linux/if_ether.h>
 #endif
+
+#include <string>
+#include <slankdev/string.h>
 
 
 
@@ -294,6 +299,17 @@ inline void socketfd::linkdown(const char* name)
   sock.ioctl(SIOCSIFFLAGS, &ifr);
 }
 
+inline std::string inaddr2str(uint32_t inaddr)
+{
+  union {
+    uint8_t  u8[4];
+    uint32_t u32;
+  } U;
+  U.u32 = inaddr;
+  std::string str = slankdev::format("%02x.%02x.%02x.%02x",
+      U.u8[0], U.u8[1], U.u8[2], U.u8[3]);
+  return str;
+}
 
 
 } /* namespace slankdev */
