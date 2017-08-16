@@ -22,7 +22,7 @@ inline ssize_t domain_reader(const void* domain, size_t len,
 {
   if (str_len < len) {
       return -1;
-    }
+  }
 
   const uint8_t* ptr = (const uint8_t*)domain;
   memcpy(str, ptr+1, len-1);
