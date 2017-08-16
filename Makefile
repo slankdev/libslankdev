@@ -8,6 +8,9 @@ MAKEFLAGS += --no-print-directory
 def:
 	@$(MAKE) -C test
 
+clean:
+	@$(MAKE) -C test clean
+
 doxy:
 	@doxygen
 

@@ -34,7 +34,7 @@ inline ssize_t domain_reader(const void* domain, size_t len,
   ptr = (const uint8_t*)domain;
   for (size_t i=0; i<len; i++, ptr++) {
       if (*ptr==0) {
-            if (ptr - ptr_head > len) return -1;
+            if (size_t(ptr - ptr_head) > len) return -1;
             return ptr - ptr_head;
           }
       uint8_t cnt = *ptr;
