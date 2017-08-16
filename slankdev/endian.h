@@ -51,7 +51,7 @@ inline uint32_t bswap32(uint32_t x)
 		((x & 0x00ff0000UL) >> 8) |
 		((x & 0xff000000UL) >> 24);
 }
-inline uint64_t bswap64(uint64_t num)
+inline uint64_t bswap64(uint64_t x)
 {
   uint64_t ret
     = ((0xff00000000000000 & x) >> 56)
