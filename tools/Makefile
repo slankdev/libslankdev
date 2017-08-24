@@ -1,6 +1,7 @@
 
 LIBSLANKDEV := $(HOME)/git/slankdev/libslankdev
 CXXFLAGS += -I$(LIBSLANKDEV) -std=c++11
+INSTALL_PATH = /usr/local/bin/
 
 .cc.out:
 	@echo "CXX $@"
@@ -18,6 +19,7 @@ clean:
 	rm -rf $(EXE)
 
 install:
-	cp packet_sender.out /usr/local/bin
-	cp create_tap.out    /usr/local/bin
+	cp pkt_send.out   $(INSTALL_PATH)
+	cp bin_send.out   $(INSTALL_PATH)
+	cp create_tap.out $(INSTALL_PATH)
 

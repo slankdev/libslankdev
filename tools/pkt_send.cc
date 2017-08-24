@@ -1,39 +1,10 @@
 
 
+#include <slankdev/net/hdr.h>
 #include <slankdev/socketfd.h>
 #include <slankdev/hexdump.h>
+using namespace slankdev;
 
-uint8_t packet[] = {
-#if 0
-  /* arp packet */
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x08, 0x06, 0x00, 0x01,
-  0x08, 0x00, 0x06, 0x04, 0x00, 0x01, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00,
-  0x00, 0x00,
-#else
-  /* ethernet header */
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x08, 0x00,
-
-  /* ipv4 header */
-  0x45,
-  0x00,                         // ToS
-  0x00, 0x1c,                   // totlen (20+8=28=0x1c)
-  0x00, 0x00,                   // id
-  0x00, 0x00,                   // fragoff
-  0x40,                         // ttl
-  0x01,                         // protocol
-  0x00, 0x00,                   // checksum
-  0xc0, 0xa8, 0x00, 0x01,       // src
-  0xc0, 0xa8, 0x02, 0x01,       // dst
-
-  /* data */
-  0x6c, 0x73, 0x6e, 0x61, 0x64, 0x6b, 0x76, 0x65, // slankdev
-#endif
-};
 
 int main(int argc, char** argv)
 {
@@ -42,10 +13,46 @@ int main(int argc, char** argv)
     return -1;
   }
 
+  uint8_t pkt_ptr[1000] = {0x00};
+  size_t  pkt_len = 0;
+  const char* str = "slankdev";
+
+  ether* eh = (ether*)pkt_ptr;
+  eh->type = bswap16(0x0800);
+  pkt_len += sizeof(ether);
+
+  ip* ih = (ip*)(eh + 1);
+  ih->ver_ihl = 0x45;
+  ih->tos     = 0x00;
+  ih->tot_len = bswap16(sizeof(ip)+strlen(str));
+  ih->id      = bswap16(0x0000);
+  ih->off     = bswap16(0x0000);
+  ih->ttl     = 0x40;
+  ih->proto   = 0x11;
+  ih->sum     = bswap16(0x0000);
+  ih->src     = bswap32(0xc0a80001);
+  ih->dst     = bswap32(0xc0a80002);
+  pkt_len += sizeof(ip);
+
+  udp* uh = (udp*)(ih + 1);
+  uh->sport = bswap16(0xeeee);
+  uh->dport = bswap16(0xdddd);
+  uh->len   = bswap16(strlen(str));
+  uh->cksum = bswap16(0x0000);
+
+  pkt_len += sizeof(udp);
+
+  uint8_t* dp = (uint8_t*)(uh + 1);
+  memcpy(dp, str, strlen(str));
+  pkt_len += strlen(str);
+
+  eh->print(stdout);
+  ih->print(stdout);
+  uh->print(stdout);
   slankdev::socketfd sock;
   sock.open_afpacket(argv[1]);
-  sock.write(packet, sizeof(packet));
-  slankdev::hexdump(stdout, packet, sizeof(packet));
+  sock.write(pkt_ptr, pkt_len);
+  slankdev::hexdump(stdout, pkt_ptr, pkt_len);
 }
 
 
