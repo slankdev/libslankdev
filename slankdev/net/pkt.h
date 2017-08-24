@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include <slankdev/mbuf.h>
-#include <slankdev/net_header.h>
+#include <slankdev/net/mbuf.h>
+#include <slankdev/net/hdr.h>
 #include <slankdev/checksum.h>
 #include <slankdev/endian.h>
 #include <slankdev/hash.h>

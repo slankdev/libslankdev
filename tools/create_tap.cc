@@ -1,7 +1,7 @@
 
 
 #include <stdio.h>
-#include <slankdev/tuntap.h>
+#include <slankdev/net/tuntap.h>
 
 int main(int argc, char** argv)
 {

@@ -7,8 +7,8 @@
 
 #include <slankdev/endian.h>
 #include <slankdev/socketfd.h>
-#include <slankdev/net_header.h>
 #include <slankdev/hexdump.h>
+#include <slankdev/net/hdr.h>
 
 #include <rte_thash.h>
 

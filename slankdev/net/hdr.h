@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 /**
- * @file   slankdev/net_header.h
+ * @file   slankdev/net/hdr.h
  * @brief  nw protocol header structure
  * @author Hiroki SHIROKURA
  * @date   2017.4.2
