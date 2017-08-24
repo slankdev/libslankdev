@@ -16,3 +16,7 @@ all: $(EXE)
 clean:
 	rm -rf $(EXE)
 
+install:
+	cp packet_sender.out /usr/local/bin
+	cp create_tap.out    /usr/local/bin
+
