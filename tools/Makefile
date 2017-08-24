@@ -7,7 +7,8 @@ CXXFLAGS += -I$(LIBSLANKDEV) -std=c++11
 	@$(CXX) $(CXXFLAGS) $< -o $@
 
 SRC = \
-			packet_sender.cc \
+			pkt_send.cc \
+			bin_send.cc \
 			create_tap.cc
 EXE = $(SRC:.cc=.out)
 
