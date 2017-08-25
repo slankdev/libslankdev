@@ -110,5 +110,5 @@ bool log<Tag>::inited = false;
 
 
 } /* namespace slankdev */
-
+// tsurai..
 

@@ -24,6 +24,11 @@ uninstall:
 	@rm -rf $(INSTALL_PATH)/slankdev
 	@echo uninstall to rm "$(INSTALL_PATH)/slankdev"... OK
 
+link-install:
+	@echo create symboric link to $(INSTALL_PATH)...
+	@ln -s `pwd`/slankdev $(INSTALL_PATH)/slankdev
+	@echo create symboric link to $(INSTALL_PATH)... OK
+
 # install_doc:
 # 	@echo installing manual page to $(MANPREFIX)/man3
 # 	@mkdir -p $(MANPREFIX)/man3

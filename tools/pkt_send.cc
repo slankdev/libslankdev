@@ -31,7 +31,7 @@ int main(int argc, char** argv)
   ih->proto   = 0x11;
   ih->sum     = bswap16(0x0000);
   ih->src     = bswap32(0xc0a80001);
-  ih->dst     = bswap32(0xc0a80002);
+  ih->dst     = bswap32(0xc0a80304);
   pkt_len += sizeof(ip);
 
   udp* uh = (udp*)(ih + 1);
@@ -51,6 +51,7 @@ int main(int argc, char** argv)
   uh->print(stdout);
   slankdev::socketfd sock;
   sock.open_afpacket(argv[1]);
+  // for (size_t i=0; i<10; i++) sock.write(pkt_ptr, pkt_len);
   sock.write(pkt_ptr, pkt_len);
   slankdev::hexdump(stdout, pkt_ptr, pkt_len);
 }

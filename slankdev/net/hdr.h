@@ -174,8 +174,8 @@ struct udp {
   void print(FILE* fp) const
   {
     fprintf(fp, "UDP header\n");
-    fprintf(fp, "+ sport: %u\n", ntohs(sport));
-    fprintf(fp, "+ dport: %u\n", ntohs(dport));
+    fprintf(fp, "+ sport: %u (0x%04x)\n", ntohs(sport), ntohs(sport));
+    fprintf(fp, "+ dport: %u (0x%04x)\n", ntohs(dport), ntohs(dport));
     fprintf(fp, "+ len  : %u\n", ntohs(len  ));
     fprintf(fp, "+ cksum: %u\n", ntohs(cksum));
   }
