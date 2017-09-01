@@ -1,5 +1,5 @@
 
-LIBSLANKDEV := $(HOME)/git/slankdev/libslankdev
+LIBSLANKDEV := $(HOME)/git/libslankdev
 CXXFLAGS += -I$(LIBSLANKDEV) -std=c++11
 INSTALL_PATH = /usr/local/bin/
 
