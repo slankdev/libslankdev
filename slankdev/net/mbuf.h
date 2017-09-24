@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 /**
- * @file   slankdev/mbuf.h
+ * @file   slankdev/net/mbuf.h
  * @brief  sample mbuf implementation
  * @author Hiroki SHIROKURA
  * @date   2017.4.2

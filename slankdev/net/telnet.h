@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 /**
- * @file   slankdev/telnet.h
+ * @file   slankdev/net/telnet.h
  * @brief  telnet operation
  * @author Hiroki SHIROKURA
  * @date   2017.4.2

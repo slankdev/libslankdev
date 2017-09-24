@@ -14,7 +14,7 @@
 
 #include <slankdev/hexdump.h>
 #include <slankdev/socketfd.h>
-#include <slankdev/packet.h>
+#include <slankdev/net/pkt.h>
 #include <pgen/io.h>
 
 const char* ifname1 = "eth1";

@@ -84,7 +84,7 @@ class vty {
 #include <unistd.h>
 #include <netinet/tcp.h>
 #include <slankdev/socketfd.h>
-#include <slankdev/telnet.h>
+#include <slankdev/net/telnet.h>
 #include <slankdev/poll.h>
 
 namespace slankdev {

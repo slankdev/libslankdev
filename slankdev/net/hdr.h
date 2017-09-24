@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 /**
- * @file   slankdev/net_header.h
+ * @file   slankdev/net/hdr.h
  * @brief  nw protocol header structure
  * @author Hiroki SHIROKURA
  * @date   2017.4.2
@@ -67,18 +67,19 @@ struct ether {
   slankdev::ether_addr src;
   uint16_t type;
 
-  void print() const
+  void print(FILE* fp) const
   {
-    printf("Ether header\n");
-    printf("+ dst  : %s    \n", dst.to_string().c_str());
-    printf("+ src  : %s    \n", src.to_string().c_str());
-    printf("+ type : 0x%04x\n", ntohs(type));
+    fprintf(fp, "Ether header\n");
+    fprintf(fp, "+ dst  : %s    \n", dst.to_string().c_str());
+    fprintf(fp, "+ src  : %s    \n", src.to_string().c_str());
+    fprintf(fp, "+ type : 0x%04x\n", ntohs(type));
   }
   size_t hdr_len() const { return 14; }
 };
 
 
 
+#if 0
 struct in_addr {
   uint32_t s_addr;
 
@@ -98,45 +99,38 @@ struct in_addr {
     return str;
   }
 };
+#endif
 
 
 
 struct ip {
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-  uint8_t  ihl:4    ;     /* header length          */
-  uint8_t  ver:4;         /* version                */
-#elif __BYTE_ORDER == __BIG_ENDIAN
-  uint8_t  ver:4;         /* version                */
-  uint8_t  ihl:4    ;     /* header length          */
-#else
-# error "fix endian!!"
-#endif
-  uint8_t   tos  ;        /* type of service        */
-  uint16_t  len  ;        /* total length           */
-  uint16_t  id   ;        /* identification         */
-  uint16_t  off  ;        /* fragment offset field  */
-  uint8_t   ttl  ;        /* time to live (TTL)     */
-  uint8_t   proto;        /* protocol               */
-  uint16_t  sum  ;        /* header checksum        */
-  slankdev::in_addr  src; /* source ip address      */
-  slankdev::in_addr  dst; /* destination ip address */
+  uint8_t 	ver_ihl;
+  uint8_t   tos    ;        /* type of service        */
+  uint16_t  tot_len;        /* total length           */
+  uint16_t  id     ;        /* identification         */
+  uint16_t  off    ;        /* fragment offset field  */
+  uint8_t   ttl    ;        /* time to live (TTL)     */
+  uint8_t   proto  ;        /* protocol               */
+  uint16_t  sum    ;        /* header checksum        */
+  uint32_t  src; /* source ip address      */
+  uint32_t  dst; /* destination ip address */
 
-  void print() const
+  void print(FILE* fp) const
   {
-    printf("IP header\n");
-    printf("+ ver  : %u        \n", ver       );
-    printf("+ hlen : %u        \n", ihl       );
-    printf("+ tos  : 0x%02x    \n", tos       );
-    printf("+ len  : %u        \n", ntohs(len));
-    printf("+ id   : 0x%04x    \n", ntohs(id ));
-    printf("+ off  : 0x%04x    \n", ntohs(off));
-    printf("+ ttl  : %u (0x%x) \n", ttl  , ttl  );
-    printf("+ proto: %u (0x%x) \n", proto, proto);
-    printf("+ sum  : 0x%04x    \n", ntohs(sum ));
-    printf("+ src  : %s  \n", src.to_string().c_str());
-    printf("+ dst  : %s  \n", dst.to_string().c_str());
+    fprintf(fp,"IP header\n");
+    fprintf(fp,"+ ver  : %u        \n", (ver_ihl&0xf0)>>4);
+    fprintf(fp,"+ ihl  : %u        \n", (ver_ihl&0x0f)   );
+    fprintf(fp,"+ tos  : 0x%02x    \n", tos       );
+    fprintf(fp,"+ tot_len: %u        \n", ntohs(tot_len));
+    fprintf(fp,"+ id   : 0x%04x    \n", ntohs(id ));
+    fprintf(fp,"+ off  : 0x%04x    \n", ntohs(off));
+    fprintf(fp,"+ ttl  : %u (0x%x) \n", ttl  , ttl  );
+    fprintf(fp,"+ proto: %u (0x%x) \n", proto, proto);
+    fprintf(fp,"+ sum  : 0x%04x    \n", ntohs(sum ));
+    fprintf(fp,"+ src  : 0x%08x  \n", bswap32(src));
+    fprintf(fp,"+ dst  : 0x%08x  \n", bswap32(dst));
   }
-  size_t hdr_len() const { return ihl<<2; }
+  size_t hdr_len() const { return (ver_ihl&0x0f)<<2; }
 };
 
 
@@ -148,22 +142,22 @@ struct arp {
   uint8_t     plen     ;
   uint16_t    operation;
   ether_addr  hwsrc    ;
-  in_addr     psrc     ;
+  uint32_t    psrc     ;
   ether_addr  hwdst    ;
-  in_addr     pdst     ;
+  uint32_t    pdst     ;
 
-  void print() const
+  void print(FILE* fp) const
   {
-    printf("ARP header\n");
-    printf("+ hwtype   : %u\n", ntohs(hwtype   ));
-    printf("+ ptype    : %u\n", ntohs(ptype    ));
-    printf("+ hwlen    : %u\n", hwlen    );
-    printf("+ plen     : %u\n", plen     );
-    printf("+ operation: %u\n", ntohs(operation));
-    printf("+ hwsrc    : %s\n", hwsrc.to_string().c_str());
-    printf("+ psrc     : %s\n", psrc.to_string().c_str());
-    printf("+ hwdst    : %s\n", hwdst.to_string().c_str());
-    printf("+ pdst     : %s\n", pdst.to_string().c_str());
+    fprintf(fp, "ARP header\n");
+    fprintf(fp, "+ hwtype   : %u\n", ntohs(hwtype   ));
+    fprintf(fp, "+ ptype    : %u\n", ntohs(ptype    ));
+    fprintf(fp, "+ hwlen    : %u\n", hwlen    );
+    fprintf(fp, "+ plen     : %u\n", plen     );
+    fprintf(fp, "+ operation: %u\n", ntohs(operation));
+    fprintf(fp, "+ hwsrc    : %s\n", hwsrc.to_string().c_str());
+    fprintf(fp, "+ psrc     : 0x%08x  \n", bswap32(psrc));
+    fprintf(fp, "+ hwdst    : %s\n", hwdst.to_string().c_str());
+    fprintf(fp, "+ pdst     : 0x%08x  \n", bswap32(pdst));
   }
   size_t hdr_len() const { return sizeof(arp); }
 };
@@ -172,18 +166,18 @@ struct arp {
 
 
 struct udp {
-  uint16_t src  ;
-  uint16_t dst  ;
+  uint16_t sport;
+  uint16_t dport;
   uint16_t len  ;
   uint16_t cksum;
 
-  void print() const
+  void print(FILE* fp) const
   {
-    printf("UDP header\n");
-    printf("+ src  : %u\n", ntohs(src  ));
-    printf("+ dst  : %u\n", ntohs(dst  ));
-    printf("+ len  : %u\n", ntohs(len  ));
-    printf("+ cksum: %u\n", ntohs(cksum));
+    fprintf(fp, "UDP header\n");
+    fprintf(fp, "+ sport: %u (0x%04x)\n", ntohs(sport), ntohs(sport));
+    fprintf(fp, "+ dport: %u (0x%04x)\n", ntohs(dport), ntohs(dport));
+    fprintf(fp, "+ len  : %u\n", ntohs(len  ));
+    fprintf(fp, "+ cksum: %u\n", ntohs(cksum));
   }
   size_t hdr_len() const { return sizeof(udp); }
 };
@@ -210,17 +204,17 @@ struct tcp {
   uint16_t cksum;     /* TCP checksum.               */
   uint16_t tcp_urp;   /* TCP urgent pointer, if any. */
 
-  void print() const
+  void print(FILE* fp) const
   {
-    printf("TCP header \n");
-    printf("+ sport    : %u 0x%04x \n", ntohs(sport)  , ntohs(sport)  );
-    printf("+ dport    : %u 0x%04x \n", ntohs(dport)  , ntohs(dport)  );
-    printf("+ seq num  : %u 0x%08x \n", ntohl(seq_num), ntohl(seq_num));
-    printf("+ ack num  : %u 0x%08x \n", ntohl(ack_num), ntohl(ack_num));
-    printf("+ data off : 0x%02x \n", data_off                         );
-    printf("+ tcp flags: 0x%02x \n", tcp_flags                        );
-    printf("+ rx win   : 0x%04x \n", ntohs(rx_win)                    );
-    printf("+ cksum    : 0x%04x \n", ntohs(cksum )                    );
+    fprintf(fp, "TCP header \n");
+    fprintf(fp, "+ sport    : %u 0x%04x \n", ntohs(sport)  , ntohs(sport)  );
+    fprintf(fp, "+ dport    : %u 0x%04x \n", ntohs(dport)  , ntohs(dport)  );
+    fprintf(fp, "+ seq num  : %u 0x%08x \n", ntohl(seq_num), ntohl(seq_num));
+    fprintf(fp, "+ ack num  : %u 0x%08x \n", ntohl(ack_num), ntohl(ack_num));
+    fprintf(fp, "+ data off : 0x%02x \n", data_off                         );
+    fprintf(fp, "+ tcp flags: 0x%02x \n", tcp_flags                        );
+    fprintf(fp, "+ rx win   : 0x%04x \n", ntohs(rx_win)                    );
+    fprintf(fp, "+ cksum    : 0x%04x \n", ntohs(cksum )                    );
   }
 };
 
@@ -230,12 +224,12 @@ struct icmp {
   uint8_t code;
   uint16_t checksum;
 
-  void print() const
+  void print(FILE* fp) const
   {
-    printf("ICMP header \n");
-    printf("+ type     : %u \n", type);
-    printf("+ code     : %u \n", code);
-    printf("+ checksum : %u \n", ntohs(checksum));
+    fprintf(fp, "ICMP header \n");
+    fprintf(fp, "+ type     : %u \n", type);
+    fprintf(fp, "+ code     : %u \n", code);
+    fprintf(fp, "+ checksum : %u \n", ntohs(checksum));
   }
 };
 

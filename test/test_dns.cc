@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <slankdev/hexdump.h>
-#include <slankdev/dns.h>
+#include <slankdev/net/dns.h>
 
 
 int main()

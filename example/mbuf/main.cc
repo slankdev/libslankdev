@@ -4,10 +4,10 @@
 #include <string.h>
 #include <stdint.h>
 
-#include <slankdev/mbuf.h>
-#include <slankdev/net_header.h>
 #include <slankdev/hexdump.h>
 #include <slankdev/util.h>
+#include <slankdev/net/mbuf.h>
+#include <slankdev/net/hdr.h>
 
 
 class packet {
