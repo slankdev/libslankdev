@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 
-INPUT = ../
+INPUT = ../slankdev
 
 PROJECT_NAME            = Lib SLANKDEV
 PREDEFINED              = __DOXYGEN__  __attribute__(x)=
@@ -48,5 +48,7 @@ SOURCE_BROWSER          = YES
 EXAMPLE_PATH            = examples
 EXAMPLE_PATTERNS        = *.cc
 EXAMPLE_RECURSIVE       = YES
+INLINE_SOURCES          = YES
+
 
 
