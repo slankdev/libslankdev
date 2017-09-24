@@ -11,8 +11,8 @@ def:
 clean:
 	@$(MAKE) -C test clean
 
-doxy:
-	@doxygen
+doxygen:
+	@$(MAKE) -C docs
 
 install:
 	@echo install to $(INSTALL_PATH)...
