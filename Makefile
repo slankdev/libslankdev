@@ -11,7 +11,7 @@ def:
 clean:
 	@$(MAKE) -C test clean
 
-doxygen:
+doc:
 	@$(MAKE) -C docs
 
 install:
