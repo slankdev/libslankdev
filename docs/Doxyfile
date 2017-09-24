@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 
-INPUT = ../slankdev
+INPUT = ../slankdev index.md
 
 PROJECT_NAME            = Lib SLANKDEV
 PREDEFINED              = __DOXYGEN__  __attribute__(x)=
@@ -32,6 +32,7 @@ ENABLE_PREPROCESSING    = YES
 MACRO_EXPANSION         = YES
 EXPAND_ONLY_PREDEF      = YES
 EXTRACT_STATIC          = YES
+EXTRACT_ALL             = YES
 DISTRIBUTE_GROUP_DOC    = YES
 HIDE_UNDOC_MEMBERS      = YES
 HIDE_UNDOC_CLASSES      = YES
