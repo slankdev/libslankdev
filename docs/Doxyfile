@@ -1,0 +1,55 @@
+
+# MIT License
+# Copyright (c) 2017 Hiroki SHIROKURA
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+INPUT = ../slankdev index.md
+
+PROJECT_NAME            = Lib SLANKDEV
+PREDEFINED              = __DOXYGEN__  __attribute__(x)=
+OUTPUT_DIRECTORY        = /tmp/libslankdev/
+RECURSIVE               = YES
+OPTIMIZE_OUTPUT_FOR_C   = YES
+ENABLE_PREPROCESSING    = YES
+MACRO_EXPANSION         = YES
+EXPAND_ONLY_PREDEF      = YES
+EXTRACT_STATIC          = YES
+EXTRACT_ALL             = YES
+DISTRIBUTE_GROUP_DOC    = YES
+HIDE_UNDOC_MEMBERS      = YES
+HIDE_UNDOC_CLASSES      = YES
+HIDE_SCOPE_NAMES        = YES
+GENERATE_DEPRECATEDLIST = NO
+GENERATE_LATEX          = NO
+VERBATIM_HEADERS        = NO
+ALPHABETICAL_INDEX      = NO
+HTML_TIMESTAMP          = NO
+HTML_DYNAMIC_SECTIONS   = YES
+SEARCHENGINE            = NO
+SORT_MEMBER_DOCS        = NO
+SOURCE_BROWSER          = YES
+EXAMPLE_PATH            = examples
+EXAMPLE_PATTERNS        = *.cc
+EXAMPLE_RECURSIVE       = YES
+INLINE_SOURCES          = YES
+
+
+

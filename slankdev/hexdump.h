@@ -2,7 +2,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2017 Susanoo G
+ * Copyright (c) 2017 Hiroki SHIROKURA
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,12 @@
  */
 /**
  * @file   slankdev/hexdump.h
- * @brief  hex dump
+ * @brief  datadump functions
  * @author Hiroki SHIROKURA
- * @date   2017.4.2
+ * @date   2017.9.24
  */
 
-
 #pragma once
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -41,7 +39,13 @@
 
 namespace slankdev {
 
-
+/**
+ * @brief hexdump memoriy dump for packet, binary, etc...
+ * @param[in]  fp output FILE pointer
+ * @param[in]  buffer dump buffer pointer
+ * @param[in]  bufferlen dump length
+ * @details basic hexdump
+ */
 inline void hexdump(FILE* fp, const void *buffer, size_t bufferlen)
 {
   const uint8_t *data = reinterpret_cast<const uint8_t*>(buffer);
@@ -74,14 +78,13 @@ inline void hexdump(FILE* fp, const void *buffer, size_t bufferlen)
   }
 }
 
-// for compatibility
-inline void hexdump(const char* tittle, const void *buffer, size_t bufferlen)
-{
-  UNUSED(tittle);
-  hexdump(stdout, buffer, bufferlen);
-}
-
-
+/**
+ * @brief hexdump memoriy dump for packet, binary, etc...
+ * @param[in]  fp output FILE pointer
+ * @param[in]  buffer dump buffer pointer
+ * @param[in]  bufferlen dump length
+ * @details basic hexdump
+ */
 inline void bindump(FILE* fp, const void* buffer, size_t bufferlen)
 {
   const uint8_t* p0 = reinterpret_cast<const uint8_t*>(buffer);
