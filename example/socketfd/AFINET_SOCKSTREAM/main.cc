@@ -1,6 +1,7 @@
 
 
 #include <slankdev/socketfd.h>
+#include <slankdev/hexdump.h>
 
 int main(int argc, char** argv)
 {
@@ -10,7 +11,7 @@ int main(int argc, char** argv)
     }
 
     slankdev::socketfd sock;
-    sock.socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    sock.socket(AF_INET, SOCK_STREAM, 0);
 
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
@@ -30,6 +31,7 @@ int main(int argc, char** argv)
     while (1) {
         uint8_t buf[1000];
         size_t recvlen = client_sock.read(buf, sizeof(buf));
+        slankdev::hexdump(stdout, buf, recvlen);
         client_sock.write(buf, recvlen);
     }
     return 0;

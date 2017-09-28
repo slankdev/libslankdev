@@ -1,4 +1,7 @@
 
+LIBSLANKDEV := $(HOME)/git/libslankdev
+CXXFLAGS += -I$(LIBSLANKDEV) -std=c++11
 
 all:
-	g++ -std=c++11 main.cc -lslankdev
+	$(CXX) $(CXXFLAGS) main.cc $(LDFLAGS)
+

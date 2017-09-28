@@ -38,6 +38,11 @@
 #include <vector>
 #include <sstream>
 #include <stdarg.h>
+#include <string>
+#include <bitset>
+#include <iostream>
+#include <sstream>
+#include <algorithm>
 
 
 /**
@@ -112,6 +117,14 @@ inline std::string get_progress_str(double percent, size_t maxlen=50)
   return s;
 }
 
+
+template <int BITLENGTH=64>
+inline std::string ntob(uint64_t x) {
+  std::stringstream ss;
+  ss << static_cast<std::bitset<BITLENGTH> >(x);
+  std::string x_bin = ss.str();
+  return x_bin;
+}
 
 
 } /* namespace slankdev */
