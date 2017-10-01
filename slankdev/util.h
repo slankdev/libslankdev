@@ -82,6 +82,17 @@ inline void clear_screen()
 }
 
 
+inline size_t popcnt32(uint32_t n)
+{
+  size_t cnt = 0;
+  for (size_t i=0; i<32; i++) {
+    if ((0x01&n) != 0) cnt ++;
+    n >>= 1;
+  }
+  return cnt;
+}
+
+
 } /* namespace slankdev */
 
 
