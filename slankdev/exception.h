@@ -36,6 +36,7 @@
 #include <sstream>
 #include <ostream>
 
+#define NI(str) slankdev::exception("notimplement "#str);
 
 namespace slankdev {
 
@@ -62,3 +63,6 @@ class exception : public std::exception {
 };
 
 } /* namespace slankdev */
+
+
+
