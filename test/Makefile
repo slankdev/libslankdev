@@ -18,7 +18,8 @@ SRC = test_include.cc    \
 			test_string.cc     \
 			test_dns.cc        \
 			test_inetaddr.cc   \
-			test_color.cc
+			test_color.cc      \
+			test_exception.cc
 OBJ = $(SRC:.cc=.out)
 
 all: $(OBJ)

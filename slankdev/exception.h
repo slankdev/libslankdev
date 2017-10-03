@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2017 Susanoo G
+ * Copyright (c) 2017 Hiroki SHIROKURA
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,12 +27,10 @@
  * @file   slankdev/exception.h
  * @brief  exception class
  * @author Hiroki SHIROKURA
- * @date   2017.4.2
+ * @date   2017.9.3
  */
 
-
 #pragma once
-
 #include <string>
 #include <exception>
 #include <sstream>
@@ -48,7 +46,9 @@ class exception : public std::exception {
   explicit exception(const char* s="") noexcept {
     str = s;
   }
-
+  exception(const std::string& s) noexcept {
+    str = s;
+  }
   template<class T>
     exception& operator<<(const T& t) noexcept {
       std::ostringstream os;
