@@ -47,7 +47,7 @@ class exception : public std::exception {
   explicit exception(const char* s="") noexcept {
     str = s;
   }
-  exception(const std::string& s) noexcept {
+  exception(std::string s) noexcept {
     str = s;
   }
   template<class T>
