@@ -38,9 +38,113 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <slankdev/exception.h>
+#include <sys/mman.h>
 
 
 namespace slankdev {
+
+/*
+ * This class is not close fd in Destructor
+ */
+class intfd final {
+  int fd;
+  bool close_in_destructor;
+ public:
+
+  intfd() : fd(-1), close_in_destructor(true) {}
+  intfd(const char* path, int flags) : intfd() { this->open(path, flags); }
+
+  virtual ~intfd()
+  {
+    if (close_in_destructor) close();
+  }
+
+  void set_close_in_destructor(bool b) { close_in_destructor = b; }
+
+  void open(const char* path, int flags)
+  {
+    fd = ::open(path, flags);
+    if (fd < 0) {
+      perror("open");
+      throw slankdev::exception("open");
+    }
+  }
+
+  void close()
+  {
+    if (fd >= 0)
+      ::close(fd);
+  }
+
+  void write(const void* buffer, size_t bufferlen)
+  {
+    ssize_t res = ::write(fd, buffer, bufferlen);
+    if (static_cast<size_t>(res) != bufferlen) {
+      if (res < 0) {
+        perror("write");
+        throw slankdev::exception("write");
+      } else {
+        fprintf(stderr, "write could not send all.\n");
+      }
+    }
+  }
+
+  size_t read(void* buffer, size_t bufferlen)
+  {
+    ssize_t res = ::read(fd, buffer, bufferlen);
+    if (res < 0) {
+      perror("read");
+      throw slankdev::exception("read");
+    } else if (res == EINTR) {
+      return read(buffer, bufferlen);
+    }
+    return static_cast<size_t>(res);
+  }
+
+  void pwrite(const void* buffer, size_t bufferlen, size_t offset)
+  {
+    ssize_t res = ::pwrite(fd, buffer, bufferlen, offset);
+    if (static_cast<size_t>(res) != bufferlen) {
+      if (res < 0) {
+        perror("pwrite");
+        throw slankdev::exception("pwrite");
+      } else {
+        fprintf(stderr, "pwrite could not send all.\n");
+      }
+    }
+  }
+
+  size_t pread(void* buffer, size_t bufferlen, size_t offset)
+  {
+    ssize_t res = ::pread(fd, buffer, bufferlen, offset);
+    if (res < 0) {
+      perror("pread");
+      throw slankdev::exception("pread");
+    }
+    return static_cast<size_t>(res);
+  }
+
+  int get_fd() const { return fd; }
+
+  void set_fd(int fd_)
+  {
+    if (fd >= 0)
+      close();
+    fd = fd_;
+  }
+
+  void *mmap(void *start, size_t length, int prot, int flags, off_t offset)
+  {
+    void* ret = ::mmap(start, length, prot, flags, fd, offset);
+    return ret;
+  }
+
+}; /* class intfd */
+
 
 
 class safe_intfd {
@@ -58,7 +162,9 @@ class safe_intfd {
   void fcntl(int cmd, long arg);
   void ioctl(unsigned long l, void* arg);
   void write(const void* buffer, size_t bufferlen);
+  void pwrite(const void* buffer, size_t bufferlen, size_t offset);
   size_t read(void* buffer, size_t bufferlen);
+  size_t pread(void* buffer, size_t bufferlen, size_t offset);
   int get_fd() const;
   void set_fd(int f);
 
@@ -154,6 +260,29 @@ inline size_t safe_intfd::read(void* buffer, size_t bufferlen)
     throw slankdev::exception("read");
   } else if (res == EINTR) {
     return read(buffer, bufferlen);
+  }
+  return static_cast<size_t>(res);
+}
+inline void safe_intfd::pwrite(const void* buffer, size_t bufferlen, size_t offset)
+{
+  ssize_t res = ::pwrite(fd, buffer, bufferlen, offset);
+  if (static_cast<size_t>(res) != bufferlen) {
+    if (res < 0) {
+      perror("pwrite");
+      throw slankdev::exception("pwrite");
+    } else {
+      fprintf(stderr, "pwrite could not send all.\n");
+    }
+  }
+}
+inline size_t safe_intfd::pread(void* buffer, size_t bufferlen, size_t offset)
+{
+  ssize_t res = ::pread(fd, buffer, bufferlen, offset);
+  if (res < 0) {
+    perror("pread");
+    throw slankdev::exception("pread");
+  } else if (res == EINTR) {
+    return pread(buffer, bufferlen, offset);
   }
   return static_cast<size_t>(res);
 }
