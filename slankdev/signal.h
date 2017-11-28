@@ -28,7 +28,7 @@
 
 namespace slankdev {
 
-void signal(int sig, void (*func)(int))
+inline void signal(int sig, void (*func)(int))
 {
   auto ret = ::signal(sig, func);
   if (ret == SIG_ERR) {
