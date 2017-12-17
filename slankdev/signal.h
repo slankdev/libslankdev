@@ -1,9 +1,8 @@
 
-
 /*
  * MIT License
  *
- * Copyright (c) 2017 Susanoo G
+ * Copyright (c) 2017 Hiroki SHIROKURA
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,75 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/**
- * @file   slankdev/util.h
- * @brief  util function
- * @author Hiroki SHIROKURA
- * @date   2017.4.2
- */
-
-
-
 #pragma once
-
-#include <stdio.h>
-#include <stdint.h>
-#include <stddef.h>
-#include <stdarg.h>
-#include <vector>
-
-#define UNUSED(x) (void)(x)
+#include <signal.h>
+#include <slankdev/exception.h>
 
 namespace slankdev {
 
-
-template <class T>
-inline void vec_delete_all_ptr_elements(std::vector<T*>& vec)
+inline void signal(int sig, void (*func)(int))
 {
-  while (vec.size() > 0) {
-    T* tmp = vec.back();
-    vec.pop_back();
-    delete tmp;
+  auto ret = ::signal(sig, func);
+  if (ret == SIG_ERR) {
+    std::string err = "signal: ";
+    err += "can't set signal handler";
+    throw slankdev::exception(err.c_str());
   }
 }
-
-#if 0
-template <class... ARGS>
-inline void fdprintf(int fd, const char* fmt, ARGS... args)
-{
-  FILE* fp = fdopen(fd, "w");
-  ::fprintf(fp, fmt, args...);
-  fflush(fp);
-}
-#else
-inline void fdprintf(int fd, const char* fmt, ...)
-{
-  FILE* fp = fdopen(fd, "w");
-  va_list args;
-  va_start(args, fmt);
-  vfprintf(fp, fmt, args);
-  va_end(args);
-  fflush(fp);
-}
-#endif
-
-
-inline void clear_screen()
-{
-  printf("\033[2J\n");
-}
-
-
-inline size_t popcnt32(uint32_t n)
-{
-  size_t cnt = 0;
-  for (size_t i=0; i<32; i++) {
-    if ((0x01&n) != 0) cnt ++;
-    n >>= 1;
-  }
-  return cnt;
-}
-
 
 } /* namespace slankdev */
 

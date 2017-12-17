@@ -77,6 +77,15 @@ inline std::string format(const char* fmt, ...)
 }
 #endif
 
+inline void waitmsg(const char* fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  vprintf(fmt, args);
+  va_end(args);
+  getchar();
+}
+
 
 /* for compatibility */
 template <class... ARGS>
@@ -125,6 +134,8 @@ inline std::string ntob(uint64_t x) {
   std::string x_bin = ss.str();
   return x_bin;
 }
+
+
 
 
 } /* namespace slankdev */
