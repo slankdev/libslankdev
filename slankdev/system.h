@@ -75,6 +75,11 @@ inline void daemon()
     throw slankdev::exception("daemon");
   }
 }
+
+inline size_t n_processors()
+{
+  return sysconf(_SC_NPROCESSORS_CONF);
+}
 #endif
 
 
