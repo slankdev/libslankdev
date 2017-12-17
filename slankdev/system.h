@@ -26,7 +26,7 @@
  * @file   slankdev/system.h
  * @brief  system operations
  * @author Hiroki SHIROKURA
- * @date   2017.4.2
+ * @date   2017.12.18
  */
 
 
@@ -34,9 +34,14 @@
 #pragma once
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <slankdev/exception.h>
+#include <slankdev/system.h>
+#include <slankdev/filefd.h>
+#include <vector>
 
 
 namespace slankdev {
@@ -80,6 +85,136 @@ inline size_t n_processors()
 {
   return sysconf(_SC_NPROCESSORS_CONF);
 }
+#endif
+
+
+#ifdef __linux__
+class cpus_state {
+
+  class cpu_state {
+
+    struct cpu_state_raw {
+      const size_t core_id;
+
+      long user;
+      long nice;
+      long system;
+      long idel;
+      long iowait;
+      long irq;
+      long softirq;
+
+      cpu_state_raw& operator=(cpu_state_raw& rhs)
+      {
+        user    = rhs.user   ;
+        nice    = rhs.nice   ;
+        system  = rhs.system ;
+        idel    = rhs.idel   ;
+        iowait  = rhs.iowait ;
+        irq     = rhs.irq    ;
+        softirq = rhs.softirq;
+        return *this;
+      }
+
+      cpu_state_raw(size_t cid) : core_id(cid) {}
+      void update()
+      {
+        slankdev::filefd file;
+        file.fopen("/proc/stat", "r");
+
+        char str[BUFSIZ];
+        file.fgets(str, sizeof(str));
+        for (size_t i=0; i<core_id; i++) {
+          file.fgets(str, sizeof(str));
+        }
+
+        file.fgets(str, sizeof(str));
+        uint32_t cid;
+        sscanf(str, "cpu%u %ld %ld %ld %ld %ld %ld %ld", &cid,
+            &this->user, &this->nice, &this->system, &this->idel,
+            &this->iowait, &this->irq, &this->softirq);
+
+        if (cid != core_id) {
+          printf("cid: %u  (except:%zd)\n", cid, core_id);
+          throw slankdev::exception("OKASHII");
+        }
+      }
+    }; /* class cpu_state_raw */
+
+   protected:
+
+    cpu_state_raw curr;
+    cpu_state_raw prev;
+
+    long cpu_all_time() const
+    {
+      long ret = (curr.user - prev.user) +
+        (curr.nice - prev.nice) +
+        (curr.system - prev.system) +
+        (curr.idel - prev.idel) +
+        (curr.irq - prev.irq) +
+        (curr.softirq - prev.softirq);
+      return ret;
+    }
+
+    long cpu_used_time() const
+    {
+      long ret = (curr.user - prev.user) +
+        (curr.nice - prev.nice) +
+        (curr.system - prev.system) +
+        (curr.iowait - prev.iowait) +
+        (curr.irq - prev.irq) +
+        (curr.softirq - prev.softirq);
+      return ret;
+    }
+
+   public:
+
+    cpu_state(size_t cid) : curr(cid), prev(cid) {}
+
+    void update()
+    {
+      prev = curr;
+      curr.update();
+    }
+
+    double cpu_rate() const
+    {
+      long all = cpu_all_time();
+      long used = cpu_used_time();
+      double rate = (double)used/all*100;
+      if(rate > 100){
+        rate = 100;
+      }
+      return rate;
+    }
+
+  }; /* class cpu_state */
+
+  const size_t np_;
+  std::vector<cpu_state> cpus;
+ public:
+
+  size_t n_processors() const { return np_; }
+
+  const cpu_state& get_processor(size_t core_id) const
+  { return cpus[core_id]; }
+
+  void update()
+  {
+    const size_t n_ele = cpus.size();
+    for (size_t i=0; i<n_ele; i++) {
+      cpus[i].update();
+    }
+  }
+
+  cpus_state() : np_(slankdev::n_processors())
+  {
+    for (size_t i=0; i<n_processors(); i++) {
+      cpus.push_back(cpu_state(i));
+    }
+  }
+};
 #endif
 
 
