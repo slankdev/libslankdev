@@ -85,7 +85,8 @@ inline void filefd::fopen(const char* path, const char* mode)
 
   fp = ::fopen(path, mode);
   if (!fp) {
-    throw slankdev::exception("filefd::fopen");
+    std::string err = slankdev::format("%s: %s", __func__, strerror(errno));
+    throw slankdev::exception(err.c_str());
   }
   name = path;
 }
@@ -102,7 +103,8 @@ inline void filefd::fwrite(const void* ptr, size_t size, size_t nmemb)
 {
   size_t res = ::fwrite(ptr, size, nmemb, fp);
   if (res != nmemb) {
-    throw slankdev::exception("filefd::fwirte");
+    std::string err = slankdev::format("%s: %s", __func__, strerror(errno));
+    throw slankdev::exception(err.c_str());
   }
 }
 
@@ -116,10 +118,12 @@ inline size_t filefd::fread(void* ptr, size_t size, size_t nmemb)
 {
   size_t res = ::fread(ptr, size, nmemb, fp);
   if (res != nmemb) {
-    if (errno == 0)
+    if (errno == 0) {
       return res;
-    else
-      throw slankdev::exception("filefd::fread");
+    } else {
+      std::string err = slankdev::format("%s: %s", __func__, strerror(errno));
+      throw slankdev::exception(err.c_str());
+    }
   }
   return res;
 }
@@ -128,7 +132,8 @@ inline void filefd::fflush()
 {
   int res = ::fflush(fp);
   if (res == EOF) {
-    throw slankdev::exception("filefd::fflush");
+    std::string err = slankdev::format("%s: %s", __func__, strerror(errno));
+    throw slankdev::exception(err.c_str());
   }
 }
 template<typename... ARG>
