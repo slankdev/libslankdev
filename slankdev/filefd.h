@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string>
+#include <slankdev/exception.h>
 
 namespace slankdev {
 
@@ -50,12 +51,13 @@ class filefd {
   FILE* getfp();
   const std::string& get_name() const;
 
-  void fopen(const char* path, const char* mode);
+  void fopen(const std::string path, const char* mode);
   void fclose();
   void fwrite(const void* ptr, size_t size, size_t nmemb);
   char* fgets(char* s, int size);
   size_t fread(void* ptr, size_t size, size_t nmemb);
   void fflush();
+  std::string readline();
   template<typename... ARG> int fprintf(const char* fmt, const ARG&... arg);
 };
 
@@ -78,15 +80,22 @@ inline filefd::~filefd() { fclose(); }
 inline FILE* filefd::getfp() { return fp; }
 inline const std::string& filefd::get_name() const { return name; }
 
-inline void filefd::fopen(const char* path, const char* mode)
+std::string filefd::readline()
+{
+  char buf[1000];
+  fgets(buf, sizeof(buf));
+  return buf;
+}
+
+inline void filefd::fopen(const std::string path, const char* mode)
 {
   if (fp)
     fclose();
 
-  fp = ::fopen(path, mode);
+  fp = ::fopen(path.c_str(), mode);
   if (!fp) {
     std::string err = slankdev::format(
-        "%s: %s (%s)", __func__, strerror(errno), path);
+        "%s: %s (%s)", __func__, strerror(errno), path.c_str());
     throw slankdev::exception(err.c_str());
   }
   name = path;
