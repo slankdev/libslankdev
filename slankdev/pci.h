@@ -60,5 +60,16 @@ inline std::string ifname2pciaddr(const char* ifname)
   }
 }
 
+inline int get_numa_node(const char* pciaddr)
+{
+  std::string path = slankdev::format(
+      "/sys/bus/pci/devices/%s/numa_node", pciaddr);
+  slankdev::filefd file;
+  file.fopen(path, "r");
+  std::string node = file.readline();
+  node[node.size()-1] = '\0';
+  return std::stoi(node);
+}
+
 
 } /* namespace slankdev */
