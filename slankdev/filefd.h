@@ -85,8 +85,7 @@ inline void filefd::fopen(const char* path, const char* mode)
 
   fp = ::fopen(path, mode);
   if (!fp) {
-    perror("fopen");
-    exit(-1);
+    throw slankdev::exception("filefd::fopen");
   }
   name = path;
 }
@@ -103,8 +102,7 @@ inline void filefd::fwrite(const void* ptr, size_t size, size_t nmemb)
 {
   size_t res = ::fwrite(ptr, size, nmemb, fp);
   if (res != nmemb) {
-    perror("fwrite");
-    exit(-1);
+    throw slankdev::exception("filefd::fwirte");
   }
 }
 
@@ -121,7 +119,7 @@ inline size_t filefd::fread(void* ptr, size_t size, size_t nmemb)
     if (errno == 0)
       return res;
     else
-      perror("fread");
+      throw slankdev::exception("filefd::fread");
   }
   return res;
 }
@@ -130,8 +128,7 @@ inline void filefd::fflush()
 {
   int res = ::fflush(fp);
   if (res == EOF) {
-    perror("fflush");
-    exit(-1);
+    throw slankdev::exception("filefd::fflush");
   }
 }
 template<typename... ARG>
