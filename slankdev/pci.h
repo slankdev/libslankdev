@@ -43,5 +43,22 @@ inline std::string get_drv_name(const char* pciaddr)
   }
 }
 
+inline std::string ifname2pciaddr(const char* ifname)
+{
+  std::string path = slankdev::format(
+      "/sys/class/net/%s/device/uevent", ifname);
+  slankdev::filefd file;
+  file.fopen(path, "r");
+
+  while (true) {
+    std::string line = file.readline();
+    char buf[1000];
+    int ret = sscanf(line.c_str(), "PCI_SLOT_NAME=%s\n", buf);
+    if (ret == 1) {
+      return buf;
+    }
+  }
+}
+
 
 } /* namespace slankdev */
