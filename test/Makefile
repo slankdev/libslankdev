@@ -21,6 +21,7 @@ SRC = test_include.cc    \
 			test_color.cc      \
 			test_exception.cc  \
 			test_vector.cc     \
+			test_pci.cc        \
 			test_system.cc     \
 			test_system_cpustate.cc
 OBJ = $(SRC:.cc=.out)
