@@ -85,7 +85,8 @@ inline void filefd::fopen(const char* path, const char* mode)
 
   fp = ::fopen(path, mode);
   if (!fp) {
-    std::string err = slankdev::format("%s: %s", __func__, strerror(errno));
+    std::string err = slankdev::format(
+        "%s: %s (%s)", __func__, strerror(errno), path);
     throw slankdev::exception(err.c_str());
   }
   name = path;
