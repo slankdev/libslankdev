@@ -81,7 +81,7 @@ inline filefd::~filefd() { fclose(); }
 inline FILE* filefd::getfp() { return fp; }
 inline const std::string& filefd::get_name() const { return name; }
 
-std::string filefd::readline()
+inline std::string filefd::readline()
 {
   char buf[1000];
   fgets(buf, sizeof(buf));
