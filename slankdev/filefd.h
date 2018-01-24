@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string>
+#include <slankdev/string.h>
 #include <slankdev/exception.h>
 
 namespace slankdev {
