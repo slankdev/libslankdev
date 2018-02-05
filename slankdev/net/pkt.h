@@ -56,7 +56,7 @@ class packet {
   virtual void summary() const = 0;
 };
 
-
+#if 0
 class udp_packet : public packet {
  public:
   slankdev::mbuf   m;
@@ -135,6 +135,194 @@ inline void udp_packet::show() const
   ih->print();
   uh->print();
 }
+#endif
+
+
+class pkt_analyzer {
+
+ public:
+
+  enum pkt_type {
+    proto_eth,
+    proto_ipv4,
+    proto_ipv6,
+    proto_arp,
+    proto_icmp,
+    proto_tcp,
+    proto_udp,
+    proto_none,
+  };
+
+  static std::string pkt_type2str(pkt_type t)
+  {
+    switch (t) {
+      case proto_eth     : return "eth" ;
+      case proto_ipv4    : return "ipv4";
+      case proto_ipv6    : return "ipv6";
+      case proto_arp     : return "arp" ;
+      case proto_icmp    : return "icmp";
+      case proto_tcp     : return "tcp" ;
+      case proto_udp     : return "udp" ;
+      case proto_none    : return "none";
+      default: throw slankdev::exception("unknown id=sfnau");
+    }
+  }
+
+  struct hdr_info {
+    size_t hdr_len;
+    pkt_type next_proto;
+    hdr_info(size_t hdrlen, pkt_type nextproto)
+      : hdr_len(hdrlen), next_proto(nextproto) {}
+  };
+
+ private:
+
+  static hdr_info analyze_eth_hdr(const void* ptr, size_t len)
+  {
+    if (len < sizeof(ether)) {
+      std::string err = format("invalid length (%zd)", len);
+      throw slankdev::exception(err.c_str());
+    }
+
+    const ether* eh = reinterpret_cast<const ether*>(ptr);
+    uint16_t type = ntohs(eh->type);
+    switch (type) {
+    case 0x0800: return hdr_info(sizeof(ether), proto_ipv4);
+    case 0x86dd: return hdr_info(sizeof(ether), proto_ipv6);
+    case 0x0806: return hdr_info(sizeof(ether), proto_arp );
+    default:     return hdr_info(sizeof(ether), proto_none);
+    } /* switch */
+  }
+
+  static hdr_info analyze_ip4_hdr(const void* ptr, size_t len)
+  {
+    if (len < sizeof(ip)) {
+      std::string err = format("invalid length (%zd)", len);
+      throw slankdev::exception(err.c_str());
+    }
+
+    const ip* ih = reinterpret_cast<const ip*>(ptr);
+    uint8_t proto = ih->proto;
+    size_t hdrlen = ((0x0f & ih->ver_ihl) << 4) << 2;
+    switch (proto) {
+    case 0x01: return hdr_info(hdrlen, proto_icmp);
+    case 0x06: return hdr_info(hdrlen, proto_tcp);
+    case 0x11: return hdr_info(hdrlen, proto_udp);
+    } /* switch */
+  }
+
+  static hdr_info analyze_ip6_hdr(const void* ptr, size_t len)
+  {
+    printf("this is non excepted function (%s())\n", __func__);
+    return hdr_info(0, proto_none);
+  }
+
+  static hdr_info analyze_udp_hdr(const void* ptr, size_t len)
+  {
+    if (len < sizeof(udp)) {
+      std::string err = format("invalid length (%zd)", len);
+      throw slankdev::exception(err.c_str());
+    }
+    size_t hdrlen = sizeof(udp);
+    return hdr_info(hdrlen, proto_none);
+  }
+
+  static hdr_info analyze_tcp_hdr(const void* ptr, size_t len)
+  {
+    if (len < sizeof(tcp)) {
+      std::string err = format("invalid length (%zd)", len);
+      throw slankdev::exception(err.c_str());
+    }
+
+    const tcp* th = reinterpret_cast<const tcp*>(ptr);
+    size_t hdrlen = th->data_off * 4;
+    return hdr_info(hdrlen, proto_none);
+  }
+
+  static hdr_info analyze_arp_hdr(const void* ptr, size_t len)
+  {
+    if (len < sizeof(arp)) {
+      std::string err = format("invalid length (%zd)", len);
+      throw slankdev::exception(err.c_str());
+    }
+    size_t hdrlen = sizeof(arp);
+    return hdr_info(hdrlen, proto_none);
+  }
+
+  static hdr_info analyze_icmp_hdr(const void* ptr, size_t len)
+  {
+    if (len < sizeof(icmp)) {
+      std::string err = format("invalid length (%zd)", len);
+      throw slankdev::exception(err.c_str());
+    }
+    size_t hdrlen = sizeof(icmp);
+    return hdr_info(hdrlen, proto_none);
+  }
+
+  static hdr_info
+  analyze_hdr(const void* ptr, size_t len, pkt_type proto)
+  {
+    switch (proto) {
+      case proto_eth     : return analyze_eth_hdr (ptr, len);
+      case proto_ipv4    : return analyze_ip4_hdr (ptr, len);
+      case proto_ipv6    : return analyze_ip6_hdr (ptr, len);
+      case proto_arp     : return analyze_arp_hdr (ptr, len);
+      case proto_icmp    : return analyze_icmp_hdr(ptr, len);
+      case proto_tcp     : return analyze_tcp_hdr (ptr, len);
+      case proto_udp     : return analyze_udp_hdr (ptr, len);
+      case proto_none    : throw slankdev::exception("not exept this id=ruan");
+      default: throw slankdev::exception("unknown id=rykvwuv");
+    }
+  }
+
+
+ public:
+
+  static std::vector<pkt_type>
+  guess_protostack(const void* _ptr_, size_t len)
+  {
+    std::vector<pkt_type> vec;
+    const uint8_t* ptr = reinterpret_cast<const uint8_t*>(_ptr_);
+    pkt_type cur_proto = proto_eth;
+    vec.push_back(proto_eth);
+    for (size_t nstack_depth=1; ; nstack_depth++) {
+      assert(nstack_depth < 20);
+      hdr_info hi = analyze_hdr(ptr, len, cur_proto);
+      pkt_type next_proto  = hi.next_proto;
+      if (next_proto == proto_none) {
+        return vec;
+      }
+
+      ptr += hi.hdr_len;
+      len -= hi.hdr_len;
+      cur_proto = next_proto;
+      vec.push_back(cur_proto);
+    }
+    /* not reachable */
+  }
+
+  static std::string
+  guess_protoname(const void* _ptr_, size_t len)
+  {
+    const uint8_t* ptr = reinterpret_cast<const uint8_t*>(_ptr_);
+    pkt_type cur_proto = proto_eth;
+    for (size_t nstack_depth=1; ; nstack_depth++) {
+      assert(nstack_depth < 20);
+      hdr_info hi = analyze_hdr(ptr, len, cur_proto);
+      pkt_type next_proto  = hi.next_proto;
+      if (next_proto == proto_none) {
+        return pkt_type2str(cur_proto);
+      }
+
+      ptr += hi.hdr_len;
+      len -= hi.hdr_len;
+      cur_proto = next_proto;
+    }
+    /* not reachable */
+  }
+
+}; /* class pkt_analyzer */
+
 
 
 } /* namespace slankdev */
