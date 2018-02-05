@@ -143,14 +143,14 @@ class pkt_analyzer {
  public:
 
   enum pkt_type {
-    proto_eth,
-    proto_ipv4,
-    proto_ipv6,
-    proto_arp,
-    proto_icmp,
-    proto_tcp,
-    proto_udp,
-    proto_none,
+    proto_eth  = 0,
+    proto_ipv4 = 1,
+    proto_ipv6 = 2,
+    proto_arp  = 3,
+    proto_icmp = 4,
+    proto_tcp  = 5,
+    proto_udp  = 6,
+    proto_none = 7,
   };
 
   static std::string pkt_type2str(pkt_type t)
@@ -164,7 +164,9 @@ class pkt_analyzer {
       case proto_tcp     : return "tcp" ;
       case proto_udp     : return "udp" ;
       case proto_none    : return "none";
-      default: throw slankdev::exception("unknown id=sfnau");
+      default:
+           throw slankdev::exception(slankdev::format(
+                 "unknown id=sfnau proto=%d", t).c_str());
     }
   }
 
@@ -203,17 +205,18 @@ class pkt_analyzer {
 
     const ip* ih = reinterpret_cast<const ip*>(ptr);
     uint8_t proto = ih->proto;
-    size_t hdrlen = ((0x0f & ih->ver_ihl) << 4) << 2;
+    size_t hdrlen = ((0x0f & ih->ver_ihl) << 2);
     switch (proto) {
     case 0x01: return hdr_info(hdrlen, proto_icmp);
     case 0x06: return hdr_info(hdrlen, proto_tcp);
     case 0x11: return hdr_info(hdrlen, proto_udp);
+    default:   return hdr_info(hdrlen, proto_none);
     } /* switch */
   }
 
   static hdr_info analyze_ip6_hdr(const void* ptr, size_t len)
   {
-    printf("this is non excepted function (%s())\n", __func__);
+    // printf("this is non excepted function (%s())\n", __func__);
     return hdr_info(0, proto_none);
   }
 
@@ -271,7 +274,9 @@ class pkt_analyzer {
       case proto_tcp     : return analyze_tcp_hdr (ptr, len);
       case proto_udp     : return analyze_udp_hdr (ptr, len);
       case proto_none    : throw slankdev::exception("not exept this id=ruan");
-      default: throw slankdev::exception("unknown id=rykvwuv");
+      default:
+           throw slankdev::exception(slankdev::format(
+                 "unknown id=rykvwuv proto=%d", proto).c_str());
     }
   }
 
@@ -321,8 +326,48 @@ class pkt_analyzer {
     /* not reachable */
   }
 
+  static std::string
+  guess_protostack_str(const void* _ptr_, size_t len)
+  {
+    auto vec = guess_protostack(_ptr_, len);
+    std::string str;
+    for (size_t i=0; i<vec.size(); i++) {
+      str += format("%s%s",
+          pkt_type2str(vec[i]).c_str(),
+          i+1<vec.size()?"/":"");
+    }
+    return str;
+  }
+
+  static ssize_t
+  find_hdr_distance(const void* _ptr_, size_t len,
+      pkt_type start, pkt_type goal)
+  {
+    const uint8_t* ptr = reinterpret_cast<const uint8_t*>(_ptr_);
+    const uint8_t* start_pos = ptr;
+    pkt_type cur_proto = start;
+    for (size_t nstack_depth=1; ; nstack_depth++) {
+      assert(nstack_depth < 20);
+      hdr_info hi = analyze_hdr(ptr, len, cur_proto);
+      pkt_type next_proto  = hi.next_proto;
+      if (cur_proto == goal) {
+        size_t dis = ptr - start_pos;
+        return dis;
+      }
+
+      ptr += hi.hdr_len;
+      len -= hi.hdr_len;
+      cur_proto = next_proto;
+    }
+
+    /* not found header */
+    throw slankdev::exception("not found proto id=rncqiuv");
+  }
+
 }; /* class pkt_analyzer */
 
 
 
 } /* namespace slankdev */
+
+
