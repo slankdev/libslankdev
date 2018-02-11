@@ -86,7 +86,7 @@ class depth_fprintf_pusher {
   ~depth_fprintf_pusher() { depth_cnt_--; }
   static size_t cnt() { return depth_cnt_; }
   static std::string str() { return str_; }
-  static std::string set_str(const char* s)
+  static void set_str(const char* s)
   {
     if (depth_cnt_ != 0) {
       fprintf(stderr, "maybe un expected call? id=395581\n");
