@@ -5,6 +5,7 @@
 
 int main(void)
 {
+#ifdef __linux__
   slankdev::cpus_state cpus;
 
   while (true) {
@@ -19,5 +20,6 @@ int main(void)
 
     sleep(1);
   }
+#endif // __linux__
 }
 
