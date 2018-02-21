@@ -23,7 +23,8 @@ SRC = test_include.cc    \
 			test_vector.cc     \
 			test_pci.cc        \
 			test_system.cc     \
-			test_system_cpustate.cc
+			test_system_cpustate.cc \
+			test_util.cc
 OBJ = $(SRC:.cc=.out)
 
 all: $(OBJ)
