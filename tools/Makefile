@@ -10,7 +10,8 @@ INSTALL_PATH = /usr/local/bin/
 SRC = \
 			pkt_send.cc \
 			bin_send.cc \
-			create_tap.cc
+			create_tap.cc \
+			linkup.cc
 EXE = $(SRC:.cc=.out)
 
 all: $(EXE)

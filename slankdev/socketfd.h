@@ -2,7 +2,6 @@
 
 /*
  * MIT License
- *
  * Copyright (c) 2017 Hiroki SHIROKURA
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -85,6 +84,7 @@ class socketfd : public safe_intfd {
 
   static void linkup(const char* name);
   static void linkdown(const char* name);
+  static void set_ip(const char* ifname, uint32_t addr, uint8_t prefix);
 };
 
 
@@ -297,6 +297,23 @@ inline void socketfd::linkdown(const char* name)
   ifr.ifr_flags &= ~IFF_UP;
   sock.ioctl(SIOCSIFFLAGS, &ifr);
 }
+
+inline void socketfd::set_ip(const char* ifname, uint32_t addr, uint8_t prefix)
+{
+  slankdev::socketfd sock;
+  sock.socket(AF_INET, SOCK_DGRAM, 0);
+
+  struct ifreq ifr;
+  memset(&ifr, 0x0, sizeof(ifr));
+  struct sockaddr_in* s_in = (struct sockaddr_in *)&ifr.ifr_addr;
+
+  s_in->sin_family = AF_INET;
+  s_in->sin_addr.s_addr = htonl(addr);
+  strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
+  sock.ioctl(SIOCSIFADDR, &ifr);
+}
+
+
 
 
 } /* namespace slankdev */
