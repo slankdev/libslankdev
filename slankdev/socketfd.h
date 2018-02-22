@@ -304,13 +304,23 @@ inline void socketfd::set_ip(const char* ifname, uint32_t addr, uint8_t prefix)
   sock.socket(AF_INET, SOCK_DGRAM, 0);
 
   struct ifreq ifr;
-  memset(&ifr, 0x0, sizeof(ifr));
   struct sockaddr_in* s_in = (struct sockaddr_in *)&ifr.ifr_addr;
 
+  memset(&ifr, 0x0, sizeof(ifr));
   s_in->sin_family = AF_INET;
   s_in->sin_addr.s_addr = htonl(addr);
   strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
   sock.ioctl(SIOCSIFADDR, &ifr);
+
+  uint32_t mask_h = 0;
+  for (size_t i=0; i<prefix; i++) {
+    mask_h = 0x80000000 | (mask_h >> 1);
+  }
+  memset(&ifr, 0x0, sizeof(ifr));
+  s_in->sin_family = AF_INET;
+  s_in->sin_addr.s_addr = htonl(mask_h);
+  strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
+  sock.ioctl(SIOCSIFNETMASK, &ifr);
 }
 
 

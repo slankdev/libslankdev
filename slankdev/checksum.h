@@ -110,50 +110,6 @@ checksum(const void *buf, size_t len)
 }
 #endif
 
-inline uint16_t
-ipv4_checksum(const void* ih_ptr)
-{
-  const ip* ih = reinterpret_cast<const ip*>(ih_ptr);
-	uint16_t cksum;
-	cksum = checksum(ih, sizeof(ip));
-	return (cksum == 0xffff) ? cksum : ~cksum;
-}
-
-static inline uint16_t
-ipv4_phdr_cksum(const ip *ipv4_hdr)
-{
-	struct ipv4_psd_header {
-		uint32_t src_addr; /* IP address of source host. */
-		uint32_t dst_addr; /* IP address of destination host. */
-		uint8_t  zero;     /* zero. */
-		uint8_t  proto;    /* L4 protocol type. */
-		uint16_t len;      /* L4 length. */
-	} psd_hdr;
-
-	psd_hdr.src_addr = ipv4_hdr->src;
-	psd_hdr.dst_addr = ipv4_hdr->dst;
-	psd_hdr.zero = 0;
-	psd_hdr.proto = ipv4_hdr->proto;
-  psd_hdr.len = htons(
-    (uint16_t)(ntohs(ipv4_hdr->tot_len) - sizeof(ip)));
-	return checksum(&psd_hdr, sizeof(psd_hdr));
-}
-
-inline uint16_t
-ipv4_tcpudp_checksum(const void* ih_ptr, const void* l4_hdr)
-{
-  const ip* ih = reinterpret_cast<const ip*>(ih_ptr);
-	uint32_t l4_len = ntohs(ih->tot_len) - sizeof(ip);
-
-	uint32_t cksum = checksum(l4_hdr, l4_len);
-	cksum += ipv4_phdr_cksum(ih);
-	cksum = ((cksum & 0xffff0000) >> 16) + (cksum & 0xffff);
-	cksum = (~cksum) & 0xffff;
-	if (cksum == 0)
-		cksum = 0xffff;
-	return cksum;
-}
-
 
 } /* namespace slankdev */
 

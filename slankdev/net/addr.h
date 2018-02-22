@@ -72,6 +72,27 @@ inline std::string macaddr2str(uint8_t macaddr[6])
   return str;
 }
 
+inline uint32_t
+inetaddr_net(uint8_t u1, uint32_t u2, uint32_t u3, uint32_t u4)
+{
+  union {
+    uint8_t u8[4];
+    uint32_t u32;
+  } U;
+  U.u8[0] = u1;
+  U.u8[1] = u2;
+  U.u8[2] = u3;
+  U.u8[3] = u4;
+  return U.u32;
+}
+
+inline uint32_t
+inetaddr_host(uint8_t u1, uint32_t u2, uint32_t u3, uint32_t u4)
+{
+  uint32_t val = inetaddr_net(u1,u2,u3,u4);
+  return ntohl(val);
+}
+
 } /* namespace slankdev */
 
 
