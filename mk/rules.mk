@@ -6,11 +6,11 @@
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 .c.o:
-	@echo "  [CC]  $@"
+	@echo "  [CC]   $@"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(TARGET): $(OBJ)
-	@echo "  [LD]  $@"
+	@echo "  [LD]   $@"
 	@$(CXX) $(CXXFLAGS) $(CFLAGS) -o $(TARGET) $(OBJ) $(LDFLAGS)
 
 

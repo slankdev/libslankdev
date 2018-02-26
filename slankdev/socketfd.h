@@ -75,6 +75,8 @@ class socketfd : public safe_intfd {
   void getsockopt(int level, int optname, void* optval, socklen_t *optlen);
   void setsockopt(int level, int optname, const void* optval, socklen_t optlen);
   void send(const void* buf, size_t nbyte, int flags);
+  size_t sendmsg(const struct msghdr* msg, int flags);
+  size_t recvmsg(struct msghdr *msg, int flags);
   size_t recv(void* buf, size_t nbyte, int flags);
 #ifdef __linux__
   void open_afpacket(const char* name);
@@ -219,6 +221,27 @@ inline void socketfd::send(const void* buf, size_t nbyte, int flags)
     exit(-1);
   }
 }
+
+inline size_t socketfd::sendmsg(const struct msghdr* msg, int flags)
+{
+	ssize_t ret = ::sendmsg(fd, msg, flags);
+	if (ret < 0) {
+    perror("sendmsg");
+    exit(-1);
+	}
+	return ret;
+}
+
+inline size_t socketfd::recvmsg(struct msghdr *msg, int flags)
+{
+  ssize_t ret = ::recvmsg(fd, msg, flags);
+	if (ret < 0) {
+    perror("recvmsg");
+    exit(-1);
+	}
+	return ret;
+}
+
 inline size_t socketfd::recv(void* buf, size_t nbyte, int flags)
 {
   ssize_t res = ::recv(fd, buf, nbyte, flags);

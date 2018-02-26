@@ -60,7 +60,8 @@ inline std::string inaddr2str(uint32_t inaddr)
     uint32_t u32;
   } U;
   U.u32 = inaddr;
-  std::string str = slankdev::format("%02x.%02x.%02x.%02x",
+  // std::string str = slankdev::format("%02x.%02x.%02x.%02x",
+  std::string str = slankdev::format("%d.%d.%d.%d",
       U.u8[0], U.u8[1], U.u8[2], U.u8[3]);
   return str;
 }
