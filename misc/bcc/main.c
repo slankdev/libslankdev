@@ -10,8 +10,10 @@ int main(int argc, char** argv)
 {
   uint8_t* ptr;
   while (true) {
-    usleep(100);
+    /* usleep(100); */
+    usleep(1000000);
     ptr = (uint8_t*)malloc(100000000);
+    free(ptr);
   }
 }
 
