@@ -5,17 +5,18 @@
 char tmpbuff[1024];
 unsigned long tmppos = 0;
 unsigned long tmpallocs = 0;
-bool malloc_detail = true;
+bool malloc_detail = false;
 struct allocate_records records;
 
 void *memset(void*,int,size_t);
 void *memmove(void *to, const void *from, size_t size);
 
-static void add_ptr_to_record(void* ptr)
+static void add_ptr_to_record(void* ptr, struct backtrace_ctx* ctx)
 {
   for (size_t i=0; i<RECORD_MAX; i++) {
     if (records.ptrs[i] == NULL) {
       records.ptrs[i] = ptr;
+      memcpy(&records.bt[i], ctx, sizeof(struct backtrace_ctx));
       return ;
     }
   }
@@ -68,10 +69,12 @@ void *malloc(size_t size)
   hack_printf("%-10s:%p: size=%zd(%zd)\n",
       __func__, ptr, malloc_usable_size(ptr), size);
 
-  add_ptr_to_record(ptr);
+  struct backtrace_ctx ctx;
+  get_backtrace(&ctx);
+  add_ptr_to_record(ptr, &ctx);
 
   if (malloc_detail) {
-    print_backtrace(3);
+    print_backtrace(&ctx, 3);
   }
   return ptr;
 }
@@ -89,13 +92,15 @@ void *calloc(size_t nmemb, size_t size)
   num_calloc_called++;
   void *ptr = myfn_calloc(nmemb, size);
 
-  add_ptr_to_record(ptr);
+  struct backtrace_ctx ctx;
+  get_backtrace(&ctx);
+  add_ptr_to_record(ptr, &ctx);
 
   hack_printf("%-10s:%p: size=%zd(%zd) \n", __func__,
       ptr, malloc_usable_size(ptr), size);
 
   if (malloc_detail) {
-    print_backtrace(3);
+    print_backtrace(&ctx, 3);
   }
   return ptr;
 }
@@ -122,13 +127,16 @@ void *realloc(void *ptr, size_t size)
   hack_printf("%-10s:%p: size=%zd->%zd(%zd) oldptr=%p\n", __func__,
       nptr, old_act_size, malloc_usable_size(nptr), size, ptr);
 
+  struct backtrace_ctx ctx;
+  get_backtrace(&ctx);
+
   if (nptr != ptr) {
     del_ptr_from_record(ptr);
-    add_ptr_to_record(nptr);
+    add_ptr_to_record(nptr, &ctx);
   }
 
   if (malloc_detail) {
-    print_backtrace(3);
+    print_backtrace(&ctx, 3);
   }
   return nptr;
 }
@@ -146,9 +154,12 @@ void free(void *ptr)
   hack_printf("%-10s:%p: size=%zd\n", __func__,
       ptr, malloc_usable_size(ptr));
 
+  struct backtrace_ctx ctx;
+  get_backtrace(&ctx);
+
   del_ptr_from_record(ptr);
   if (malloc_detail) {
-    print_backtrace(3);
+    print_backtrace(&ctx, 3);
   }
   myfn_free(ptr);
 }

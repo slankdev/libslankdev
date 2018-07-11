@@ -62,6 +62,7 @@ static void dump_record(int signum)
   for (size_t i=0; i<RECORD_MAX; i++) {
     if (records.ptrs[i] != NULL) {
       hack_printf(" %p \n", records.ptrs[i]);
+      print_backtrace(&records.bt[i], 3);
       cnt ++;
     }
   }

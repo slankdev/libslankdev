@@ -1,4 +1,5 @@
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,8 +8,19 @@
 #include <execinfo.h>
 #define UNW_LOCAL_ONLY
 #include <libunwind.h>
+#include "hack.h"
 
-void print_backtrace(int depth)
+void print_backtrace(struct backtrace_ctx* ctx, int depth)
+{
+  assert(1000 > ctx->size);
+  assert(ctx->size >= depth);
+  for (size_t i=0; i<depth; i++) {
+    fprintf(stderr, "  #%zd <%s+0x%lx>\n", i,
+        ctx->frames[i].fname, ctx->frames[i].offset);
+  }
+}
+
+void get_backtrace(struct backtrace_ctx* ctx)
 {
   unw_cursor_t cursor;
   unw_context_t context;
@@ -25,19 +37,11 @@ void print_backtrace(int depth)
     unw_get_reg(&cursor, UNW_REG_IP, &pc);
     unw_get_proc_name(&cursor, fname, sizeof(fname), &offset);
 
-    fprintf(stderr, "  #%zd <%s+0x%lx>\n", count, fname, offset);
+    assert(1000 > count);
+    strcpy(ctx->frames[count].fname, fname);
+    ctx->frames[count].offset = offset;
     count ++;
-  } while (unw_step(&cursor) > 0 && count < depth);
-}
-
-#if 0
-void get_backtrace(struct bt_ctx* array, size_t size)
-{
-}
-#endif
-
-void print_backtrace_full()
-{
-  print_backtrace(1000);
+  } while (unw_step(&cursor) > 0);
+  ctx->size = count;
 }
 
