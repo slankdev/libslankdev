@@ -1,8 +1,8 @@
 
 CFLAGS += -I. -L. -g -O0 -fPIC
-LDFLAGS += -ldl
+LDFLAGS += -rdynamic -lunwind -ldl
 
-SRC = hack.c wrapper.c sighandler.c
+SRC = hack.c wrapper.c sighandler.c backtrace.c
 OBJ = $(SRC:.c=.o)
 TARGET = hack.so
 

@@ -44,7 +44,7 @@ void *malloc(size_t size)
       __func__, ptr, malloc_usable_size(ptr), size);
 
   if (malloc_detail) {
-    hack_printf(" + TBD(to be develop)\n");
+    print_backtrace(1);
   }
   return ptr;
 }
@@ -63,7 +63,7 @@ void free(void *ptr)
       ptr, malloc_usable_size(ptr));
 
   if (malloc_detail) {
-    hack_printf(" + TBD(to be develop)\n");
+    print_backtrace(1);
   }
   myfn_free(ptr);
 }
@@ -91,7 +91,7 @@ void *realloc(void *ptr, size_t size)
       nptr, old_act_size, malloc_usable_size(nptr), size, ptr);
 
   if (malloc_detail) {
-    hack_printf(" + TBD(to be develop)\n");
+    print_backtrace(1);
   }
   return nptr;
 }
@@ -113,7 +113,7 @@ void *calloc(size_t nmemb, size_t size)
       ptr, malloc_usable_size(ptr), size);
 
   if (malloc_detail) {
-    hack_printf(" + TBD(to be develop)\n");
+    print_backtrace(1);
   }
   return ptr;
 }

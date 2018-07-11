@@ -41,6 +41,7 @@ void* (*myfn_memalign)(size_t blocksize, size_t bytes);
 
 void init();
 void set_all_sighandlers();
+void print_backtrace();
 
 #endif /* _SLANKDEV_DBG_ */
 
