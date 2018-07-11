@@ -1,5 +1,5 @@
 
-CFLAGS += -static
+CFLAGS +=
 LDFLAGS +=
 
 SRC = main.c

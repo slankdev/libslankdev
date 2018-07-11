@@ -2,24 +2,36 @@
 # from __future__ import print_function
 from bcc import BPF
 from time import strftime
+import sys
 
 bpf_text="""
 #include <uapi/linux/ptrace.h>
-int malloc_ret() {
-    bpf_trace_printk("slankdev\\n");
+int cb_malloc() {
+    u32 pid = bpf_get_current_pid_tgid();
+    if (pid != PID) return 0;
+    bpf_trace_printk("malloc pid %u\\n", pid);
     return 0;
 };
-int free_ret() {
-    bpf_trace_printk("yukaribonk\\n");
+int cb_free() {
+    u32 pid = bpf_get_current_pid_tgid();
+    if (pid != PID) return 0;
+    bpf_trace_printk("free pid %u\\n", pid);
     return 0;
 };
 """
 
-# program = '/home/vagrant/git/libslankdev/misc/bcc/a.out'
-program = '/home/vagrant/git/libvty/a.out'
+if len(sys.argv) < 2:
+    print("USAGE: prog PID")
+    exit()
+pid = sys.argv[1]
+
+bpf_text = bpf_text.replace('PID', pid)
 b = BPF(text=bpf_text)
-b.attach_uretprobe(name=program, sym='malloc', fn_name='malloc_ret')
-b.attach_uretprobe(name=program, sym='free', fn_name='free_ret')
+# prog='/home/vagrant/git/libvty/libvty.a'
+# prog='/home/vagrant/git/libvty/a.out'
+prog='c'
+b.attach_uprobe(name=prog, sym='malloc', fn_name='cb_malloc')
+b.attach_uprobe(name=prog, sym='free', fn_name='cb_free')
 
 print("%-9s %-6s %s" % ("TIME", "PID", "COMMAND"))
 while 1:
