@@ -15,24 +15,26 @@ void print_backtrace(int depth)
   unw_getcontext(&context);
   unw_init_local(&cursor, &context);
 
+  unw_step(&cursor); /* skip frame of this function */
+  unw_step(&cursor); /* skip frame of malloc */
+
   size_t count = 0;
   do {
+    char fname[64] = {0};
     unw_word_t  offset, pc;
     unw_get_reg(&cursor, UNW_REG_IP, &pc);
-    char fname[64];
-    memset(fname, 0x0, sizeof(fname));
     unw_get_proc_name(&cursor, fname, sizeof(fname), &offset);
 
-    Dl_info info;
-    dladdr((void*)pc, &info);
-
-    if (count > 1) {
-      fprintf(stderr, "    #%zd %s(%s+0x%lx) [%p]\n",
-          count-2, info.dli_fname, fname, offset, (void*)pc);
-    }
-    count++;
-  } while (unw_step(&cursor) > 0 && count < depth+2);
+    fprintf(stderr, "  #%zd <%s+0x%lx>\n", count, fname, offset);
+    count ++;
+  } while (unw_step(&cursor) > 0 && count < depth);
 }
+
+#if 0
+void get_backtrace(struct bt_ctx* array, size_t size)
+{
+}
+#endif
 
 void print_backtrace_full()
 {
