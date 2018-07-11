@@ -40,7 +40,7 @@ void *malloc(size_t size)
   void *ptr = myfn_malloc(size);
   sum_malloced_memory += malloc_usable_size(ptr);
 
-  hack_printf("%s:%p: size=%zd(%zd)\n",
+  hack_printf("%-10s:%p: size=%zd(%zd)\n",
       __func__, ptr, malloc_usable_size(ptr), size);
 
   if (malloc_detail) {
@@ -59,7 +59,7 @@ void free(void *ptr)
   num_free_called++;
   sum_freed_memory += malloc_usable_size(ptr);
 
-  hack_printf("%s:%p size=%zd\n", __func__,
+  hack_printf("%-10s:%p: size=%zd\n", __func__,
       ptr, malloc_usable_size(ptr));
 
   if (malloc_detail) {
@@ -81,10 +81,13 @@ void *realloc(void *ptr, size_t size)
   }
 
   const size_t old_act_size = malloc_usable_size(ptr);
+  sum_malloced_memory -= old_act_size;
   num_realloc_called++;
   void *nptr = myfn_realloc(ptr, size);
 
-  hack_printf("%s:%p: size=%zd->%zd(%zd) oldptr=%p\n", __func__,
+  sum_malloced_memory += malloc_usable_size(nptr);
+
+  hack_printf("%-10s:%p: size=%zd->%zd(%zd) oldptr=%p\n", __func__,
       nptr, old_act_size, malloc_usable_size(nptr), size, ptr);
 
   if (malloc_detail) {
@@ -106,7 +109,7 @@ void *calloc(size_t nmemb, size_t size)
   num_calloc_called++;
   void *ptr = myfn_calloc(nmemb, size);
 
-  hack_printf("%s:%p: size=%zd(%zd) \n", __func__,
+  hack_printf("%-10s:%p: size=%zd(%zd) \n", __func__,
       ptr, malloc_usable_size(ptr), size);
 
   if (malloc_detail) {
@@ -118,7 +121,7 @@ void *calloc(size_t nmemb, size_t size)
 void *memalign(size_t blocksize, size_t bytes)
 {
   num_memalign_called++;
-  hack_printf("%s\n", __func__);
+  hack_printf("%-10s\n", __func__);
   void *ptr = myfn_memalign(blocksize, bytes);
   return ptr;
 }
