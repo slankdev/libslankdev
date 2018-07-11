@@ -71,6 +71,14 @@ static void dump_record(int signum)
   printf("\n\n");
 }
 
+static inline void set_sighandler(int signum, sighandler_t callback)
+{
+  if (signal(signum, callback) == SIG_ERR) {
+    fprintf(stderr, "signal: can't set sighandler\n");
+    exit(1);
+  }
+}
+
 void set_all_sighandlers()
 {
   /*
@@ -96,21 +104,9 @@ void set_all_sighandlers()
    * 60) SIGRTMAX-4   61) SIGRTMAX-3   62) SIGRTMAX-2
    * 63) SIGRTMAX-1   64) SIGRTMAX
    */
-  if (signal(SIGUSR1, dump_counter) == SIG_ERR) {
-    fprintf(stderr, "signal: can't set sighandler\n");
-    exit(1);
-  }
-  if (signal(SIGUSR2, reset_counter) == SIG_ERR) {
-    fprintf(stderr, "signal: can't set sighandler\n");
-    exit(1);
-  }
-  if (signal(SIGTERM, switch_detail) == SIG_ERR) {
-    fprintf(stderr, "signal: can't set sighandler\n");
-    exit(1);
-  }
-  if (signal(SIGURG, dump_record) == SIG_ERR) {
-    fprintf(stderr, "signal: can't set sighandler\n");
-    exit(1);
-  }
+  set_sighandler(SIGUSR1, dump_counter);
+  set_sighandler(SIGUSR2, reset_counter);
+  set_sighandler(SIGTERM, switch_detail);
+  set_sighandler(SIGURG, dump_record);
 }
 
