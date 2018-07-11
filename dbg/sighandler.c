@@ -5,14 +5,6 @@ static void dump_counter(int signum);
 static void reset_counter(int signum);
 static void switch_detail(int signum);
 
-static void show_status(int signum)
-{
-  printf("\n\n");
-  dump_counter(0);
-  printf("=---------------=\n");
-  printf("malloc_detail: %s\n", malloc_detail?"true":"false");
-  printf("\n");
-}
 
 static void dump_counter(int signum)
 {
@@ -55,8 +47,9 @@ static void reset_counter(int signum)
 
 static void switch_detail(int signum)
 {
-  hack_printf("switch malloc_detail flag\n");
   malloc_detail = !malloc_detail;
+  printf("switch_detail malloc_detail:%s\n",
+      malloc_detail?"false->true":"true->false");
 }
 
 void set_all_sighandlers()
