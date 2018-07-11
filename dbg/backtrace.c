@@ -8,8 +8,7 @@
 #define UNW_LOCAL_ONLY
 #include <libunwind.h>
 
-
-void print_backtrace()
+void print_backtrace(int depth)
 {
   unw_cursor_t cursor;
   unw_context_t context;
@@ -32,6 +31,11 @@ void print_backtrace()
           count-2, info.dli_fname, fname, offset, (void*)pc);
     }
     count++;
-  } while (unw_step(&cursor) > 0);
+  } while (unw_step(&cursor) > 0 && count < depth+2);
+}
+
+void print_backtrace_full()
+{
+  print_backtrace(1000);
 }
 

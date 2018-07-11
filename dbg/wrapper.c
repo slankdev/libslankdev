@@ -5,7 +5,7 @@
 char tmpbuff[1024];
 unsigned long tmppos = 0;
 unsigned long tmpallocs = 0;
-bool malloc_detail = false;
+bool malloc_detail = true;
 struct allocate_records records;
 
 void *memset(void*,int,size_t);
@@ -71,7 +71,7 @@ void *malloc(size_t size)
   add_ptr_to_record(ptr);
 
   if (malloc_detail) {
-    print_backtrace(1);
+    print_backtrace(3);
   }
   return ptr;
 }
@@ -95,7 +95,7 @@ void *calloc(size_t nmemb, size_t size)
       ptr, malloc_usable_size(ptr), size);
 
   if (malloc_detail) {
-    print_backtrace(1);
+    print_backtrace(3);
   }
   return ptr;
 }
@@ -128,7 +128,7 @@ void *realloc(void *ptr, size_t size)
   }
 
   if (malloc_detail) {
-    print_backtrace(1);
+    print_backtrace(3);
   }
   return nptr;
 }
@@ -148,7 +148,7 @@ void free(void *ptr)
 
   del_ptr_from_record(ptr);
   if (malloc_detail) {
-    print_backtrace(1);
+    print_backtrace(3);
   }
   myfn_free(ptr);
 }
