@@ -43,13 +43,31 @@ static void reset_counter(int signum)
   cur_alloced_memory  = 0;
 
   dump_counter(0);
+  memset(&records, 0x00, sizeof(records));
 }
 
 static void switch_detail(int signum)
 {
   malloc_detail = !malloc_detail;
-  printf("switch_detail malloc_detail:%s\n",
+  hack_printf("switch_detail malloc_detail:%s\n",
       malloc_detail?"false->true":"true->false");
+}
+
+static void dump_record(int signum)
+{
+  printf("\n\n");
+  printf("###############################\n");
+  printf("Called Signal Handler: dump record\n");
+  size_t cnt = 0;
+  for (size_t i=0; i<RECORD_MAX; i++) {
+    if (records.ptrs[i] != NULL) {
+      hack_printf(" %p \n", records.ptrs[i]);
+      cnt ++;
+    }
+  }
+  printf("%zd records found\n", cnt);
+  printf("###############################\n");
+  printf("\n\n");
 }
 
 void set_all_sighandlers()
@@ -86,6 +104,10 @@ void set_all_sighandlers()
     exit(1);
   }
   if (signal(SIGTERM, switch_detail) == SIG_ERR) {
+    fprintf(stderr, "signal: can't set sighandler\n");
+    exit(1);
+  }
+  if (signal(SIGURG, dump_record) == SIG_ERR) {
     fprintf(stderr, "signal: can't set sighandler\n");
     exit(1);
   }

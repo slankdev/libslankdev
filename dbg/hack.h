@@ -23,6 +23,12 @@
       write(1, str, strlen(str)+1); \
     } while (0)
 
+#define RECORD_MAX 1000
+struct allocate_records {
+  void* ptrs[RECORD_MAX];
+};
+extern struct allocate_records records;
+
 extern size_t num_malloc_called  ;
 extern size_t num_realloc_called ;
 extern size_t num_calloc_called  ;

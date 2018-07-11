@@ -34,5 +34,7 @@ void init()
     fprintf(stderr, "Error in `dlsym`: %s\n", dlerror());
     exit(1);
   }
+
+  memset(&records, 0x0, sizeof(records));
 }
 
