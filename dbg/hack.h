@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <malloc.h>
+#include <stdbool.h>
 
 #define hack_printf(...) \
     do { \
@@ -21,10 +22,6 @@
       sprintf(str, __VA_ARGS__); \
       write(1, str, strlen(str)+1); \
     } while (0)
-
-extern char tmpbuff[1024];
-extern unsigned long tmppos;
-extern unsigned long tmpallocs;
 
 extern size_t num_malloc_called  ;
 extern size_t num_realloc_called ;
@@ -34,15 +31,16 @@ extern size_t num_memalign_called;
 extern size_t sum_malloced_memory;
 extern size_t sum_freed_memory   ;
 extern size_t cur_alloced_memory ;
-
-void *memset(void*,int,size_t);
-void *memmove(void *to, const void *from, size_t size);
+extern bool   malloc_detail;
 
 void* (*myfn_calloc)(size_t nmemb, size_t size);
 void* (*myfn_malloc)(size_t size);
 void  (*myfn_free)(void *ptr);
 void* (*myfn_realloc)(void *ptr, size_t size);
 void* (*myfn_memalign)(size_t blocksize, size_t bytes);
+
+void init();
+void set_all_sighandlers();
 
 #endif /* _SLANKDEV_DBG_ */
 

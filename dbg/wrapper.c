@@ -1,7 +1,14 @@
 
 #include "hack.h"
+#include <string.h>
 
-void init();
+char tmpbuff[1024];
+unsigned long tmppos = 0;
+unsigned long tmpallocs = 0;
+bool malloc_detail = false;
+
+void *memset(void*,int,size_t);
+void *memmove(void *to, const void *from, size_t size);
 
 void *malloc(size_t size)
 {
@@ -30,9 +37,15 @@ void *malloc(size_t size)
   }
 
   num_malloc_called++;
-  hack_printf("%s\n", __func__);
   void *ptr = myfn_malloc(size);
   sum_malloced_memory += malloc_usable_size(ptr);
+
+  hack_printf("%s:%p: size=%zd(%zd)\n",
+      __func__, ptr, malloc_usable_size(ptr), size);
+
+  if (malloc_detail) {
+    hack_printf(" + TBD(to be develop)\n");
+  }
   return ptr;
 }
 
@@ -40,12 +53,19 @@ void free(void *ptr)
 {
   if (ptr >= (void*) tmpbuff && ptr <= (void*)(tmpbuff + tmppos)) {
     fprintf(stdout, "freeing temp memory\n");
-  } else {
-    num_free_called++;
-    hack_printf("%s\n", __func__);
-    sum_freed_memory += malloc_usable_size(ptr);
-    myfn_free(ptr);
+    return;
   }
+
+  num_free_called++;
+  sum_freed_memory += malloc_usable_size(ptr);
+
+  hack_printf("%s:%p size=%zd\n", __func__,
+      ptr, malloc_usable_size(ptr));
+
+  if (malloc_detail) {
+    hack_printf(" + TBD(to be develop)\n");
+  }
+  myfn_free(ptr);
 }
 
 void *realloc(void *ptr, size_t size)
@@ -60,9 +80,16 @@ void *realloc(void *ptr, size_t size)
     return nptr;
   }
 
+  const size_t old_act_size = malloc_usable_size(ptr);
   num_realloc_called++;
-  hack_printf("%s\n", __func__);
   void *nptr = myfn_realloc(ptr, size);
+
+  hack_printf("%s:%p: size=%zd->%zd(%zd) oldptr=%p\n", __func__,
+      nptr, old_act_size, malloc_usable_size(nptr), size, ptr);
+
+  if (malloc_detail) {
+    hack_printf(" + TBD(to be develop)\n");
+  }
   return nptr;
 }
 
@@ -77,8 +104,14 @@ void *calloc(size_t nmemb, size_t size)
   }
 
   num_calloc_called++;
-  hack_printf("%s\n", __func__);
   void *ptr = myfn_calloc(nmemb, size);
+
+  hack_printf("%s:%p: size=%zd(%zd) \n", __func__,
+      ptr, malloc_usable_size(ptr), size);
+
+  if (malloc_detail) {
+    hack_printf(" + TBD(to be develop)\n");
+  }
   return ptr;
 }
 

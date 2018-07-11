@@ -2,7 +2,7 @@
 CFLAGS += -I. -L. -g -O0 -fPIC
 LDFLAGS += -ldl
 
-SRC = hack.c wrapper.c
+SRC = hack.c wrapper.c sighandler.c
 OBJ = $(SRC:.c=.o)
 TARGET = hack.so
 
