@@ -15,8 +15,8 @@ void print_backtrace(struct backtrace_ctx* ctx, int depth)
   assert(1000 > ctx->size);
   assert(ctx->size >= depth);
   for (size_t i=0; i<depth; i++) {
-    fprintf(stderr, "  #%zd <%s+0x%lx>\n", i,
-        ctx->frames[i].fname, ctx->frames[i].offset);
+    fprintf(stderr, "  #%zd  0x%lx  <%s+0x%lx> \n", i,
+        ctx->frames[i].pc, ctx->frames[i].fname, ctx->frames[i].offset);
   }
 }
 
@@ -40,6 +40,7 @@ void get_backtrace(struct backtrace_ctx* ctx)
     assert(1000 > count);
     strcpy(ctx->frames[count].fname, fname);
     ctx->frames[count].offset = offset;
+    ctx->frames[count].pc = pc;
     count ++;
   } while (unw_step(&cursor) > 0);
   ctx->size = count;

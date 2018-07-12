@@ -27,6 +27,7 @@
 struct frame_info {
   char fname[64];
   size_t offset;
+  size_t pc;
 };
 struct backtrace_ctx {
   struct frame_info frames[RECORD_MAX];
