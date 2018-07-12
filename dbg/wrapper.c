@@ -6,6 +6,7 @@ char tmpbuff[1024];
 unsigned long tmppos = 0;
 unsigned long tmpallocs = 0;
 bool malloc_detail = false;
+bool log_stdout = false;
 struct allocate_records records;
 
 void *memset(void*,int,size_t);
@@ -66,8 +67,9 @@ void *malloc(size_t size)
   void *ptr = myfn_malloc(size);
   sum_malloced_memory += malloc_usable_size(ptr);
 
-  hack_printf("%-10s:%p: size=%zd(%zd)\n",
-      __func__, ptr, malloc_usable_size(ptr), size);
+  if (log_stdout)
+    hack_printf("%-10s:%p: size=%zd(%zd)\n",
+        __func__, ptr, malloc_usable_size(ptr), size);
 
   struct backtrace_ctx ctx;
   get_backtrace(&ctx);
@@ -96,8 +98,9 @@ void *calloc(size_t nmemb, size_t size)
   get_backtrace(&ctx);
   add_ptr_to_record(ptr, &ctx);
 
-  hack_printf("%-10s:%p: size=%zd(%zd) \n", __func__,
-      ptr, malloc_usable_size(ptr), size);
+  if (log_stdout)
+    hack_printf("%-10s:%p: size=%zd(%zd) \n", __func__,
+        ptr, malloc_usable_size(ptr), size);
 
   if (malloc_detail) {
     print_backtrace(&ctx, 3);
@@ -124,8 +127,9 @@ void *realloc(void *ptr, size_t size)
 
   sum_malloced_memory += malloc_usable_size(nptr);
 
-  hack_printf("%-10s:%p: size=%zd->%zd(%zd) oldptr=%p\n", __func__,
-      nptr, old_act_size, malloc_usable_size(nptr), size, ptr);
+  if (log_stdout)
+    hack_printf("%-10s:%p: size=%zd->%zd(%zd) oldptr=%p\n", __func__,
+        nptr, old_act_size, malloc_usable_size(nptr), size, ptr);
 
   struct backtrace_ctx ctx;
   get_backtrace(&ctx);
@@ -151,8 +155,9 @@ void free(void *ptr)
   num_free_called++;
   sum_freed_memory += malloc_usable_size(ptr);
 
-  hack_printf("%-10s:%p: size=%zd\n", __func__,
-      ptr, malloc_usable_size(ptr));
+  if (log_stdout)
+    hack_printf("%-10s:%p: size=%zd\n", __func__,
+        ptr, malloc_usable_size(ptr));
 
   struct backtrace_ctx ctx;
   get_backtrace(&ctx);

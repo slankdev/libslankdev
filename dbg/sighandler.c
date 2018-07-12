@@ -1,10 +1,11 @@
 
+#include <stdbool.h>
 #include "hack.h"
 
+extern bool log_stdout;
 static void dump_counter(int signum);
 static void reset_counter(int signum);
 static void switch_detail(int signum);
-
 
 static void dump_counter(int signum)
 {
@@ -42,7 +43,6 @@ static void reset_counter(int signum)
   sum_freed_memory    = 0;
   cur_alloced_memory  = 0;
 
-  dump_counter(0);
   memset(&records, 0x00, sizeof(records));
 }
 
@@ -53,6 +53,13 @@ static void switch_detail(int signum)
       malloc_detail?"false->true":"true->false");
 }
 
+static void switch_log_stdout(int signum)
+{
+  log_stdout = !log_stdout;
+  hack_printf("switch log_stdout:%s\n",
+      log_stdout?"false->true":"true->false");
+}
+
 static void dump_record(int signum)
 {
   printf("\n\n");
@@ -61,7 +68,7 @@ static void dump_record(int signum)
   size_t cnt = 0;
   for (size_t i=0; i<RECORD_MAX; i++) {
     if (records.ptrs[i] != NULL) {
-      hack_printf(" %p \n", records.ptrs[i]);
+      hack_printf(" %p: size=%zd \n", records.ptrs[i], malloc_usable_size(records.ptrs[i]));
       print_backtrace(&records.bt[i], 3);
       cnt ++;
     }
@@ -108,5 +115,6 @@ void set_all_sighandlers()
   set_sighandler(SIGUSR2, reset_counter);
   set_sighandler(SIGTERM, switch_detail);
   set_sighandler(SIGURG, dump_record);
+  set_sighandler(SIGTTIN, switch_log_stdout);
 }
 
