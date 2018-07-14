@@ -17,10 +17,10 @@ static void dump_counter(int signum)
   printf("num_calloc_called  : %zd \n", num_calloc_called  );
   printf("num_free_called    : %zd \n", num_free_called    );
   printf("num_memalign_called: %zd \n", num_memalign_called);
-  printf("\n");
+  printf("---------------\n");
   printf("sum_malloced_memory: %zd \n", sum_malloced_memory);
   printf("sum_freed_memory: %zd \n"   , sum_freed_memory);
-  printf("current_allocated_memory: %zd\n", cur_alloced_memory);
+  printf("current_allocated_memory: %zd \n", sum_malloced_memory-sum_freed_memory);
   printf("###############################\n");
   printf("\n");
 }
@@ -41,7 +41,6 @@ static void reset_counter(int signum)
 
   sum_malloced_memory = 0;
   sum_freed_memory    = 0;
-  cur_alloced_memory  = 0;
 
   memset(&records, 0x00, sizeof(records));
 }

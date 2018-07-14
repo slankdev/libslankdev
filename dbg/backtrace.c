@@ -13,8 +13,10 @@
 void print_backtrace(struct backtrace_ctx* ctx, int depth)
 {
   assert(1000 > ctx->size);
-  assert(ctx->size >= depth);
-  for (size_t i=0; i<depth; i++) {
+  if (depth != -1) assert(ctx->size >= depth);
+
+  size_t nloop = depth==-1?ctx->size:depth;
+  for (size_t i=0; i<nloop; i++) {
     fprintf(stderr, "  #%zd  0x%lx  <%s+0x%lx> \n", i,
         ctx->frames[i].pc, ctx->frames[i].fname, ctx->frames[i].offset);
   }

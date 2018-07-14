@@ -33,7 +33,10 @@ static void del_ptr_from_record(void* ptr)
       return ;
     }
   }
-  hack_printf("recored was not found!!\n");
+  hack_printf("record was not found!!\n");
+  struct backtrace_ctx ctx;
+  get_backtrace(&ctx);
+  print_backtrace(&ctx, -1);
   exit(1);
 }
 

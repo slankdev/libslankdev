@@ -36,6 +36,9 @@ class CLI(Cmd):
         print("bye...")
         return True;
 
+    def emptyline(self):
+        pass
+
 def pidof(name):
     ss = check_output(["pidof",name])
     return int(ss)

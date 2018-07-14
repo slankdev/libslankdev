@@ -46,7 +46,6 @@ extern size_t num_free_called    ;
 extern size_t num_memalign_called;
 extern size_t sum_malloced_memory;
 extern size_t sum_freed_memory   ;
-extern size_t cur_alloced_memory ;
 extern bool   malloc_detail;
 
 void* (*myfn_calloc)(size_t nmemb, size_t size);

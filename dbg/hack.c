@@ -8,7 +8,6 @@ size_t num_free_called     = 0;
 size_t num_memalign_called = 0;
 size_t sum_malloced_memory = 0;
 size_t sum_freed_memory    = 0;
-size_t cur_alloced_memory  = 0;
 
 void cnstr() __attribute__((constructor));
 void cnstr() { }
