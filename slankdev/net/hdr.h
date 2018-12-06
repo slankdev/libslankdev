@@ -38,6 +38,7 @@
 #include <string>
 #include <slankdev/endian.h>
 #include <slankdev/string.h>
+#include <slankdev/checksum.h>
 #include <arpa/inet.h>
 
 
@@ -134,6 +135,55 @@ struct ip {
   size_t hdr_len() const { return (ver_ihl&0x0f)<<2; }
 };
 
+
+struct ip6 {
+  uint32_t vtc_flow;
+  uint16_t payload_len;
+  uint8_t  proto;
+  uint8_t  hop_limits;
+  uint8_t  src[16];
+  uint8_t  dst[16];
+
+  void print(FILE* fp) const
+  {
+    fprintf(fp, "+ vtc_flow   : 0x%08x(%u)\n", vtc_flow   , vtc_flow   );
+    fprintf(fp, "+ payload_len: 0x%08x(%u)\n", payload_len, payload_len);
+    fprintf(fp, "+ proto      : 0x%08x(%u)\n", proto      , proto      );
+    fprintf(fp, "+ hop_limits : 0x%08x(%u)\n", hop_limits , hop_limits );
+    // fprintf(fp, "+ : 0x%08x(%u)\n", src[16]); // TODO
+    // fprintf(fp, "+ : 0x%08x(%u)\n", dst[16]); // TODO
+  }
+  size_t hdr_len() const { return 40; }
+  const void* get_next() const
+  {
+    uint8_t* ptr = (uint8_t*)this;
+    return ptr + hdr_len();
+  }
+};
+
+struct srv6h {
+  uint8_t  next_hdr;
+  uint8_t  hdr_ext_len;
+  uint8_t  routing_type;
+  uint8_t  segments_left;
+  uint8_t  last_entry;
+  uint8_t  flags;
+  uint16_t tag;
+  struct in6_addr segment_list[100];
+
+  void print(FILE* fp) const
+  {
+    printf("not imple %s()\n", __func__);
+    assert(false);
+  }
+
+  size_t hdr_len() const { return hdr_ext_len * 2 * 6; }
+  const void* get_next() const
+  {
+    uint8_t* ptr = (uint8_t*)this;
+    return ptr + hdr_len();
+  }
+};
 
 
 struct arp {
