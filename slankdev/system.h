@@ -38,6 +38,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <sys/utsname.h>
 #include <slankdev/exception.h>
 #include <slankdev/system.h>
 #include <slankdev/filefd.h>
@@ -45,6 +46,48 @@
 
 
 namespace slankdev {
+
+inline std::string uname_get_sysname()
+{
+  struct utsname val;
+  int ret = uname(&val);
+  if (ret < 0)
+    throw slankdev::exception("uname");
+  return val.sysname;
+}
+inline std::string uname_get_nodename()
+{
+  struct utsname val;
+  int ret = uname(&val);
+  if (ret < 0)
+    throw slankdev::exception("uname");
+  return val.nodename;
+}
+inline std::string uname_get_release()
+{
+  struct utsname val;
+  int ret = uname(&val);
+  if (ret < 0)
+    throw slankdev::exception("uname");
+  return val.release;
+}
+inline std::string uname_get_version()
+{
+  struct utsname val;
+  int ret = uname(&val);
+  if (ret < 0)
+    throw slankdev::exception("uname");
+  return val.version;
+}
+inline std::string uname_get_machine()
+{
+  struct utsname val;
+  int ret = uname(&val);
+  if (ret < 0)
+    throw slankdev::exception("uname");
+  return val.machine;
+}
+
 
 
 inline uint64_t rdtscp(uint32_t* cpuid)
