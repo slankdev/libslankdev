@@ -173,8 +173,9 @@ struct srv6h {
 
   void print(FILE* fp) const
   {
-    printf("not imple %s()\n", __func__);
-    assert(false);
+    fprintf(fp, "not imple %s()\n", __func__);
+    fprintf(stderr, "not imple %s()\n", __func__);
+    exit(1);
   }
 
   size_t hdr_len() const { return hdr_ext_len * 2 * 6; }
