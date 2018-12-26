@@ -161,7 +161,7 @@ struct ip6 {
   }
 };
 
-struct srv6h {
+struct srh {
   uint8_t  next_hdr;
   uint8_t  hdr_ext_len;
   uint8_t  routing_type;
