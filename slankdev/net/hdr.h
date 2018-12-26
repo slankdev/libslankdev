@@ -141,17 +141,21 @@ struct ip6 {
   uint16_t payload_len;
   uint8_t  proto;
   uint8_t  hop_limits;
-  uint8_t  src[16];
-  uint8_t  dst[16];
+  struct in6_addr src;
+  struct in6_addr dst;
 
   void print(FILE* fp) const
   {
+    fprintf(fp, "IPv6\n");
     fprintf(fp, "+ vtc_flow   : 0x%08x(%u)\n", vtc_flow   , vtc_flow   );
     fprintf(fp, "+ payload_len: 0x%08x(%u)\n", payload_len, payload_len);
     fprintf(fp, "+ proto      : 0x%08x(%u)\n", proto      , proto      );
     fprintf(fp, "+ hop_limits : 0x%08x(%u)\n", hop_limits , hop_limits );
-    // fprintf(fp, "+ : 0x%08x(%u)\n", src[16]); // TODO
-    // fprintf(fp, "+ : 0x%08x(%u)\n", dst[16]); // TODO
+    char src_buf[100], dst_buf[100];
+    inet_ntop(AF_INET6, &src, src_buf, sizeof(src_buf));
+    inet_ntop(AF_INET6, &dst, dst_buf, sizeof(dst_buf));
+    fprintf(fp, "+ src        : %s\n", src_buf);
+    fprintf(fp, "+ dst        : %s\n", dst_buf);
   }
   size_t hdr_len() const { return 40; }
   const void* get_next() const
@@ -173,9 +177,23 @@ struct srh {
 
   void print(FILE* fp) const
   {
-    fprintf(fp, "not imple %s()\n", __func__);
-    fprintf(stderr, "not imple %s()\n", __func__);
-    exit(1);
+    fprintf(fp, "SRH\n");
+    fprintf(fp, "+ next_hdr     : 0x%02x(%u)\n", next_hdr     , next_hdr     );
+    fprintf(fp, "+ hdr_ext_len  : 0x%02x(%u)\n", hdr_ext_len  , hdr_ext_len  );
+    fprintf(fp, "+ routing_type : 0x%02x(%u)\n", routing_type , routing_type );
+    fprintf(fp, "+ segments_left: 0x%02x(%u)\n", segments_left, segments_left);
+    fprintf(fp, "+ last_entry   : 0x%02x(%u)\n", last_entry   , last_entry   );
+    fprintf(fp, "+ flags        : 0x%02x(%u)\n", flags        , flags        );
+    fprintf(fp, "+ tag          : 0x%04x(%u)\n", tag          , tag          );
+    fprintf(fp, "+ slist: [");
+    const size_t n_loop = segments_left + 1;
+    for (size_t i=0; i<n_loop; i++) {
+      char strbuf[100];
+      inet_ntop(AF_INET6,
+          (const void*)&segment_list[i],
+          strbuf, sizeof(strbuf));
+      printf("%s%s", strbuf, i+1<n_loop?",":"]\n");
+    }
   }
 
   size_t hdr_len() const { return hdr_ext_len * 2 * 6; }
