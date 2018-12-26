@@ -196,7 +196,7 @@ struct srh {
     }
   }
 
-  size_t hdr_len() const { return hdr_ext_len * 2 * 6; }
+  size_t hdr_len() const { return hdr_ext_len * 8 + 8; }
   const void* get_next() const
   {
     uint8_t* ptr = (uint8_t*)this;
@@ -204,6 +204,13 @@ struct srh {
   }
 };
 
+static inline std::string
+in6_addr_to_string(const struct in6_addr* addr)
+{
+  char buf[100];
+  inet_ntop(AF_INET6, addr, buf, sizeof(buf));
+  return buf;
+}
 
 struct arp {
   uint16_t    hwtype   ;
