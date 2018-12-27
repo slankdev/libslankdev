@@ -59,6 +59,7 @@ class pcap {
   void open_dead();
   void loop(int cnt, pcap_handler callback, uint8_t* user);
   int datalink() const;
+  void setdirection(pcap_direction_t d);
 };
 
 
@@ -172,6 +173,15 @@ inline void pcap::compile(struct bpf_program *fp,
 inline void pcap::loop(int cnt, pcap_handler callback, uint8_t* user)
 {
   pcap_loop(handle, cnt, callback, user);
+}
+
+inline void pcap::setdirection(pcap_direction_t d)
+{
+  int ret = pcap_setdirection(handle, d);
+  if (ret < 0) {
+    std::string errstr = pcap_geterr(handle);
+    throw slankdev::exception(errstr.c_str());
+  }
 }
 
 } /* namespace slankadev */
