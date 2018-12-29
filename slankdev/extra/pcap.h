@@ -37,7 +37,8 @@
 
 namespace slankdev {
 
-inline void cb(uint8_t* user, const struct pcap_pkthdr* h, const uint8_t* byte)
+inline void cb(uint8_t* user __attribute__((unused)),
+    const struct pcap_pkthdr* h, const uint8_t* byte)
 { slankdev::hexdump(stdout, byte, h->len); }
 
 class pcap {
