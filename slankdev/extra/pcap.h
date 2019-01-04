@@ -54,6 +54,7 @@ class pcap {
   void close();
   void next();
   virtual void recv(const void* ptr, struct pcap_pkthdr* header);
+  void setfilter_str(const char* str);
   void setfilter(struct bpf_program *fp);
   void compile(struct bpf_program *fp,
       const char *str, int optimize, bpf_u_int32 netmask);
@@ -152,6 +153,12 @@ inline void pcap::next()
 inline void pcap::recv(const void* ptr, struct pcap_pkthdr* header)
 {
   slankdev::hexdump(stdout, ptr, header->len);
+}
+inline void pcap::setfilter_str(const char* str)
+{
+  struct bpf_program fp;
+  compile(&fp, str, 0, 0);
+  setfilter(&fp);
 }
 inline void pcap::setfilter(struct bpf_program *fp)
 {
