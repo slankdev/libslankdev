@@ -133,6 +133,11 @@ struct ip {
     fprintf(fp,"+ dst  : 0x%08x  \n", bswap32(dst));
   }
   size_t hdr_len() const { return (ver_ihl&0x0f)<<2; }
+  void* get_next() const
+  {
+    uint8_t* ptr = (uint8_t*)this;
+    return ptr + hdr_len();
+  }
 };
 
 

@@ -41,7 +41,7 @@
 namespace slankdev {
 
 
-#if 0
+#if 1
 /* Thanks @herumi */
 static uint16_t read_as_little_endian(const void* data)
 {
