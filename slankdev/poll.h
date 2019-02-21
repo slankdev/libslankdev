@@ -38,6 +38,7 @@
 
 namespace slankdev {
 
+#if 0
 inline bool poll(struct ::pollfd* fds, size_t nfds, int timeout)
 {
   int res = ::poll(fds, nfds, timeout);
@@ -46,6 +47,30 @@ inline bool poll(struct ::pollfd* fds, size_t nfds, int timeout)
   }
   return res > 0;
 }
+#endif
+
+struct pollfd {
+  std::vector<struct ::pollfd> fds;
+  pollfd() {}
+  int get_fd(size_t idx) const { return fds[idx].fd; }
+  int16_t get_revents(size_t idx) const { return fds[idx].revents; }
+  size_t n_fds() const { return fds.size(); }
+  void append_fd(int32_t fd, int16_t events)
+  {
+    struct ::pollfd pd;
+    memset(&pd, 0, sizeof(struct ::pollfd));
+    pd.fd = fd;
+    pd.events = events;
+    fds.push_back(pd);
+  }
+  int poll(int timeout)
+  {
+    int ret = ::poll(fds.data(), fds.size(), timeout);
+    if (ret < 0)
+      throw slankdev::exception("poll");
+    return ret;
+  }
+};
 
 } /* namespace slankdev */
 
