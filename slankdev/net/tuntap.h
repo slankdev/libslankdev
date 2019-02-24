@@ -24,7 +24,7 @@ class tap : public slankdev::safe_intfd {
     this->open("/dev/net/tun", O_RDWR);
 
     memset(&ifr, 0, sizeof(ifr));
-    ifr.ifr_flags = IFF_TAP;
+    ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
     strncpy(ifr.ifr_name, name, IFNAMSIZ);
     this->ioctl(TUNSETIFF, (void*)&ifr);
 
