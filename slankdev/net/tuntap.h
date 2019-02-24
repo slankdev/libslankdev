@@ -20,11 +20,11 @@ class tap : public slankdev::safe_intfd {
  public:
   tap(const char* name)
   {
-    struct ifreq ifr;
     this->open("/dev/net/tun", O_RDWR);
 
+    struct ifreq ifr;
     memset(&ifr, 0, sizeof(ifr));
-    ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
+    ifr.ifr_flags = IFF_TAP;
     strncpy(ifr.ifr_name, name, IFNAMSIZ);
     this->ioctl(TUNSETIFF, (void*)&ifr);
 
