@@ -4,7 +4,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2017 Susanoo G
+ * Copyright (c) 2017 Hiroki Shirokura
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@
  * @file   slankdev/filefd.h
  * @brief  FILE wrapper
  * @author Hiroki SHIROKURA
- * @date   2017.4.2
+ * @date   2019.4.22
  */
 
 #pragma once
@@ -60,6 +60,12 @@ class filefd {
   void fflush();
   std::string readline();
   template<typename... ARG> int fprintf(const char* fmt, const ARG&... arg);
+
+  bool feof() const
+  {
+    int ret = ::feof(fp);
+    return ret != 0;
+  }
 };
 
 } /* namespace slankdev */
