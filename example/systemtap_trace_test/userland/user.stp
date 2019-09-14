@@ -1,0 +1,9 @@
+
+
+
+probe process("./a.out").function("*").call {
+        printf("%s -> %s\n", thread_indent(1), probefunc())
+}
+probe process("./a.out").function("*").return {
+        printf("%s <- %s\n", thread_indent(-1), probefunc())
+}

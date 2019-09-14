@@ -1,0 +1,18 @@
+
+#! /usr/bin/env stap
+
+probe kernel.function("*@net/ipv4/af_inet.c").call {
+  printf ("%15s -> %15s\n", thread_indent(4), probefunc())
+}
+probe kernel.function("*@net/ipv4/af_inet.c").return {
+  printf ("%15s <- %15s\n", thread_indent(-4), probefunc())
+}
+
+
+probe process("./a.out").function("sendto").call {
+  printf ("%15s -> %15s\n", thread_indent(4), probefunc())
+}
+
+probe process("./a.out").function("sendto").return {
+  printf ("%15s -> %15s\n", thread_indent(-4), probefunc())
+}
